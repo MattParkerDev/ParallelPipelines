@@ -29,7 +29,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 				Console.WriteLine($"Error running module {moduleContainer.Module.GetType().Name}: {ex.Message}");
 				moduleContainer.HasCompletedSuccessfully = false;
 			}
-		}).ConfigureAwait(false);
+		});
 
 		Console.WriteLine("OrchestratorService Complete");
 	}
@@ -43,6 +43,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 	{
 		foreach (var moduleContainer in moduleContainers)
 		{
+
 			var dependencyTypes = moduleContainer.Module.GetType().GetDependencyTypes();
 			var dependencies = moduleContainers.Where(m => dependencyTypes.Contains(m.Module.GetType()));
 			foreach (var dependency in dependencies)
