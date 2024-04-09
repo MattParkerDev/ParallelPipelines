@@ -1,6 +1,6 @@
 ﻿using Spectre.Console;
 
-namespace ModularPipelines.Host;
+namespace ModularPipelines.Host.Services;
 
 public class ExampleAnsiProgressService
 {

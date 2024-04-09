@@ -2,6 +2,7 @@
 using Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ModularPipelines.Host.Services;
 
 namespace ModularPipelines.Host;
 
@@ -13,6 +14,7 @@ public static class DependencyInjection
 		services.AddInfrastructure(configuration);
 		services.AddHostedService<PipelineApplication>();
 		services.AddSingleton<ExampleAnsiProgressService>();
+		services.AddSingleton<OrchestratorService>();
 		return services;
 	}
 }
