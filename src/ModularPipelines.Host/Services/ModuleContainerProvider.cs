@@ -1,4 +1,5 @@
-﻿using Application.Attributes;
+﻿using System.Runtime.CompilerServices;
+using Application.Attributes;
 using Domain.Entities;
 
 namespace ModularPipelines.Host.Services;
@@ -12,7 +13,8 @@ public class ModuleContainerProvider(IEnumerable<ModuleContainer> moduleContaine
 		return _moduleContainers;
 	}
 
-	public async IAsyncEnumerable<ModuleContainer> GetModuleContainersOrderedForExecution()
+	public async IAsyncEnumerable<ModuleContainer> GetModuleContainersOrderedForExecution(
+		[EnumeratorCancellation] CancellationToken cancellationToken)
 	{
 		var noDependencies = _moduleContainers.Where(m => m.Module.GetType().HasNoDependencies()).ToList();
 		if (noDependencies.Count == 0)

@@ -2,6 +2,6 @@
 
 public interface IModule
 {
-	public Task RunModule();
+	public Task RunModule(CancellationToken cancellationToken);
 	public void ShouldSkip();
 }

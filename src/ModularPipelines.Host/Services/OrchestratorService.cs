@@ -7,19 +7,20 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 {
 	private readonly ModuleContainerProvider _moduleContainerProvider = moduleContainerProvider;
 
-	public async Task RunPipeline()
+	public async Task RunPipeline(CancellationToken cancellationToken)
 	{
 		Console.WriteLine("🚀Executing OrchestratorService");
 		var moduleContainers = _moduleContainerProvider.GetAllModuleContainers();
-		moduleContainers.ForEach(c => Console.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
+		LogFoundModules(moduleContainers);
 		PopulateDependents(moduleContainers);
 
-		var modulesToExecute = _moduleContainerProvider.GetModuleContainersOrderedForExecution();
-		await Parallel.ForEachAsync(modulesToExecute, async (moduleContainer, cancellationToken) =>
+		var modulesToExecute = _moduleContainerProvider.GetModuleContainersOrderedForExecution(cancellationToken);
+
+		await Parallel.ForEachAsync(modulesToExecute, cancellationToken, async (moduleContainer, ct) =>
 		{
 			try
 			{
-				await moduleContainer.Module.RunModule();
+				await moduleContainer.Module.RunModule(ct);
 				moduleContainer.HasCompletedSuccessfully = true;
 				moduleContainer.CompletedSuccessfullyTask.Start();
 			}
@@ -31,6 +32,11 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		}).ConfigureAwait(false);
 
 		Console.WriteLine("OrchestratorService Complete");
+	}
+
+	private void LogFoundModules(List<ModuleContainer> moduleContainers)
+	{
+		moduleContainers.ForEach(c => Console.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
 	}
 
 	private static void PopulateDependents(List<ModuleContainer> moduleContainers)

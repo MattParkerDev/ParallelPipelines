@@ -4,10 +4,10 @@ namespace ModularPipelines.Console.Modules;
 
 public class PowershellModule : IModule
 {
-	public async Task RunModule()
+	public async Task RunModule(CancellationToken cancellationToken)
 	{
 		System.Console.WriteLine("🏎️ Executing PowershellModule");
-		await Task.Delay(3000);
+		await Task.Delay(3000, cancellationToken);
 		System.Console.WriteLine("🏎️ Executing PowershellModule Finished");
 	}
 
