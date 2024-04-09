@@ -3,10 +3,9 @@ using Domain.Entities;
 
 namespace ModularPipelines.Host.Services;
 
-public class OrchestratorService(IEnumerable<IModuleContainer> moduleContainers, IServiceProvider serviceProvider)
+public class OrchestratorService(IEnumerable<ModuleContainer> moduleContainers)
 {
-	private readonly IEnumerable<IModuleContainer> _moduleContainers = moduleContainers;
-	private readonly IServiceProvider _serviceProvider = serviceProvider;
+	private readonly IEnumerable<ModuleContainer> _moduleContainers = moduleContainers;
 
 	public async Task RunPipeline()
 	{

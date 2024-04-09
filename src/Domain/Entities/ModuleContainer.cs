@@ -1,15 +1,12 @@
 ﻿namespace Domain.Entities;
 
-public class ModuleContainer<T> : IModuleContainer where T : IModule
-//public class ModuleContainer<T> where T : IModule
+public class ModuleContainer
 {
-	public bool HasCompletedSuccessfully { get; set; }
-	public IModule Module { get; set; }
-
-	public ModuleContainer(T module)
+	public ModuleContainer(IModule module)
 	{
 		Module = module;
 	}
 
-
+	public bool HasCompletedSuccessfully { get; set; }
+	public IModule Module { get; set; }
 }
