@@ -16,4 +16,9 @@ public static class AttributeExtensions
 	{
 		return !type.GetCustomAttributes(typeof(DependsOnAttribute<>), true).Any();
 	}
+	public static object[] GetDependencies(this Type type)
+	{
+		var attributes = type.GetCustomAttributes(typeof(DependsOnAttribute<>), true);
+		return attributes;
+	}
 }

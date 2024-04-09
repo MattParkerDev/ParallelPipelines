@@ -6,6 +6,7 @@ public class PowershellModule : IModule
 {
 	public async Task RunModule()
 	{
+		await Task.Delay(5000);
 		System.Console.WriteLine("🏎️ Executing PowershellModule");
 	}
 

@@ -21,13 +21,14 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 			{
 				await moduleContainer.Module.RunModule();
 				moduleContainer.HasCompletedSuccessfully = true;
+				await moduleContainer.CompletedSuccessfullyTask.ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine($"Error running module {moduleContainer.Module.GetType().Name}: {ex.Message}");
 				moduleContainer.HasCompletedSuccessfully = false;
 			}
-		});
+		}).ConfigureAwait(false);
 
 		Console.WriteLine("OrchestratorService Complete");
 	}
