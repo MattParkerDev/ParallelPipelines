@@ -2,6 +2,6 @@
 
 public interface IModule
 {
-	public void RunModule();
+	public Task RunModule();
 	public void ShouldSkip();
 }

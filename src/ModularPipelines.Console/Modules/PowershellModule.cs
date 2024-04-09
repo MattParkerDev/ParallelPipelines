@@ -4,9 +4,9 @@ namespace ModularPipelines.Console.Modules;
 
 public class PowershellModule : IModule
 {
-	public void RunModule()
+	public async Task RunModule()
 	{
-		throw new NotImplementedException();
+		System.Console.WriteLine("🏎️ Executing PowershellModule");
 	}
 
 	public void ShouldSkip()

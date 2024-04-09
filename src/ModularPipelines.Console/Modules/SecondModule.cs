@@ -6,9 +6,9 @@ namespace ModularPipelines.Console.Modules;
 [DependsOn<PowershellModule>]
 public class SecondModule : IModule
 {
-	public void RunModule()
+	public async Task RunModule()
 	{
-		throw new NotImplementedException();
+		System.Console.WriteLine("🏎️ Executing SecondModule");
 	}
 
 	public void ShouldSkip()

@@ -1,4 +1,5 @@
 ﻿using Application;
+using Domain.Entities;
 using Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,13 @@ public static class DependencyInjection
 		services.AddHostedService<PipelineApplication>();
 		services.AddSingleton<ExampleAnsiProgressService>();
 		services.AddSingleton<OrchestratorService>();
+		return services;
+	}
+
+	public static IServiceCollection AddModule<TModule>(this IServiceCollection services)
+		where TModule : class, IModule
+	{
+		services.AddSingleton<IModule, TModule>();
 		return services;
 	}
 }
