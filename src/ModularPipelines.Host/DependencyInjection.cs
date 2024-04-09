@@ -28,6 +28,7 @@ public static class DependencyInjection
 			var module = sp.GetRequiredService<TModule>();
 			return new ModuleContainer(module);
 		});
+		services.AddSingleton<ModuleContainerProvider>();
 		return services;
 	}
 }

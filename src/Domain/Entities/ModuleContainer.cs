@@ -7,6 +7,6 @@ public class ModuleContainer
 		Module = module;
 	}
 
-	public bool HasCompletedSuccessfully { get; set; }
+	public bool? HasCompletedSuccessfully { get; set; }
 	public IModule Module { get; set; }
 }

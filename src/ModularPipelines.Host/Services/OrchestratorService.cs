@@ -3,24 +3,30 @@ using Domain.Entities;
 
 namespace ModularPipelines.Host.Services;
 
-public class OrchestratorService(IEnumerable<ModuleContainer> moduleContainers)
+public class OrchestratorService(ModuleContainerProvider moduleContainerProvider)
 {
-	private readonly IEnumerable<ModuleContainer> _moduleContainers = moduleContainers;
+	private readonly ModuleContainerProvider _moduleContainerProvider = moduleContainerProvider;
 
 	public async Task RunPipeline()
 	{
 		Console.WriteLine("🚀Executing OrchestratorService");
-		var moduleContainers = _moduleContainers.ToList();
-		foreach (var container in moduleContainers)
-		{
-			Console.WriteLine($"⭐ Found {container.Module.GetType().Name}");
-		}
-		// find modules with no dependencies
-		var noDependencies = moduleContainers.Where(m => m.Module.GetType().HasNoDependencies());
+		var moduleContainers = _moduleContainerProvider.GetAllModuleContainers();
+		moduleContainers.ForEach(c => Console.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
 
-		await Parallel.ForEachAsync(noDependencies, async (moduleContainer, cancellationToken) =>
+		var tasks = new List<Task>();
+		var modulesToExecute = _moduleContainerProvider.GetModuleContainersOrderedForExecution();
+		await Parallel.ForEachAsync(modulesToExecute, async (moduleContainer, cancellationToken) =>
 		{
-			await moduleContainer.Module.RunModule();
+			try
+			{
+				await moduleContainer.Module.RunModule();
+				moduleContainer.HasCompletedSuccessfully = true;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error running module {moduleContainer.Module.GetType().Name}: {ex.Message}");
+				moduleContainer.HasCompletedSuccessfully = false;
+			}
 		});
 
 		Console.WriteLine("OrchestratorService Complete");
