@@ -3,12 +3,13 @@ using ModularPipelines.Host.Services;
 
 namespace ModularPipelines.Host;
 
-public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetime, ExampleAnsiProgressService progressService, OrchestratorService orchestratorService)
+public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetime, ExampleAnsiProgressService progressService, OrchestratorService orchestratorService, IServiceProvider serviceProvider)
 	: IHostedService
 {
 	private readonly IHostApplicationLifetime _hostApplicationLifetime = hostApplicationLifetime;
 	private readonly ExampleAnsiProgressService _progressService = progressService;
 	private readonly OrchestratorService _orchestratorService = orchestratorService;
+	private readonly IServiceProvider _serviceProvider = serviceProvider;
 
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
@@ -17,7 +18,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 		Console.WriteLine("Max worker threads: {0}, max completion port threads: {1}", workerThreads, completionPortThreads);
 
 		//await _progressService.DoWork();
-		await _orchestratorService.ExecuteAsync();
+		await _orchestratorService.RunPipeline();
 
 		_hostApplicationLifetime.StopApplication();
 	}

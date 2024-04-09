@@ -3,24 +3,25 @@ using Domain.Entities;
 
 namespace ModularPipelines.Host.Services;
 
-public class OrchestratorService(IEnumerable<IModule> modules)
+public class OrchestratorService(IEnumerable<IModuleContainer> moduleContainers, IServiceProvider serviceProvider)
 {
-	private readonly IEnumerable<IModule> _modules = modules;
+	private readonly IEnumerable<IModuleContainer> _moduleContainers = moduleContainers;
+	private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-	public async Task ExecuteAsync()
+	public async Task RunPipeline()
 	{
 		Console.WriteLine("🚀Executing OrchestratorService");
-		var modules = _modules.ToList();
-		foreach (var module in modules)
+		var moduleContainers = _moduleContainers.ToList();
+		foreach (var container in moduleContainers)
 		{
-			Console.WriteLine($"⭐ Found {module.GetType().Name}");
+			Console.WriteLine($"⭐ Found {container.Module.GetType().Name}");
 		}
 		// find modules with no dependencies
-		var noDependencies = modules.Where(m => m.GetType().HasNoDependencies());
+		var noDependencies = moduleContainers.Where(m => m.Module.GetType().HasNoDependencies());
 
-		await Parallel.ForEachAsync(noDependencies, async (module, cancellationToken) =>
+		await Parallel.ForEachAsync(noDependencies, async (moduleContainer, cancellationToken) =>
 		{
-			await module.RunModule();
+			await moduleContainer.Module.RunModule();
 		});
 
 		Console.WriteLine("OrchestratorService Complete");

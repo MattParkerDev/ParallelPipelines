@@ -22,7 +22,8 @@ public static class DependencyInjection
 	public static IServiceCollection AddModule<TModule>(this IServiceCollection services)
 		where TModule : class, IModule
 	{
-		services.AddSingleton<IModule, TModule>();
+		services.AddSingleton<IModuleContainer, ModuleContainer<TModule>>();
+		services.AddSingleton<TModule>();
 		return services;
 	}
 }
