@@ -9,6 +9,8 @@ public class SecondModule : IModule
 	public async Task RunModule()
 	{
 		System.Console.WriteLine("🏎️ Executing SecondModule");
+		await Task.Delay(3000);
+		System.Console.WriteLine("🏎️ Executing SecondModule Finished");
 	}
 
 	public void ShouldSkip()

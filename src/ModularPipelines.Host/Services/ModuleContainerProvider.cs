@@ -14,28 +14,29 @@ public class ModuleContainerProvider(IEnumerable<ModuleContainer> moduleContaine
 
 	public async IAsyncEnumerable<ModuleContainer> GetModuleContainersOrderedForExecution()
 	{
-		var noDependencies = _moduleContainers.Where(m => m.Module.GetType().HasNoDependencies());
+		var noDependencies = _moduleContainers.Where(m => m.Module.GetType().HasNoDependencies()).ToList();
+		if (noDependencies.Count == 0)
+		{
+			throw new InvalidOperationException("No modules found with no dependencies");
+		}
 		foreach (var container in noDependencies)
 		{
 			yield return container;
 		}
-		var inProgress = noDependencies.ToList();
+		var inProgress = noDependencies;
 		var remaining = _moduleContainers.Except(inProgress).ToList();
-
 
 		while (remaining.Count != 0)
 		{
-			var result = await Task.WhenAny(remaining.Select(s => s.CompletedSuccessfullyTask).ToList()).ConfigureAwait(false);
-			var modulesThatModuleDependsOn = result.Result.Module.GetType().GetDependencies();
-			var test = 0;
-			// var modulesThatDependOnResult = remaining.Where(m => m.Module.GetType().DependsOn(result.Module.GetType()));
-			// var next = remaining.FirstOrDefault(m => m.Module.GetType().DependenciesAreSatisfiedBy(_moduleContainers));
-			// if (next == null)
-			// {
-			// 	throw new Exception("Circular dependency detected");
-			// }
-			// yield return next;
-			// remaining.Remove(next);
+			var result = await await Task.WhenAny(inProgress.Select(s => s.CompletedSuccessfullyTask).ToList()).ConfigureAwait(false);
+			inProgress.Remove(result);
+
+			foreach (var dependent in result.Dependents)
+			{
+				yield return dependent;
+				inProgress.Add(dependent);
+				remaining.Remove(dependent);
+			}
 		}
 	}
 }

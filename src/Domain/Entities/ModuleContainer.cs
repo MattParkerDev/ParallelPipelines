@@ -11,4 +11,5 @@ public class ModuleContainer
 	public bool? HasCompletedSuccessfully { get; set; }
 	public Task<ModuleContainer> CompletedSuccessfullyTask;
 	public IModule Module { get; set; }
+	public List<ModuleContainer> Dependents { get; set; } = new();
 }

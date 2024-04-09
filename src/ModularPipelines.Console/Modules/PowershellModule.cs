@@ -6,8 +6,9 @@ public class PowershellModule : IModule
 {
 	public async Task RunModule()
 	{
-		await Task.Delay(5000);
 		System.Console.WriteLine("🏎️ Executing PowershellModule");
+		await Task.Delay(3000);
+		System.Console.WriteLine("🏎️ Executing PowershellModule Finished");
 	}
 
 	public void ShouldSkip()

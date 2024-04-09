@@ -7,18 +7,20 @@ public class DependsOnAttribute<T> : Attribute where T : class
 
 public static class AttributeExtensions
 {
-	public static bool DependsOn<T>(this Type type) where T : class
+	public static bool DependsOn(this Type type1, Type type2)
 	{
-		return type.GetCustomAttributes(typeof(DependsOnAttribute<T>), true).Any();
+		var attributes = type1.GetCustomAttributes(typeof(DependsOnAttribute<>), true);
+		return attributes.Any(a => a.GetType().GetGenericArguments().First() == type2);
 	}
 
 	public static bool HasNoDependencies(this Type type)
 	{
 		return !type.GetCustomAttributes(typeof(DependsOnAttribute<>), true).Any();
 	}
-	public static object[] GetDependencies(this Type type)
+	public static List<Type> GetDependencyTypes(this Type type)
 	{
 		var attributes = type.GetCustomAttributes(typeof(DependsOnAttribute<>), true);
-		return attributes;
+		var types = attributes.Select(a => a.GetType().GetGenericArguments().First()).ToList();
+		return types;
 	}
 }

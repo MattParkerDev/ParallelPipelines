@@ -12,8 +12,8 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		Console.WriteLine("🚀Executing OrchestratorService");
 		var moduleContainers = _moduleContainerProvider.GetAllModuleContainers();
 		moduleContainers.ForEach(c => Console.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
+		PopulateDependents(moduleContainers);
 
-		var tasks = new List<Task>();
 		var modulesToExecute = _moduleContainerProvider.GetModuleContainersOrderedForExecution();
 		await Parallel.ForEachAsync(modulesToExecute, async (moduleContainer, cancellationToken) =>
 		{
@@ -21,7 +21,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 			{
 				await moduleContainer.Module.RunModule();
 				moduleContainer.HasCompletedSuccessfully = true;
-				await moduleContainer.CompletedSuccessfullyTask.ConfigureAwait(false);
+				moduleContainer.CompletedSuccessfullyTask.Start();
 			}
 			catch (Exception ex)
 			{
@@ -31,5 +31,18 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		}).ConfigureAwait(false);
 
 		Console.WriteLine("OrchestratorService Complete");
+	}
+
+	private static void PopulateDependents(List<ModuleContainer> moduleContainers)
+	{
+		foreach (var moduleContainer in moduleContainers)
+		{
+			var dependencyTypes = moduleContainer.Module.GetType().GetDependencyTypes();
+			var dependencies = moduleContainers.Where(m => dependencyTypes.Contains(m.Module.GetType()));
+			foreach (var dependency in dependencies)
+			{
+				dependency.Dependents.Add(moduleContainer);
+			}
+		}
 	}
 }
