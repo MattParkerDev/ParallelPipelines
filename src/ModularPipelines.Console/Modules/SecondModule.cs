@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace ModularPipelines.Console.Modules;
 
-[DependsOn<PowershellModule>]
+[DependsOnExp<PowershellModule>]
 public class SecondModule : IModule
 {
 	public async Task<CommandResult?> RunModule(CancellationToken cancellationToken)
