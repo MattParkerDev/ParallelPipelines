@@ -1,4 +1,5 @@
 ﻿using Application.Attributes;
+using CliWrap;
 using Domain.Entities;
 
 namespace ModularPipelines.Console.Modules;
@@ -6,10 +7,9 @@ namespace ModularPipelines.Console.Modules;
 [DependsOn<PowershellModule>]
 public class SecondModule : IModule
 {
-	public async Task RunModule(CancellationToken cancellationToken)
+	public async Task<CommandResult?> RunModule(CancellationToken cancellationToken)
 	{
-		System.Console.WriteLine("🏎️ Executing SecondModule");
 		await Task.Delay(3000, cancellationToken);
-		System.Console.WriteLine("🏎️ Executing SecondModule Finished");
+		return null;
 	}
 }

@@ -1,8 +1,10 @@
-﻿namespace Domain.Entities;
+﻿using CliWrap;
+
+namespace Domain.Entities;
 
 public interface IModule
 {
-	public Task RunModule(CancellationToken cancellationToken);
+	public Task<CommandResult?> RunModule(CancellationToken cancellationToken);
 
 	public bool ShouldSkip()
 	{

@@ -1,15 +1,15 @@
-﻿using Domain.Entities;
+﻿using CliWrap;
+using Domain.Entities;
 
 namespace ModularPipelines.Console.Modules;
 
 public class PowershellModule : IModule
 {
-	public async Task RunModule(CancellationToken cancellationToken)
+	public async Task<CommandResult?> RunModule(CancellationToken cancellationToken)
 	{
-		System.Console.WriteLine("🏎️ Executing PowershellModule");
 		await Task.Delay(2000, cancellationToken);
 		//throw new ArgumentNullException();
-		System.Console.WriteLine("🏎️ Executing PowershellModule Finished");
+		return null;
 	}
 
 	public bool ShouldSkip()

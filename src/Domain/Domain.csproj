@@ -6,4 +6,8 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="CliWrap" Version="3.6.6" />
+	</ItemGroup>
+
 </Project>
