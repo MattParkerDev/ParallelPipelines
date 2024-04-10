@@ -12,9 +12,4 @@ public class SecondModule : IModule
 		await Task.Delay(3000, cancellationToken);
 		System.Console.WriteLine("🏎️ Executing SecondModule Finished");
 	}
-
-	public void ShouldSkip()
-	{
-		throw new NotImplementedException();
-	}
 }

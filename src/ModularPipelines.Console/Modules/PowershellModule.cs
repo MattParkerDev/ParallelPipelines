@@ -7,12 +7,13 @@ public class PowershellModule : IModule
 	public async Task RunModule(CancellationToken cancellationToken)
 	{
 		System.Console.WriteLine("🏎️ Executing PowershellModule");
-		await Task.Delay(3000, cancellationToken);
+		await Task.Delay(2000, cancellationToken);
+		//throw new ArgumentNullException();
 		System.Console.WriteLine("🏎️ Executing PowershellModule Finished");
 	}
 
-	public void ShouldSkip()
+	public bool ShouldSkip()
 	{
-		throw new NotImplementedException();
+		return false;
 	}
 }
