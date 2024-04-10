@@ -19,7 +19,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 		}
 		catch (TaskCanceledException)
 		{
-			Console.WriteLine($"PipelineApplication was cancelled");
+			Console.WriteLine("PipelineApplication was cancelled");
 		}
 
 		_hostApplicationLifetime.StopApplication();

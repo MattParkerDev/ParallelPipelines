@@ -46,7 +46,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					moduleContainer.HasCompleted = true;
 					moduleContainer.CompletionType = CompletionType.Success;
 					moduleContainer.CompletedTask.Start();
-					Console.WriteLine($"⚡ {moduleContainer.Module.GetType().Name} Finished Successfully");
+					Console.WriteLine($"✅ {moduleContainer.Module.GetType().Name} Finished Successfully");
 				}
 			}
 			catch (Exception ex)
