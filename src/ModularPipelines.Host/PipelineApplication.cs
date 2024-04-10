@@ -13,7 +13,14 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 	{
 		Console.WriteLine("Starting PipelineApplication Hosted Service");
 
-		await _orchestratorService.RunPipeline(cancellationToken);
+		try
+		{
+			await _orchestratorService.RunPipeline(cancellationToken);
+		}
+		catch (TaskCanceledException)
+		{
+			Console.WriteLine($"PipelineApplication was cancelled");
+		}
 
 		_hostApplicationLifetime.StopApplication();
 	}
