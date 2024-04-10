@@ -19,7 +19,9 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 
 		var modulesToExecute = _moduleContainerProvider.GetModuleContainersOrderedForExecution(cancellationToken);
 
-		await Parallel.ForEachAsync(modulesToExecute, cancellationToken, async (moduleContainer, ct) =>
+		using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+		await Parallel.ForEachAsync(modulesToExecute, linkedCts.Token, async (moduleContainer, ct) =>
 		{
 			try
 			{
@@ -55,13 +57,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 				if (_exitPipelineOnSingleFailure)
 				{
 					_isPipelineCancellationRequested = true;
-					// foreach (var container in moduleContainers.Where(s => s.HasCompleted == false))
-					// {
-					// 	container.HasCompleted = true;
-					// 	container.CompletionType = CompletionType.Cancelled;
-					// 	container.CompletedTask.Start();
-					// }
-					// //throw;
+					await linkedCts.CancelAsync();
 				}
 				moduleContainer.CompletedTask.Start();
 			}
