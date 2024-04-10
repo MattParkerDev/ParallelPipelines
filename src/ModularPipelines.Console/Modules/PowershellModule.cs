@@ -14,6 +14,6 @@ public class PowershellModule : IModule
 
 	public bool ShouldSkip()
 	{
-		return false;
+		return true;
 	}
 }

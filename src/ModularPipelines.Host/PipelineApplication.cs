@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Hosting;
 using ModularPipelines.Host.Services;
 
 namespace ModularPipelines.Host;
@@ -12,7 +13,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
 		Console.WriteLine("Starting PipelineApplication Hosted Service");
-
+		var timer = Stopwatch.StartNew();
 		try
 		{
 			await _orchestratorService.RunPipeline(cancellationToken);
@@ -21,7 +22,9 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 		{
 			Console.WriteLine("PipelineApplication was cancelled");
 		}
-
+		timer.Stop();
+		var timeString = timer.Elapsed.ToString(@"hh\h\:mm\m\:ss\s\:ff\m\s");
+		Console.WriteLine($"PipelineApplication Hosted Service finished in {timeString}");
 		_hostApplicationLifetime.StopApplication();
 	}
 

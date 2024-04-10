@@ -12,4 +12,9 @@ public class SecondModule : IModule
 		await Task.Delay(3000, cancellationToken);
 		return null;
 	}
+
+	public bool ShouldSkip()
+	{
+		return true;
+	}
 }

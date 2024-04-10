@@ -12,4 +12,8 @@ public class InstallSwaCliModule : IModule
 		var result = await PipelineCliHelper.RunCliCommandAsync("npm", "install -g @azure/static-web-apps-cli", cancellationToken);
 		return result;
 	}
+	public bool ShouldSkip()
+	{
+		return true;
+	}
 }
