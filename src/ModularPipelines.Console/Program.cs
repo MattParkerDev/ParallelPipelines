@@ -1,5 +1,3 @@
-using Domain.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ModularPipelines.Console.Modules;
 using ModularPipelines.Host;

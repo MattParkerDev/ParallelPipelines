@@ -3,11 +3,10 @@ using ModularPipelines.Host.Services;
 
 namespace ModularPipelines.Host;
 
-public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetime, ExampleAnsiProgressService progressService, OrchestratorService orchestratorService)
+public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetime, OrchestratorService orchestratorService)
 	: IHostedService
 {
 	private readonly IHostApplicationLifetime _hostApplicationLifetime = hostApplicationLifetime;
-	private readonly ExampleAnsiProgressService _progressService = progressService;
 	private readonly OrchestratorService _orchestratorService = orchestratorService;
 
 	public async Task StartAsync(CancellationToken cancellationToken)
@@ -19,8 +18,9 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 		_hostApplicationLifetime.StopApplication();
 	}
 
-	public async Task StopAsync(CancellationToken cancellationToken)
+	public Task StopAsync(CancellationToken cancellationToken)
 	{
 		Console.WriteLine("PipelineApplication Hosted Service is stopping");
+		return Task.CompletedTask;
 	}
 }
