@@ -28,24 +28,28 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					moduleContainer.HasCompleted = true;
 					moduleContainer.CompletionType = CompletionType.Cancelled;
 					moduleContainer.CompletedTask.Start();
+					Console.WriteLine($"{moduleContainer.Module.GetType().Name} cancelled due to previous failure");
 				}
 				else if (moduleContainer.Module.ShouldSkip())
 				{
 					moduleContainer.HasCompleted = true;
 					moduleContainer.CompletionType = CompletionType.Skipped;
 					moduleContainer.CompletedTask.Start();
+					Console.WriteLine($"{moduleContainer.Module.GetType().Name} skipped");
 				}
 				else
 				{
+					Console.WriteLine($"⚡ {moduleContainer.Module.GetType().Name} Starting");
 					await moduleContainer.Module.RunModule(ct);
 					moduleContainer.HasCompleted = true;
 					moduleContainer.CompletionType = CompletionType.Success;
 					moduleContainer.CompletedTask.Start();
+					Console.WriteLine($"⚡ {moduleContainer.Module.GetType().Name} Finished Successfully");
 				}
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Error running module {moduleContainer.Module.GetType().Name}: {ex.Message}");
+				Console.WriteLine($"❌ {moduleContainer.Module.GetType().Name} Failed: {ex.Message}");
 				moduleContainer.HasCompleted = true;
 				moduleContainer.CompletionType = CompletionType.Failure;
 				if (_exitPipelineOnSingleFailure)
