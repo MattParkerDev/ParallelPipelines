@@ -1,15 +1,18 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Enums;
+
+namespace Domain.Entities;
 
 public class ModuleContainer
 {
 	public ModuleContainer(IModule module)
 	{
-		CompletedSuccessfullyTask = new Task<ModuleContainer>(() => this);
+		CompletedTask = new Task<ModuleContainer>(() => this);
 		Module = module;
 	}
 
-	public bool? HasCompletedSuccessfully { get; set; }
-	public Task<ModuleContainer> CompletedSuccessfullyTask;
+	public bool HasCompleted { get; set; } = false;
+	public Task<ModuleContainer> CompletedTask;
+	public CompletionType? CompletionType { get; set; }
 	public IModule Module { get; set; }
 	public List<ModuleContainer> Dependents { get; set; } = new();
 }

@@ -3,5 +3,9 @@
 public interface IModule
 {
 	public Task RunModule(CancellationToken cancellationToken);
-	public void ShouldSkip();
+
+	public bool ShouldSkip()
+	{
+		return false;
+	}
 }
