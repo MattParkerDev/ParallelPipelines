@@ -3,6 +3,7 @@ using Domain.Entities;
 using Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ModularPipelines.Host.Helpers;
 using ModularPipelines.Host.Services;
 
 namespace ModularPipelines.Host;
@@ -16,6 +17,8 @@ public static class DependencyInjection
 		services.AddHostedService<PipelineApplication>();
 		services.AddSingleton<ExampleAnsiProgressService>();
 		services.AddSingleton<OrchestratorService>();
+		services.AddSingleton<ModuleContainerProvider>();
+		services.AddSingleton<IPipelineContext, PipelineContext>();
 		return services;
 	}
 
@@ -28,7 +31,6 @@ public static class DependencyInjection
 			var module = sp.GetRequiredService<TModule>();
 			return new ModuleContainer(module);
 		});
-		services.AddSingleton<ModuleContainerProvider>();
 		return services;
 	}
 }

@@ -5,14 +5,16 @@ namespace ModularPipelines.Host.Helpers;
 
 public static class PipelineCliHelper
 {
-	public static async Task<CommandResult?> RunCliCommandAsync(string targetFilePath, string arguments, CancellationToken cancellationToken)
+	public static async Task<BufferedCommandResult?> RunCliCommandAsync(string targetFilePath, string arguments,
+		CancellationToken cancellationToken)
 	{
 		var command = Cli.Wrap(targetFilePath).WithArguments(arguments);
 		var result = await command.ExecuteBufferedAsync(cancellationToken);
 		return result;
 	}
 
-	public static async Task<CommandResult?> ExecuteBufferedAsync(this Command command, CancellationToken cancellationToken)
+	public static async Task<BufferedCommandResult?> ExecuteBufferedAsync(this Command command,
+		CancellationToken cancellationToken)
 	{
 		var forcefulCts = new CancellationTokenSource();
 
@@ -20,7 +22,8 @@ public static class PipelineCliHelper
 			forcefulCts.CancelAfter(TimeSpan.FromSeconds(3))
 		);
 
-		var result = await command.ExecuteBufferedAsync(Console.OutputEncoding, Console.OutputEncoding, forcefulCts.Token, cancellationToken);
+		var result = await command.ExecuteBufferedAsync(Console.OutputEncoding, Console.OutputEncoding,
+			forcefulCts.Token, cancellationToken);
 		return result;
 	}
 }
