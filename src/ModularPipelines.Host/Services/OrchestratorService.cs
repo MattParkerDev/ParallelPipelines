@@ -16,6 +16,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		var moduleContainers = _moduleContainerProvider.GetAllModuleContainers();
 		LogFoundModules(moduleContainers);
 		PopulateDependents(moduleContainers);
+		PopulateDependencies(moduleContainers);
 
 		var modulesToExecute = _moduleContainerProvider.GetModuleContainersOrderedForExecution(cancellationToken);
 
@@ -59,6 +60,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					_isPipelineCancellationRequested = true;
 					await linkedCts.CancelAsync();
 				}
+
 				moduleContainer.CompletedTask.Start();
 			}
 		});
@@ -76,13 +78,20 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 	{
 		foreach (var moduleContainer in moduleContainers)
 		{
-
 			var dependencyTypes = moduleContainer.Module.GetType().GetDependencyTypes();
 			var dependencies = moduleContainers.Where(m => dependencyTypes.Contains(m.Module.GetType()));
 			foreach (var dependency in dependencies)
 			{
 				dependency.Dependents.Add(moduleContainer);
 			}
+		}
+	}
+
+	private static void PopulateDependencies(List<ModuleContainer> moduleContainers)
+	{
+		foreach (var moduleContainer in moduleContainers)
+		{
+			moduleContainer.Dependents.ForEach(d => d.Dependencies.Add(moduleContainer));
 		}
 	}
 }
