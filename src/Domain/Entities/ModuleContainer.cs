@@ -15,4 +15,5 @@ public class ModuleContainer
 	public CompletionType? CompletionType { get; set; }
 	public IModule Module { get; set; }
 	public List<ModuleContainer> Dependents { get; set; } = new();
+	public List<ModuleContainer> Dependencies { get; set; } = new();
 }
