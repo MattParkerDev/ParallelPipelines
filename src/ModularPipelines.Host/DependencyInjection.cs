@@ -18,7 +18,7 @@ public static class DependencyInjection
 		services.AddSingleton<ExampleAnsiProgressService>();
 		services.AddSingleton<OrchestratorService>();
 		services.AddSingleton<ModuleContainerProvider>();
-		services.AddSingleton<IPipelineContext, PipelineContext>();
+		services.AddSingleton<IPipelineContext, PipelineContext>(sp => new PipelineContext(configuration));
 		return services;
 	}
 

@@ -2,9 +2,9 @@
 
 namespace ModularPipelines.Host.Helpers;
 
-public class PipelineContext : IPipelineContext
+public class PipelineContext(IConfiguration configuration) : IPipelineContext
 {
-	public IConfiguration Configuration { get; }
+	public IConfiguration Configuration { get; } = configuration;
 }
 
 public interface IPipelineContext
