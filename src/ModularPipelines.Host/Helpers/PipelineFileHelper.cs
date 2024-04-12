@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using System.Text.Json;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
 namespace ModularPipelines.Host.Helpers;
@@ -40,17 +41,35 @@ public static class PipelineFileHelper
 		return Task.FromResult(fileInfo);
 	}
 
-	public static Task<FileInfo> GetFile(this DirectoryInfo directoryInfo, string relativePath)
+	public static async Task<FileInfo> GetFile(this DirectoryInfo directoryInfo, string relativePath)
 	{
-		var fileInfo = new FileInfo(directoryInfo.FullName + Path.DirectorySeparatorChar + relativePath);
-		return Task.FromResult(fileInfo);
+		var fileInfo = await GetFile(directoryInfo.FullName + Path.DirectorySeparatorChar + relativePath);
+		return fileInfo;
 	}
 
-	public static Task<DirectoryInfo> GetDirectory(this DirectoryInfo currentDirectoryInfo, string relativePath)
+	public static async Task<T?> ReadFileAsJson<T>(this DirectoryInfo directoryInfo, string relativePath)
+	{
+		var fileInfo = await GetFile(directoryInfo.FullName + Path.DirectorySeparatorChar + relativePath);
+		return await fileInfo.ReadFileAsJson<T>();
+	}
+
+	public static async Task<T?> ReadFileAsJson<T>(this FileInfo fileInfo)
+	{
+		if (fileInfo.Exists is false)
+		{
+			throw new FileNotFoundException($"File not found: {fileInfo.FullName}");
+		}
+
+		await using var fileStream = fileInfo.OpenRead();
+		var deserialized = JsonSerializer.Deserialize<T>(fileStream);
+		return deserialized;
+	}
+
+	public static async Task<DirectoryInfo> GetDirectory(this DirectoryInfo currentDirectoryInfo, string relativePath)
 	{
 		var directoryInfo =
-			new DirectoryInfo(currentDirectoryInfo.FullName + Path.DirectorySeparatorChar + relativePath);
-		return Task.FromResult(directoryInfo);
+			await GetDirectory(currentDirectoryInfo.FullName + Path.DirectorySeparatorChar + relativePath);
+		return directoryInfo;
 	}
 
 	public static Task<FileInfo> ZipDirectoryToFile(this DirectoryInfo sourceDirectory, string targetZipFilePath)
@@ -68,18 +87,4 @@ public static class PipelineFileHelper
 	{
 		return await File.ReadAllTextAsync(targetFilePath);
 	}
-
-	public static async Task ZipDirectory(string sourceDirectory, string targetFilePath)
-	{
-		ZipFile.CreateFromDirectory(sourceDirectory, targetFilePath);
-	}
 }
-
-// public class FileInfo
-// {
-// 	public string Name { get; set; }
-// 	public string FullName { get; set; }
-// 	public string Extension { get; set; }
-// 	public long Length { get; set; }
-// 	public DateTime LastWriteTime { get; set; }
-// }
