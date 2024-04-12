@@ -4,7 +4,7 @@ namespace ModularPipelines.Host.Services;
 
 public class ExampleAnsiProgressService
 {
-	public async Task DoWork()
+	public async Task DoWork(CancellationToken cancellationToken)
 	{
 		Console.WriteLine("Starting Ansi Console Progress Work");
 		ProgressContext progressContext;
@@ -19,10 +19,10 @@ public class ExampleAnsiProgressService
 				var task2 = ctx.AddTask("[green]Folding space[/]");
 				tasks = [task1, task2];
 
-				while (!ctx.IsFinished)
+				while (!ctx.IsFinished && cancellationToken.IsCancellationRequested is false)
 				{
 					// Simulate some work
-					await Task.Delay(250);
+					await Task.Delay(250, cancellationToken);
 
 					// Increment
 					if (task1.IsFinished is false)
