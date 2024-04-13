@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using ModularPipelines.Host.Helpers;
 using ModularPipelines.Host.Services;
+using Spectre.Console;
 
 namespace ModularPipelines.Host;
 
@@ -14,7 +15,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
 		await PipelineFileHelper.PopulateGitRootDirectory();
-		Console.WriteLine("Starting PipelineApplication Hosted Service");
+		AnsiConsole.WriteLine("Starting PipelineApplication Hosted Service");
 		var timer = Stopwatch.StartNew();
 		try
 		{
@@ -22,17 +23,17 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 		}
 		catch (TaskCanceledException)
 		{
-			Console.WriteLine("PipelineApplication was cancelled");
+			AnsiConsole.WriteLine("PipelineApplication was cancelled");
 		}
 		timer.Stop();
 		var timeString = timer.Elapsed.ToString(@"hh\h\:mm\m\:ss\s\:ff\m\s");
-		Console.WriteLine($"PipelineApplication Hosted Service finished in {timeString}");
+		AnsiConsole.WriteLine($"PipelineApplication Hosted Service finished in {timeString}");
 		_hostApplicationLifetime.StopApplication();
 	}
 
 	public Task StopAsync(CancellationToken cancellationToken)
 	{
-		Console.WriteLine("PipelineApplication Hosted Service is stopping");
+		AnsiConsole.WriteLine("PipelineApplication Hosted Service is stopping");
 		return Task.CompletedTask;
 	}
 }

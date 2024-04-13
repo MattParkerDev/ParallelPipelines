@@ -6,7 +6,7 @@ public class ExampleAnsiProgressService
 {
 	public async Task DoWork(CancellationToken cancellationToken)
 	{
-		Console.WriteLine("Starting Ansi Console Progress Work");
+		AnsiConsole.WriteLine("Starting Ansi Console Progress Work");
 		ProgressContext progressContext;
 		var tasks = new List<ProgressTask>();
 
