@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Hosting;
+using ModularPipelines.Host.Helpers;
 using ModularPipelines.Host.Services;
 
 namespace ModularPipelines.Host;
@@ -12,6 +13,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
+		await PipelineFileHelper.PopulateGitRootDirectory();
 		Console.WriteLine("Starting PipelineApplication Hosted Service");
 		var timer = Stopwatch.StartNew();
 		try
