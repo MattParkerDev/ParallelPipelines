@@ -6,16 +6,10 @@ namespace ModularPipelines.Host.Helpers;
 
 public static class PipelineFileHelper
 {
-	private static DirectoryInfo? _gitRootDirectory { get; set; }
-	public static DirectoryInfo GitRootDirectory => _gitRootDirectory ?? GetGitRootDirectory().Result;
+	public static DirectoryInfo GitRootDirectory { get; set; } = null!;
 
-	private static async Task<DirectoryInfo> GetGitRootDirectory()
+	internal static async Task PopulateGitRootDirectory()
 	{
-		if (_gitRootDirectory is not null)
-		{
-			return _gitRootDirectory;
-		}
-
 		var result =
 			await PipelineCliHelper.RunCliCommandAsync("git", "rev-parse --show-toplevel", CancellationToken.None);
 		var gitRootDirectory = await GetDirectory(result!.StandardOutput.Trim().ReplaceLineEndings(string.Empty));
@@ -24,9 +18,7 @@ public static class PipelineFileHelper
 			throw new DirectoryNotFoundException("Git root directory not found");
 		}
 
-		_gitRootDirectory = gitRootDirectory;
-
-		return _gitRootDirectory;
+		GitRootDirectory = gitRootDirectory;
 	}
 
 	public static Task<DirectoryInfo> GetDirectory(string directoryPath)
