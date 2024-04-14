@@ -1,6 +1,5 @@
 ﻿using System.IO.Compression;
 using System.Text.Json;
-using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
 namespace Parker.ModularPipelines.Host.Helpers;
 

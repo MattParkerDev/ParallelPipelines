@@ -9,6 +9,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Parker.ModularPipelines.Host\Parker.ModularPipelines.Host.csproj" />
+		<ProjectReference Include="..\Parker.ModularPipelines\Parker.ModularPipelines.csproj" />
 	</ItemGroup>
 </Project>

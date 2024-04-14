@@ -1,7 +1,7 @@
-﻿using Parker.ModularPipelines.Application;
-using Parker.ModularPipelines.Domain.Entities;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Parker.ModularPipelines.Application;
+using Parker.ModularPipelines.Domain.Entities;
 using Parker.ModularPipelines.Host.Helpers;
 using Parker.ModularPipelines.Host.Services;
 using Parker.ModularPipelines.Infrastructure;
