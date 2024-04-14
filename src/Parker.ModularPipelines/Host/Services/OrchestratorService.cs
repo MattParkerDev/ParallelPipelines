@@ -85,12 +85,12 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 
 	private void SetModuleState(ModuleContainer moduleContainer, ModuleState state, CompletionType? completionType, bool newModuleStarting = false, bool completeAsyncTask = true)
 	{
-		moduleContainer.HasCompleted = true;
 		moduleContainer.CompletionType = completionType;
 		moduleContainer.State = state;
 		moduleContainer.StartTime ??= DateTimeOffset.Now;
 		if (newModuleStarting is false)
 		{
+			moduleContainer.HasCompleted = true;
 			moduleContainer.EndTime ??= DateTimeOffset.Now;
 		}
 		if (completeAsyncTask is true)
