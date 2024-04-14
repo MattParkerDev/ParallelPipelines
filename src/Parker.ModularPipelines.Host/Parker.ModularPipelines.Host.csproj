@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CliWrap" Version="3.6.6" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+      <PackageReference Include="Spectre.Console" Version="0.48.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+		<ProjectReference Include="..\Parker.ModularPipelines.Application\Parker.ModularPipelines.Application.csproj" />
+		<ProjectReference Include="..\Parker.ModularPipelines.Common\Parker.ModularPipelines.Common.csproj" />
+		<ProjectReference Include="..\Parker.ModularPipelines.Domain\Parker.ModularPipelines.Domain.csproj" />
+		<ProjectReference Include="..\Parker.ModularPipelines.Infrastructure\Parker.ModularPipelines.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
