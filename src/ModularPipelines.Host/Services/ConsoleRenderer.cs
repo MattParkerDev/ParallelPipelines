@@ -12,18 +12,20 @@ public static class ConsoleRenderer
 	{
 		lock ("ConsoleRenderer")
 		{
+			if (HasRenderedOnce is false)
+			{
+				AnsiConsole.WriteLine("Module\t\t\t\tStatus");
+			}
 			if (HasRenderedOnce)
 			{
 				Console.SetCursorPosition(0, Console.CursorTop - NumberOfModules);
 				AnsiConsole.Write("\x1B[0J"); // clear from cursor to end of screen https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#erase-functions
 			}
-
 			foreach (var module in moduleContainers)
 			{
-				var moduleName = module.Module.GetType().Name;
-				var status = GetModuleStatus(module);
+				var text = GetDecoratedText(module);
 
-				Console.WriteLine($"Module: {moduleName}\t\t {status}");
+				AnsiConsole.WriteLine(text);
 			}
 
 			if (!HasRenderedOnce)
@@ -34,15 +36,16 @@ public static class ConsoleRenderer
 		}
 	}
 
-	private static string GetModuleStatus(ModuleContainer module)
+	private static string GetDecoratedText(ModuleContainer module)
 	{
 		return module.State switch
 		{
-			ModuleState.Waiting => "Waiting...",
-			ModuleState.Running => "\x1b[36mRunning...\x1b[0m",
-			ModuleState.Completed when module.CompletionType == CompletionType.Success => "\x1b[32mSuccess\x1b[0m",
-			ModuleState.Completed when module.CompletionType == CompletionType.Skipped => "\x1b[33mSkipped\x1b[0m",
-			ModuleState.Completed when module.CompletionType == CompletionType.Cancelled => "\x1b[31mCancelled\x1b[0m",
+			ModuleState.Waiting => $"{module.GetModuleName()}\t\tWaiting",
+			ModuleState.Running => $"\x1b[36m{module.GetModuleName()}\t\tRunning\x1b[0m",
+			ModuleState.Completed when module.CompletionType == CompletionType.Success => $"\x1b[32m{module.GetModuleName()}\t\tSuccess\x1b[0m",
+			ModuleState.Completed when module.CompletionType == CompletionType.Skipped => $"\x1b[33m{module.GetModuleName()}\t\tSkipped\x1b[0m",
+			ModuleState.Completed when module.CompletionType == CompletionType.Cancelled => $"\x1b[31m{module.GetModuleName()}\t\tCancelled\x1b[0m",
+			ModuleState.Completed when module.CompletionType == CompletionType.Failure => $"\x1b[31m{module.GetModuleName()}\t\tFailure\x1b[0m",
 			_ => throw new ArgumentOutOfRangeException(nameof(module.State))
 		};
 	}

@@ -9,7 +9,7 @@ public class ModuleContainer
 		CompletedTask = new Task<ModuleContainer>(() => this);
 		Module = module;
 	}
-
+	public string GetModuleName() => Module.GetType().Name;
 	public bool HasCompleted { get; set; } = false;
 	public Task<ModuleContainer> CompletedTask;
 	public CompletionType? CompletionType { get; set; }
