@@ -5,17 +5,17 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5F3E03F6-838F-433E-B8ED-38AC5AFDCD85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularPipelines.Console", "src\ModularPipelines.Console\ModularPipelines.Console.csproj", "{23339A9C-1746-46DB-9D3A-2FFE930FE8C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Console", "src\Parker.ModularPipelines.Console\Parker.ModularPipelines.Console.csproj", "{23339A9C-1746-46DB-9D3A-2FFE930FE8C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Application\Application.csproj", "{2DFDC50D-D793-4EC7-9E92-9EA9D07931F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Application", "src\Parker.ModularPipelines.Application\Parker.ModularPipelines.Application.csproj", "{2DFDC50D-D793-4EC7-9E92-9EA9D07931F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\Domain\Domain.csproj", "{21F78D00-49BB-47E6-AB48-9885B08CA5CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Domain", "src\Parker.ModularPipelines.Domain\Parker.ModularPipelines.Domain.csproj", "{21F78D00-49BB-47E6-AB48-9885B08CA5CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "src\Infrastructure\Infrastructure.csproj", "{1491BEEF-B342-44EF-8E42-7056AF13BE7F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Infrastructure", "src\Parker.ModularPipelines.Infrastructure\Parker.ModularPipelines.Infrastructure.csproj", "{1491BEEF-B342-44EF-8E42-7056AF13BE7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "src\Common\Common.csproj", "{422D038D-6351-44AB-90F7-2196AB6F76D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Common", "src\Parker.ModularPipelines.Common\Parker.ModularPipelines.Common.csproj", "{422D038D-6351-44AB-90F7-2196AB6F76D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularPipelines.Host", "src\ModularPipelines.Host\ModularPipelines.Host.csproj", "{04D03AC9-55D6-4647-8FED-091B9C9343D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Host", "src\Parker.ModularPipelines.Host\Parker.ModularPipelines.Host.csproj", "{04D03AC9-55D6-4647-8FED-091B9C9343D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{97428686-0D95-47B9-8CC0-62A25E26AC51}"
 	ProjectSection(SolutionItems) = preProject
