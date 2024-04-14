@@ -31,31 +31,38 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 				{
 					moduleContainer.HasCompleted = true;
 					moduleContainer.CompletionType = CompletionType.Cancelled;
+					moduleContainer.State = ModuleState.Completed;
 					moduleContainer.CompletedTask.Start();
-					AnsiConsole.WriteLine($"{moduleContainer.Module.GetType().Name} cancelled due to previous failure");
+					//AnsiConsole.WriteLine($"{moduleContainer.Module.GetType().Name} cancelled due to previous failure");
 				}
 				else if (moduleContainer.Module.ShouldSkip())
 				{
 					moduleContainer.HasCompleted = true;
 					moduleContainer.CompletionType = CompletionType.Skipped;
+					moduleContainer.State = ModuleState.Completed;
 					moduleContainer.CompletedTask.Start();
-					AnsiConsole.WriteLine($"{moduleContainer.Module.GetType().Name} skipped");
+					//AnsiConsole.WriteLine($"{moduleContainer.Module.GetType().Name} skipped");
 				}
 				else
 				{
-					AnsiConsole.WriteLine($"⚡ {moduleContainer.Module.GetType().Name} Starting");
+					//AnsiConsole.WriteLine($"⚡ {moduleContainer.Module.GetType().Name} Starting");
+					moduleContainer.State = ModuleState.Running;
+					ConsoleRenderer.RenderModulesProgress(moduleContainers);
 					await moduleContainer.Module.RunModule(ct);
 					moduleContainer.HasCompleted = true;
 					moduleContainer.CompletionType = CompletionType.Success;
+					moduleContainer.State = ModuleState.Completed;
 					moduleContainer.CompletedTask.Start();
-					AnsiConsole.WriteLine($"✅ {moduleContainer.Module.GetType().Name} Finished Successfully");
+					ConsoleRenderer.RenderModulesProgress(moduleContainers);
+					//AnsiConsole.WriteLine($"✅ {moduleContainer.Module.GetType().Name} Finished Successfully");
 				}
 			}
 			catch (Exception ex)
 			{
-				AnsiConsole.WriteLine($"❌ {moduleContainer.Module.GetType().Name} Failed: {ex.Message}");
+				//AnsiConsole.WriteLine($"❌ {moduleContainer.Module.GetType().Name} Failed: {ex.Message}");
 				moduleContainer.HasCompleted = true;
 				moduleContainer.CompletionType = CompletionType.Failure;
+				moduleContainer.State = ModuleState.Completed;
 				if (_exitPipelineOnSingleFailure)
 				{
 					_isPipelineCancellationRequested = true;
@@ -66,13 +73,16 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 			}
 		});
 
+		AnsiConsole.WriteLine();
 		AnsiConsole.WriteLine("OrchestratorService Complete");
-		moduleContainers.ForEach(c => AnsiConsole.WriteLine($"🏁 {c.Module.GetType().Name} {c.CompletionType}"));
+		//moduleContainers.ForEach(c => AnsiConsole.WriteLine($"🏁 {c.Module.GetType().Name} {c.CompletionType}"));
 	}
 
 	private void LogFoundModules(List<ModuleContainer> moduleContainers)
 	{
-		moduleContainers.ForEach(c => AnsiConsole.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
+		//moduleContainers.ForEach(c => AnsiConsole.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
+		AnsiConsole.WriteLine($"Found {moduleContainers.Count} modules");
+		AnsiConsole.WriteLine();
 	}
 
 	private static void PopulateDependents(List<ModuleContainer> moduleContainers)
