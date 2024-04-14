@@ -17,4 +17,8 @@ public class ModuleContainer
 	public IModule Module { get; set; }
 	public List<ModuleContainer> Dependents { get; set; } = new();
 	public List<ModuleContainer> Dependencies { get; set; } = new();
+
+	public DateTimeOffset? StartTime { get; set; }
+	public DateTimeOffset? EndTime { get; set; }
+	public TimeSpan? Duration => EndTime - StartTime;
 }
