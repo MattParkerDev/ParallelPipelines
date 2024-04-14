@@ -36,7 +36,7 @@ public class ModuleContainerProvider(IEnumerable<ModuleContainer> moduleContaine
 			inProgress.Remove(result);
 			foreach (var dependent in result.Dependents)
 			{
-				if (dependent.Dependencies.Any(d => !d.HasCompleted))
+				if (remaining.Contains(dependent) is false || dependent.Dependencies.Any(d => !d.HasCompleted))
 				{
 					continue;
 				}

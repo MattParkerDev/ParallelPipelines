@@ -34,61 +34,36 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 				{
 					if (_isPipelineCancellationRequested)
 					{
-						moduleContainer.HasCompleted = true;
-						moduleContainer.CompletionType = CompletionType.Cancelled;
-						moduleContainer.State = ModuleState.Completed;
-						moduleContainer.StartTime = DateTimeOffset.Now;
-						moduleContainer.EndTime = DateTimeOffset.Now;
-						moduleContainer.CompletedTask.Start();
-						ConsoleRenderer.WriteCancelledModule(moduleContainer);
+						SetModuleState(moduleContainer, ModuleState.Completed, CompletionType.Cancelled);
 					}
 					else if (moduleContainer.Module.ShouldSkip())
 					{
-						moduleContainer.HasCompleted = true;
-						moduleContainer.CompletionType = CompletionType.Skipped;
-						moduleContainer.State = ModuleState.Completed;
-						moduleContainer.StartTime = DateTimeOffset.Now;
-						moduleContainer.EndTime = DateTimeOffset.Now;
-						moduleContainer.CompletedTask.Start();
-						ConsoleRenderer.WriteSkippedModule(moduleContainer);
+						SetModuleState(moduleContainer, ModuleState.Completed, CompletionType.Skipped);
 					}
 					else
 					{
-						ConsoleRenderer.WriteModuleStarting(moduleContainer);
-						moduleContainer.State = ModuleState.Running;
-						moduleContainer.StartTime = DateTimeOffset.Now;
+						SetModuleState(moduleContainer, ModuleState.Running, null, newModuleStarting: true, completeAsyncTask: false);
 						await moduleContainer.Module.RunModule(ct);
-						moduleContainer.HasCompleted = true;
-						moduleContainer.CompletionType = CompletionType.Success;
-						moduleContainer.State = ModuleState.Completed;
-						moduleContainer.EndTime = DateTimeOffset.Now;
-						moduleContainer.CompletedTask.Start();
-						ConsoleRenderer.WriteModuleSuccess(moduleContainer);
+						SetModuleState(moduleContainer, ModuleState.Completed, CompletionType.Success);
 					}
 				}
 				catch (Exception ex)
 				{
 					if (ex is TaskCanceledException or OperationCanceledException)
 					{
-						moduleContainer.CompletionType = CompletionType.Cancelled;
-						ConsoleRenderer.WriteCancelledModule(moduleContainer);
+						SetModuleState(moduleContainer, ModuleState.Completed, CompletionType.Cancelled, completeAsyncTask: false);
 					}
 					else
 					{
-						moduleContainer.CompletionType = CompletionType.Failure;
-						moduleContainer.ExceptionMessage = ex.Message;
-						ConsoleRenderer.WriteModuleFailure(moduleContainer);
+						moduleContainer.ExceptionMessage = ex.Message + ex.InnerException?.Message;
+						SetModuleState(moduleContainer, ModuleState.Completed, CompletionType.Failure, completeAsyncTask: false);
 					}
-					moduleContainer.HasCompleted = true;
-					moduleContainer.State = ModuleState.Completed;
-					moduleContainer.EndTime = DateTimeOffset.Now;
 					ConsoleRenderer.RenderModulesProgress(moduleContainers);
 					if (_exitPipelineOnSingleFailure)
 					{
 						_isPipelineCancellationRequested = true;
 						await linkedCts.CancelAsync();
 					}
-
 					moduleContainer.CompletedTask.Start();
 				}
 			});
@@ -97,15 +72,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		{
 			if (_isPipelineCancellationRequested)
 			{
-				moduleContainers.Where(s => s.State == ModuleState.Waiting).ToList().ForEach(c =>
-				{
-					c.HasCompleted = true;
-					c.CompletionType = CompletionType.Cancelled;
-					c.State = ModuleState.Completed;
-					c.StartTime = DateTimeOffset.Now;
-					c.EndTime = DateTimeOffset.Now;
-					c.CompletedTask.Start();
-				});
+				moduleContainers.Where(s => s.State == ModuleState.Waiting).ToList().ForEach(c => SetModuleState(c, ModuleState.Completed, CompletionType.Cancelled));
 			}
 			ConsoleRenderer.WriteFinalState(moduleContainers);
 			AnsiConsole.WriteLine();
@@ -113,6 +80,23 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 			AnsiConsole.WriteLine($"OrchestratorService {(_isPipelineCancellationRequested ? "cancelled" : "completed")}");
 			DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
 		}
+	}
+
+	private void SetModuleState(ModuleContainer moduleContainer, ModuleState state, CompletionType? completionType, bool newModuleStarting = false, bool completeAsyncTask = true)
+	{
+		moduleContainer.HasCompleted = true;
+		moduleContainer.CompletionType = completionType;
+		moduleContainer.State = state;
+		moduleContainer.StartTime ??= DateTimeOffset.Now;
+		if (newModuleStarting is false)
+		{
+			moduleContainer.EndTime ??= DateTimeOffset.Now;
+		}
+		if (completeAsyncTask is true)
+		{
+			moduleContainer.CompletedTask.Start();
+		}
+		ConsoleRenderer.WriteModule(moduleContainer);
 	}
 
 	private void LogFoundModules(List<ModuleContainer> moduleContainers)

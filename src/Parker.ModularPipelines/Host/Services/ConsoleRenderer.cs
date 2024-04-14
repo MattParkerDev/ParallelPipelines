@@ -123,49 +123,22 @@ public static class ConsoleRenderer
 		return timeSpan?.ToString(@"mm\m\:ss\s\:fff\m\s");
 	}
 
-	public static void WriteCancelledModule(ModuleContainer moduleContainer)
+	public static void WriteModule(ModuleContainer moduleContainer)
 	{
 		if (DeploymentConstants.IsGithubActions is false)
 		{
 			return;
 		}
-		AnsiConsole.WriteLine($"{moduleContainer.GetModuleName()} cancelled due to previous failure");
-	}
-
-	public static void WriteSkippedModule(ModuleContainer moduleContainer)
-	{
-		if (DeploymentConstants.IsGithubActions is false)
+		var text = moduleContainer switch
 		{
-			return;
-		}
-		AnsiConsole.WriteLine($"{moduleContainer.GetModuleName()} skipped");
-	}
-
-	public static void WriteModuleStarting(ModuleContainer moduleContainer)
-	{
-		if (DeploymentConstants.IsGithubActions is false)
-		{
-			return;
-		}
-		AnsiConsole.WriteLine($"⚡ {moduleContainer.GetModuleName()} Starting");
-	}
-
-	public static void WriteModuleSuccess(ModuleContainer moduleContainer)
-	{
-		if (DeploymentConstants.IsGithubActions is false)
-		{
-			return;
-		}
-		AnsiConsole.WriteLine($"✅ {moduleContainer.GetModuleName()} Finished Successfully");
-	}
-
-	public static void WriteModuleFailure(ModuleContainer moduleContainer)
-	{
-		if (DeploymentConstants.IsGithubActions is false)
-		{
-			return;
-		}
-		AnsiConsole.WriteLine($"❌ {moduleContainer.Module.GetType().Name} Failed: {moduleContainer.ExceptionMessage}");
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Success } => $"✅ {moduleContainer.GetModuleName()} finished Successfully",
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Skipped } => $"{moduleContainer.GetModuleName()} skipped",
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Cancelled } => $"{moduleContainer.GetModuleName()} cancelled due to previous failure",
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Failure } => $"❌ {moduleContainer.GetModuleName()} Failed: {moduleContainer.ExceptionMessage}",
+			{ State: ModuleState.Running } => $"⚡ {moduleContainer.GetModuleName()} Starting",
+			_ => throw new ArgumentOutOfRangeException(nameof(moduleContainer))
+		};
+		AnsiConsole.WriteLine(text);
 	}
 
 	public static void WriteFinalState(List<ModuleContainer> moduleContainers)
