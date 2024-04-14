@@ -1,10 +1,11 @@
 ﻿using CliWrap;
+using CliWrap.Buffered;
 
 namespace Parker.ModularPipelines.Domain.Entities;
 
 public interface IModule
 {
-	public Task<CommandResult?> RunModule(CancellationToken cancellationToken);
+	public Task<BufferedCommandResult?[]?> RunModule(CancellationToken cancellationToken);
 
 	public bool ShouldSkip()
 	{

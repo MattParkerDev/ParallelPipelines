@@ -10,6 +10,10 @@ public static class PipelineCliHelper
 	{
 		var command = Cli.Wrap(targetFilePath).WithArguments(arguments);
 		var result = await command.ExecuteBufferedAsync(cancellationToken);
+		if (result?.IsSuccess is false)
+		{
+			throw new InvalidOperationException(result.StandardError + result.StandardOutput);
+		}
 		return result;
 	}
 
@@ -22,7 +26,7 @@ public static class PipelineCliHelper
 			forcefulCts.CancelAfter(TimeSpan.FromSeconds(3))
 		);
 
-		var result = await command.ExecuteBufferedAsync(Console.OutputEncoding, Console.OutputEncoding,
+		var result = await command.WithValidation(CommandResultValidation.None).ExecuteBufferedAsync(Console.OutputEncoding, Console.OutputEncoding,
 			forcefulCts.Token, cancellationToken);
 		return result;
 	}

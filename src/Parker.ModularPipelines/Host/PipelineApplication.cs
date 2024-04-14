@@ -26,6 +26,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 		catch (TaskCanceledException)
 		{
 			AnsiConsole.WriteLine("PipelineApplication was cancelled");
+			throw;
 		}
 		timer.Stop();
 		var timeString = timer.Elapsed.ToString(@"hh\h\:mm\m\:ss\s\:fff\m\s");
