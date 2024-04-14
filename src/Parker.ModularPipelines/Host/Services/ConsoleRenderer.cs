@@ -14,6 +14,10 @@ public static class ConsoleRenderer
 
 	public static async Task StartRenderingProgress(List<ModuleContainer> moduleContainers, CancellationToken cancellationToken)
 	{
+		if (DeploymentConstants.IsGithubActions)
+		{
+			return;
+		}
 		ModuleContainers = moduleContainers;
 		while (!cancellationToken.IsCancellationRequested)
 		{
@@ -21,19 +25,27 @@ public static class ConsoleRenderer
 			await Task.Delay(1000, cancellationToken);
 		}
 	}
-	public static void RenderModulesProgress(List<ModuleContainer> moduleContainers)
+	public static void RenderModulesProgress(List<ModuleContainer> moduleContainers, bool finalWrite = false)
 	{
+		if (DeploymentConstants.IsGithubActions && finalWrite is false)
+		{
+			return;
+		}
 		lock ("ConsoleRenderer")
 		{
 			if (HasRenderedOnce is false)
 			{
-				var consoleWidth = AnsiConsole.Profile.Width;
-				AnsiConsole.WriteLine("Console Width" + consoleWidth);
+				if (DeploymentConstants.IsGithubActions)
+				{
+					var consoleWidth = AnsiConsole.Profile.Width;
+					AnsiConsole.WriteLine($"Console Width: {consoleWidth}, overriding to 120");
+					AnsiConsole.Profile.Width = 120;
+				}
 				AnsiConsole.WriteLine($"{"Module",-40}{"Status", -10}{"Start", -15}{"End", -15}{"Duration", -15}");
 			}
 			if (HasRenderedOnce)
 			{
-				Console.SetCursorPosition(0, Console.CursorTop - NumberOfModules);
+				AnsiConsole.Console.Cursor.SetPosition(0, Console.CursorTop - NumberOfModules + 1);
 				AnsiConsole.Write("\x1B[0J"); // clear from cursor to end of screen https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#erase-functions
 			}
 			foreach (var module in moduleContainers)
@@ -109,5 +121,55 @@ public static class ConsoleRenderer
 	private static string? ToTimeSpanString(this TimeSpan? timeSpan)
 	{
 		return timeSpan?.ToString(@"mm\m\:ss\s\:fff\m\s");
+	}
+
+	public static void WriteCancelledModule(ModuleContainer moduleContainer)
+	{
+		if (DeploymentConstants.IsGithubActions is false)
+		{
+			return;
+		}
+		AnsiConsole.WriteLine($"{moduleContainer.GetModuleName()} cancelled due to previous failure");
+	}
+
+	public static void WriteSkippedModule(ModuleContainer moduleContainer)
+	{
+		if (DeploymentConstants.IsGithubActions is false)
+		{
+			return;
+		}
+		AnsiConsole.WriteLine($"{moduleContainer.GetModuleName()} skipped");
+	}
+
+	public static void WriteModuleStarting(ModuleContainer moduleContainer)
+	{
+		if (DeploymentConstants.IsGithubActions is false)
+		{
+			return;
+		}
+		AnsiConsole.WriteLine($"⚡ {moduleContainer.GetModuleName()} Starting");
+	}
+
+	public static void WriteModuleSuccess(ModuleContainer moduleContainer)
+	{
+		if (DeploymentConstants.IsGithubActions is false)
+		{
+			return;
+		}
+		AnsiConsole.WriteLine($"✅ {moduleContainer.GetModuleName()} Finished Successfully");
+	}
+
+	public static void WriteModuleFailure(ModuleContainer moduleContainer)
+	{
+		if (DeploymentConstants.IsGithubActions is false)
+		{
+			return;
+		}
+		AnsiConsole.WriteLine($"❌ {moduleContainer.Module.GetType().Name} Failed: {moduleContainer.ExceptionMessage}");
+	}
+
+	public static void WriteFinalState(List<ModuleContainer> moduleContainers)
+	{
+		RenderModulesProgress(moduleContainers, true);
 	}
 }

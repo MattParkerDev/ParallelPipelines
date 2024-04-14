@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Hosting;
 using Parker.ModularPipelines.Host.Helpers;
+using Parker.ModularPipelines.Host.InternalHelpers;
 using Parker.ModularPipelines.Host.Services;
 using Spectre.Console;
 
@@ -15,6 +16,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
 		await PipelineFileHelper.PopulateGitRootDirectory();
+		DeploymentConstants.IsGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
 		AnsiConsole.WriteLine("Starting PipelineApplication Hosted Service");
 		var timer = Stopwatch.StartNew();
 		try

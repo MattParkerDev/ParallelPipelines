@@ -40,7 +40,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 						moduleContainer.StartTime = DateTimeOffset.Now;
 						moduleContainer.EndTime = DateTimeOffset.Now;
 						moduleContainer.CompletedTask.Start();
-						//AnsiConsole.WriteLine($"{moduleContainer.Module.GetType().Name} cancelled due to previous failure");
+						ConsoleRenderer.WriteCancelledModule(moduleContainer);
 					}
 					else if (moduleContainer.Module.ShouldSkip())
 					{
@@ -50,13 +50,12 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 						moduleContainer.StartTime = DateTimeOffset.Now;
 						moduleContainer.EndTime = DateTimeOffset.Now;
 						moduleContainer.CompletedTask.Start();
-						//AnsiConsole.WriteLine($"{moduleContainer.Module.GetType().Name} skipped");
+						ConsoleRenderer.WriteSkippedModule(moduleContainer);
 					}
 					else
 					{
-						//AnsiConsole.WriteLine($"⚡ {moduleContainer.Module.GetType().Name} Starting");
+						ConsoleRenderer.WriteModuleStarting(moduleContainer);
 						moduleContainer.State = ModuleState.Running;
-						//ConsoleRenderer.RenderModulesProgress(moduleContainers);
 						moduleContainer.StartTime = DateTimeOffset.Now;
 						await moduleContainer.Module.RunModule(ct);
 						moduleContainer.HasCompleted = true;
@@ -64,21 +63,21 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 						moduleContainer.State = ModuleState.Completed;
 						moduleContainer.EndTime = DateTimeOffset.Now;
 						moduleContainer.CompletedTask.Start();
-						//ConsoleRenderer.RenderModulesProgress(moduleContainers);
-						//AnsiConsole.WriteLine($"✅ {moduleContainer.Module.GetType().Name} Finished Successfully");
+						ConsoleRenderer.WriteModuleSuccess(moduleContainer);
 					}
 				}
 				catch (Exception ex)
 				{
-					//AnsiConsole.WriteLine($"❌ {moduleContainer.Module.GetType().Name} Failed: {ex.Message}");
 					if (ex is TaskCanceledException or OperationCanceledException)
 					{
 						moduleContainer.CompletionType = CompletionType.Cancelled;
+						ConsoleRenderer.WriteCancelledModule(moduleContainer);
 					}
 					else
 					{
 						moduleContainer.CompletionType = CompletionType.Failure;
 						moduleContainer.ExceptionMessage = ex.Message;
+						ConsoleRenderer.WriteModuleFailure(moduleContainer);
 					}
 					moduleContainer.HasCompleted = true;
 					moduleContainer.State = ModuleState.Completed;
@@ -108,20 +107,23 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					c.CompletedTask.Start();
 				});
 			}
-			ConsoleRenderer.RenderModulesProgress(moduleContainers);
+			ConsoleRenderer.WriteFinalState(moduleContainers);
 			AnsiConsole.WriteLine();
 			moduleContainers.Where(s => s.ExceptionMessage != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.Module.GetType().Name} Failed: {s.ExceptionMessage}"));
 			AnsiConsole.WriteLine($"OrchestratorService {(_isPipelineCancellationRequested ? "cancelled" : "completed")}");
 			DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
-			//moduleContainers.ForEach(c => AnsiConsole.WriteLine($"🏁 {c.Module.GetType().Name} {c.CompletionType}"));
 		}
 	}
 
 	private void LogFoundModules(List<ModuleContainer> moduleContainers)
 	{
-		//moduleContainers.ForEach(c => AnsiConsole.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
 		AnsiConsole.WriteLine($"Found {moduleContainers.Count} modules");
 		AnsiConsole.WriteLine();
+		if (DeploymentConstants.IsGithubActions)
+		{
+			moduleContainers.ForEach(c => AnsiConsole.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
+			AnsiConsole.WriteLine();
+		}
 	}
 
 	private static void PopulateDependents(List<ModuleContainer> moduleContainers)
