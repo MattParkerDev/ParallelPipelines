@@ -1,9 +1,10 @@
-﻿namespace Application.Attributes;
+﻿using Domain.Entities;
+
+namespace Application.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true, Inherited = true)]
-public class DependsOnExpAttribute<T> : Attribute where T : class
+public class DependsOnExpAttribute<T> : Attribute where T : class, IModule
 {
-
 }
 
 public static class AttributeExtensions
