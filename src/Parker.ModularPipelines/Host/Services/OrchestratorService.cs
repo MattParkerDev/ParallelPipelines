@@ -43,7 +43,8 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					else
 					{
 						SetModuleState(moduleContainer, ModuleState.Running, null, newModuleStarting: true, completeAsyncTask: false);
-						await moduleContainer.Module.RunModule(ct);
+						var results = await moduleContainer.Module.RunModule(ct);
+						moduleContainer.StandardOutput = string.Join(Environment.NewLine, results?.Select(r => r?.StandardOutput)!);
 						SetModuleState(moduleContainer, ModuleState.Completed, CompletionType.Success);
 					}
 				}
