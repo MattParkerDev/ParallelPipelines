@@ -1,6 +1,7 @@
 ﻿using Application.Attributes;
 using Domain.Entities;
 using Domain.Enums;
+using ModularPipelines.Host.InternalHelpers;
 using Spectre.Console;
 
 namespace ModularPipelines.Host.Services;
@@ -22,7 +23,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		var modulesToExecute = _moduleContainerProvider.GetModuleContainersOrderedForExecution(cancellationToken);
 
 		using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
+		DeploymentTimeProvider.DeploymentStartTime = DateTimeOffset.Now;
 		await Parallel.ForEachAsync(modulesToExecute, linkedCts.Token, async (moduleContainer, ct) =>
 		{
 			try
@@ -32,6 +33,8 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					moduleContainer.HasCompleted = true;
 					moduleContainer.CompletionType = CompletionType.Cancelled;
 					moduleContainer.State = ModuleState.Completed;
+					moduleContainer.StartTime = DateTimeOffset.Now;
+					moduleContainer.EndTime = DateTimeOffset.Now;
 					moduleContainer.CompletedTask.Start();
 					//AnsiConsole.WriteLine($"{moduleContainer.Module.GetType().Name} cancelled due to previous failure");
 				}
@@ -40,6 +43,8 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					moduleContainer.HasCompleted = true;
 					moduleContainer.CompletionType = CompletionType.Skipped;
 					moduleContainer.State = ModuleState.Completed;
+					moduleContainer.StartTime = DateTimeOffset.Now;
+					moduleContainer.EndTime = DateTimeOffset.Now;
 					moduleContainer.CompletedTask.Start();
 					//AnsiConsole.WriteLine($"{moduleContainer.Module.GetType().Name} skipped");
 				}
@@ -48,10 +53,12 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					//AnsiConsole.WriteLine($"⚡ {moduleContainer.Module.GetType().Name} Starting");
 					moduleContainer.State = ModuleState.Running;
 					ConsoleRenderer.RenderModulesProgress(moduleContainers);
+					moduleContainer.StartTime = DateTimeOffset.Now;
 					await moduleContainer.Module.RunModule(ct);
 					moduleContainer.HasCompleted = true;
 					moduleContainer.CompletionType = CompletionType.Success;
 					moduleContainer.State = ModuleState.Completed;
+					moduleContainer.EndTime = DateTimeOffset.Now;
 					moduleContainer.CompletedTask.Start();
 					ConsoleRenderer.RenderModulesProgress(moduleContainers);
 					//AnsiConsole.WriteLine($"✅ {moduleContainer.Module.GetType().Name} Finished Successfully");
@@ -59,10 +66,11 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 			}
 			catch (Exception ex)
 			{
-				//AnsiConsole.WriteLine($"❌ {moduleContainer.Module.GetType().Name} Failed: {ex.Message}");
+				AnsiConsole.WriteLine($"❌ {moduleContainer.Module.GetType().Name} Failed: {ex.Message}");
 				moduleContainer.HasCompleted = true;
 				moduleContainer.CompletionType = CompletionType.Failure;
 				moduleContainer.State = ModuleState.Completed;
+				moduleContainer.EndTime = DateTimeOffset.Now;
 				if (_exitPipelineOnSingleFailure)
 				{
 					_isPipelineCancellationRequested = true;
@@ -75,6 +83,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 
 		AnsiConsole.WriteLine();
 		AnsiConsole.WriteLine("OrchestratorService Complete");
+		DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
 		//moduleContainers.ForEach(c => AnsiConsole.WriteLine($"🏁 {c.Module.GetType().Name} {c.CompletionType}"));
 	}
 
