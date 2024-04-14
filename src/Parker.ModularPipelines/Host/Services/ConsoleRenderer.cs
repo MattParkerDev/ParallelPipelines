@@ -27,7 +27,9 @@ public static class ConsoleRenderer
 		{
 			if (HasRenderedOnce is false)
 			{
-				AnsiConsole.WriteLine($"{"Module",-40}{"Status", -20}{"Start", -20}{"End", -20}{"Duration", -20}");
+				var consoleWidth = AnsiConsole.Profile.Width;
+				AnsiConsole.WriteLine("Console Width" + consoleWidth);
+				AnsiConsole.WriteLine($"{"Module",-40}{"Status", -10}{"Start", -15}{"End", -15}{"Duration", -15}");
 			}
 			if (HasRenderedOnce)
 			{
@@ -52,7 +54,7 @@ public static class ConsoleRenderer
 	{
 		var (start, end) = GetAnsiColorCodes(module);
 		var (startTime, endTime, duration) = GetTimeStartedAndFinished(module);
-		var text = $"{start}{module.GetModuleName(),-40}{GetStatusString(module), -20}{startTime, -20}{endTime, -20}{duration, -20}{end}";
+		var text = $"{start}{module.GetModuleName(),-40}{GetStatusString(module), -10}{startTime, -15}{endTime, -15}{duration, -15}{end}";
 		return text;
 	}
 
