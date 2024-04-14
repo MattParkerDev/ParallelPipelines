@@ -1,6 +1,6 @@
 ﻿using CliWrap;
-using Parker.ModularPipelines.Host.Helpers;
 using Parker.ModularPipelines.Domain.Entities;
+using Parker.ModularPipelines.Host.Helpers;
 
 // ReSharper disable once CheckNamespace
 namespace Deploy.Modules.Setup;

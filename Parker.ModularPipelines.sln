@@ -7,15 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5F3E03F6-838
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Console", "src\Parker.ModularPipelines.Console\Parker.ModularPipelines.Console.csproj", "{23339A9C-1746-46DB-9D3A-2FFE930FE8C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Application", "src\Parker.ModularPipelines.Application\Parker.ModularPipelines.Application.csproj", "{2DFDC50D-D793-4EC7-9E92-9EA9D07931F5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Domain", "src\Parker.ModularPipelines.Domain\Parker.ModularPipelines.Domain.csproj", "{21F78D00-49BB-47E6-AB48-9885B08CA5CA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Infrastructure", "src\Parker.ModularPipelines.Infrastructure\Parker.ModularPipelines.Infrastructure.csproj", "{1491BEEF-B342-44EF-8E42-7056AF13BE7F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Common", "src\Parker.ModularPipelines.Common\Parker.ModularPipelines.Common.csproj", "{422D038D-6351-44AB-90F7-2196AB6F76D0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines.Host", "src\Parker.ModularPipelines.Host\Parker.ModularPipelines.Host.csproj", "{04D03AC9-55D6-4647-8FED-091B9C9343D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parker.ModularPipelines", "src\Parker.ModularPipelines\Parker.ModularPipelines.csproj", "{04D03AC9-55D6-4647-8FED-091B9C9343D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{97428686-0D95-47B9-8CC0-62A25E26AC51}"
 	ProjectSection(SolutionItems) = preProject
@@ -38,22 +30,6 @@ Global
 		{23339A9C-1746-46DB-9D3A-2FFE930FE8C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23339A9C-1746-46DB-9D3A-2FFE930FE8C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23339A9C-1746-46DB-9D3A-2FFE930FE8C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2DFDC50D-D793-4EC7-9E92-9EA9D07931F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2DFDC50D-D793-4EC7-9E92-9EA9D07931F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2DFDC50D-D793-4EC7-9E92-9EA9D07931F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2DFDC50D-D793-4EC7-9E92-9EA9D07931F5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{21F78D00-49BB-47E6-AB48-9885B08CA5CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{21F78D00-49BB-47E6-AB48-9885B08CA5CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{21F78D00-49BB-47E6-AB48-9885B08CA5CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{21F78D00-49BB-47E6-AB48-9885B08CA5CA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1491BEEF-B342-44EF-8E42-7056AF13BE7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1491BEEF-B342-44EF-8E42-7056AF13BE7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1491BEEF-B342-44EF-8E42-7056AF13BE7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1491BEEF-B342-44EF-8E42-7056AF13BE7F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{422D038D-6351-44AB-90F7-2196AB6F76D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{422D038D-6351-44AB-90F7-2196AB6F76D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{422D038D-6351-44AB-90F7-2196AB6F76D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{422D038D-6351-44AB-90F7-2196AB6F76D0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{04D03AC9-55D6-4647-8FED-091B9C9343D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{04D03AC9-55D6-4647-8FED-091B9C9343D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04D03AC9-55D6-4647-8FED-091B9C9343D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -61,10 +37,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{23339A9C-1746-46DB-9D3A-2FFE930FE8C7} = {5F3E03F6-838F-433E-B8ED-38AC5AFDCD85}
-		{2DFDC50D-D793-4EC7-9E92-9EA9D07931F5} = {5F3E03F6-838F-433E-B8ED-38AC5AFDCD85}
-		{21F78D00-49BB-47E6-AB48-9885B08CA5CA} = {5F3E03F6-838F-433E-B8ED-38AC5AFDCD85}
-		{1491BEEF-B342-44EF-8E42-7056AF13BE7F} = {5F3E03F6-838F-433E-B8ED-38AC5AFDCD85}
-		{422D038D-6351-44AB-90F7-2196AB6F76D0} = {5F3E03F6-838F-433E-B8ED-38AC5AFDCD85}
 		{04D03AC9-55D6-4647-8FED-091B9C9343D5} = {5F3E03F6-838F-433E-B8ED-38AC5AFDCD85}
 	EndGlobalSection
 EndGlobal
