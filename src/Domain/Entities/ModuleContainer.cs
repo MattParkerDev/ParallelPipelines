@@ -21,4 +21,5 @@ public class ModuleContainer
 	public DateTimeOffset? StartTime { get; set; }
 	public DateTimeOffset? EndTime { get; set; }
 	public TimeSpan? Duration => EndTime - StartTime;
+	public string? ExceptionMessage { get; set; }
 }

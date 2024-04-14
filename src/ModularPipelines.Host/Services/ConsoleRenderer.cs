@@ -10,6 +10,17 @@ public static class ConsoleRenderer
 	public static bool ZeroTimesToFirstModule = true;
 	private static bool HasRenderedOnce { get; set; } = false;
 	private static int NumberOfModules { get; set; } = 0;
+	private static List<ModuleContainer>? ModuleContainers { get; set; }
+
+	public static async Task StartRenderingProgress(List<ModuleContainer> moduleContainers, CancellationToken cancellationToken)
+	{
+		ModuleContainers = moduleContainers;
+		while (!cancellationToken.IsCancellationRequested)
+		{
+			RenderModulesProgress(ModuleContainers);
+			await Task.Delay(1000, cancellationToken);
+		}
+	}
 	public static void RenderModulesProgress(List<ModuleContainer> moduleContainers)
 	{
 		lock ("ConsoleRenderer")
@@ -86,6 +97,10 @@ public static class ConsoleRenderer
 			var startTime = module.StartTime - DeploymentTimeProvider.DeploymentStartTime;
 			var endTime = module.EndTime - DeploymentTimeProvider.DeploymentStartTime;
 			var duration = endTime - startTime;
+			if (duration is null)
+			{
+				duration = DateTimeOffset.Now - module.StartTime;
+			}
 			return (startTime.ToTimeSpanString(), endTime.ToTimeSpanString(), duration.ToTimeSpanString());
 		}
 	}
