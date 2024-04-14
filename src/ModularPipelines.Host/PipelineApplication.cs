@@ -26,7 +26,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 			AnsiConsole.WriteLine("PipelineApplication was cancelled");
 		}
 		timer.Stop();
-		var timeString = timer.Elapsed.ToString(@"hh\h\:mm\m\:ss\s\:ff\m\s");
+		var timeString = timer.Elapsed.ToString(@"hh\h\:mm\m\:ss\s\:fff\m\s");
 		AnsiConsole.WriteLine($"PipelineApplication Hosted Service finished in {timeString}");
 		_hostApplicationLifetime.StopApplication();
 	}
