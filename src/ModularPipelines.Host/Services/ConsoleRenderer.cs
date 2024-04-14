@@ -106,6 +106,6 @@ public static class ConsoleRenderer
 	}
 	private static string? ToTimeSpanString(this TimeSpan? timeSpan)
 	{
-		return timeSpan?.ToString(@"mm\m\:ss\s\:ff\m\s");
+		return timeSpan?.ToString(@"mm\m\:ss\s\:fff\m\s");
 	}
 }
