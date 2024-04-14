@@ -13,6 +13,7 @@ public class ModuleContainer
 	public bool HasCompleted { get; set; } = false;
 	public Task<ModuleContainer> CompletedTask;
 	public CompletionType? CompletionType { get; set; }
+	public ModuleState State { get; set; } = ModuleState.Waiting;
 	public IModule Module { get; set; }
 	public List<ModuleContainer> Dependents { get; set; } = new();
 	public List<ModuleContainer> Dependencies { get; set; } = new();

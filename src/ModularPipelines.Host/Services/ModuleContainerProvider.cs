@@ -32,8 +32,7 @@ public class ModuleContainerProvider(IEnumerable<ModuleContainer> moduleContaine
 
 		while (remaining.Count != 0)
 		{
-			var result = await await Task.WhenAny(inProgress.Select(s => s.CompletedTask).ToList())
-				.WaitAsync(cancellationToken);
+			var result = await await Task.WhenAny(inProgress.Select(s => s.CompletedTask).ToList()).WaitAsync(cancellationToken);
 			inProgress.Remove(result);
 			foreach (var dependent in result.Dependents)
 			{
