@@ -1,4 +1,5 @@
 ﻿using CliWrap;
+using CliWrap.Buffered;
 using Parker.ModularPipelines.Domain.Entities;
 using Parker.ModularPipelines.Host.Helpers;
 
@@ -7,10 +8,10 @@ namespace Deploy.Modules.Setup;
 
 public class InstallSwaCliModule : IModule
 {
-	public async Task<CommandResult?> RunModule(CancellationToken cancellationToken)
+	public async Task<BufferedCommandResult?[]?> RunModule(CancellationToken cancellationToken)
 	{
 		var result = await PipelineCliHelper.RunCliCommandAsync("npm", "install -g @azure/static-web-apps-cli", cancellationToken);
-		return result;
+		return [result];
 	}
 	public bool ShouldSkip()
 	{
