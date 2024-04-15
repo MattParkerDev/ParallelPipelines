@@ -9,7 +9,7 @@ public static class PipelineCliHelper
 		CancellationToken cancellationToken)
 	{
 		var command = Cli.Wrap(targetFilePath).WithArguments(arguments);
-		var result = await command.ExecuteBufferedAsync(cancellationToken);
+		var result = await command.ExecuteBufferedWithGracefulCancelAsync(cancellationToken);
 		if (result?.IsSuccess is false)
 		{
 			throw new InvalidOperationException(result.StandardError + result.StandardOutput);
@@ -17,7 +17,7 @@ public static class PipelineCliHelper
 		return result;
 	}
 
-	public static async Task<BufferedCommandResult?> ExecuteBufferedAsync(this Command command,
+	private static async Task<BufferedCommandResult?> ExecuteBufferedWithGracefulCancelAsync(this Command command,
 		CancellationToken cancellationToken)
 	{
 		var forcefulCts = new CancellationTokenSource();

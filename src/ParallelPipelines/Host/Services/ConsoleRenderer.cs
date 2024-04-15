@@ -134,7 +134,7 @@ public static class ConsoleRenderer
 			{ State: ModuleState.Completed, CompletionType: CompletionType.Success } => $"✅ {moduleContainer.GetModuleName()} finished Successfully",
 			{ State: ModuleState.Completed, CompletionType: CompletionType.Skipped } => $"{moduleContainer.GetModuleName()} skipped",
 			{ State: ModuleState.Completed, CompletionType: CompletionType.Cancelled } => $"{moduleContainer.GetModuleName()} cancelled due to previous failure",
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Failure } => $"❌ {moduleContainer.GetModuleName()} Failed: {moduleContainer.ExceptionMessage}",
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Failure } => $"❌ {moduleContainer.GetModuleName()} Failed: {moduleContainer.Exception}",
 			{ State: ModuleState.Running } => $"⚡ {moduleContainer.GetModuleName()} Starting",
 			_ => throw new ArgumentOutOfRangeException(nameof(moduleContainer))
 		};

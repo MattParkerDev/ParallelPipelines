@@ -1,4 +1,5 @@
-﻿using ParallelPipelines.Domain.Enums;
+﻿using CliWrap.Buffered;
+using ParallelPipelines.Domain.Enums;
 
 namespace ParallelPipelines.Domain.Entities;
 
@@ -21,7 +22,6 @@ public class ModuleContainer
 	public DateTimeOffset? StartTime { get; set; }
 	public DateTimeOffset? EndTime { get; set; }
 	public TimeSpan? Duration => EndTime - StartTime;
-	public string? ExceptionMessage { get; set; }
-	public string? StandardOutput { get; set; }
-	public string? StandardError { get; set; }
+	public Exception? Exception { get; set; }
+	public BufferedCommandResult?[]? CliCommandResults { get; set; }
 }
