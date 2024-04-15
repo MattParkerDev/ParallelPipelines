@@ -12,13 +12,14 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 {
 	private readonly IHostApplicationLifetime _hostApplicationLifetime = hostApplicationLifetime;
 	private readonly OrchestratorService _orchestratorService = orchestratorService;
+	private readonly Stopwatch _timer = new Stopwatch();
 
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
 		await PipelineFileHelper.PopulateGitRootDirectory();
 		DeploymentConstants.IsGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
 		AnsiConsole.WriteLine("Starting PipelineApplication Hosted Service");
-		var timer = Stopwatch.StartNew();
+		_timer.Start();
 		try
 		{
 			await _orchestratorService.RunPipeline(cancellationToken);
@@ -28,15 +29,14 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 			AnsiConsole.WriteLine("PipelineApplication failed");
 			throw;
 		}
-		timer.Stop();
-		var timeString = timer.Elapsed.ToString(@"hh\h\:mm\m\:ss\s\:fff\m\s");
-		AnsiConsole.WriteLine($"PipelineApplication Hosted Service finished in {timeString}");
 		_hostApplicationLifetime.StopApplication();
 	}
 
 	public Task StopAsync(CancellationToken cancellationToken)
 	{
-		AnsiConsole.WriteLine("PipelineApplication Hosted Service is stopping");
+		_timer.Stop();
+		var timeString = _timer.Elapsed.ToString(@"hh\h\:mm\m\:ss\s\:fff\m\s");
+		AnsiConsole.WriteLine($"ParallelPipelines finished in {timeString}");
 		return Task.CompletedTask;
 	}
 }
