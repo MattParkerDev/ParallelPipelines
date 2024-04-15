@@ -23,9 +23,9 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 		{
 			await _orchestratorService.RunPipeline(cancellationToken);
 		}
-		catch (TaskCanceledException)
+		catch (Exception)
 		{
-			AnsiConsole.WriteLine("PipelineApplication was cancelled");
+			AnsiConsole.WriteLine("PipelineApplication failed");
 			throw;
 		}
 		timer.Stop();

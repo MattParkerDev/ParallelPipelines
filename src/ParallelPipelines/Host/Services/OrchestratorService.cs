@@ -27,7 +27,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 
 			using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 			DeploymentTimeProvider.DeploymentStartTime = DateTimeOffset.Now;
-			_ = ConsoleRenderer.StartRenderingProgress(moduleContainers, cancellationToken);
+			_ = ConsoleRenderer.StartRenderingProgress(moduleContainers, linkedCts.Token);
 			await Parallel.ForEachAsync(modulesToExecute, linkedCts.Token, async (moduleContainer, ct) =>
 			{
 				try
@@ -44,7 +44,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					{
 						SetModuleState(moduleContainer, ModuleState.Running, null, newModuleStarting: true, completeAsyncTask: false);
 						var results = await moduleContainer.Module.RunModule(ct);
-						moduleContainer.StandardOutput = string.Join(Environment.NewLine, results?.Select(r => r?.StandardOutput)!);
+						moduleContainer.CliCommandResults = results;
 						SetModuleState(moduleContainer, ModuleState.Completed, CompletionType.Success);
 					}
 				}
@@ -56,7 +56,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					}
 					else
 					{
-						moduleContainer.ExceptionMessage = ex.Message + ex.InnerException?.Message;
+						moduleContainer.Exception = ex;
 						SetModuleState(moduleContainer, ModuleState.Completed, CompletionType.Failure, completeAsyncTask: false);
 					}
 					ConsoleRenderer.RenderModulesProgress(moduleContainers);
@@ -69,6 +69,10 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 				}
 			});
 		}
+		catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
+		{
+			// Don't thow if await Parallel.ForEachAsync has thrown
+		}
 		finally
 		{
 			if (_isPipelineCancellationRequested)
@@ -77,7 +81,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 			}
 			ConsoleRenderer.WriteFinalState(moduleContainers);
 			AnsiConsole.WriteLine();
-			moduleContainers.Where(s => s.ExceptionMessage != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.Module.GetType().Name} Failed: {s.ExceptionMessage}"));
+			moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
 			AnsiConsole.WriteLine($"OrchestratorService {(_isPipelineCancellationRequested ? "cancelled" : "completed")}");
 			DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
 		}
