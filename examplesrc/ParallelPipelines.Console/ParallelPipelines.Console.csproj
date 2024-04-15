@@ -13,9 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="appsettings.Development.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
+	  <Content Include="Deploy.Experimental.csproj" />
 	</ItemGroup>
 	
 </Project>
