@@ -45,7 +45,7 @@ public static class ConsoleRenderer
 			}
 			if (HasRenderedOnce)
 			{
-				AnsiConsole.Console.Cursor.SetPosition(0, Console.CursorTop - NumberOfModules + 1);
+				AnsiConsole.Console.Cursor.SetPosition(0, Console.CursorTop - NumberOfModules - 1 + 1);
 				AnsiConsole.Write("\x1B[0J"); // clear from cursor to end of screen https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#erase-functions
 			}
 			foreach (var module in moduleContainers)
@@ -53,6 +53,9 @@ public static class ConsoleRenderer
 				var text = GetDecoratedText(module);
 				AnsiConsole.WriteLine(text);
 			}
+
+			var (startTime, endTime, duration) = GetTimeStartedAndFinishedGlobal();
+			AnsiConsole.WriteLine($"{"Total",-40}{"Status", -10}{startTime, -15}{endTime, -15}{duration, -15}");
 
 			if (!HasRenderedOnce)
 			{
@@ -95,6 +98,31 @@ public static class ConsoleRenderer
 			ModuleState.Completed when module.CompletionType == CompletionType.Failure => $"Failure",
 			_ => throw new ArgumentOutOfRangeException(nameof(module.State))
 		};
+	}
+
+	private static (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinishedGlobal()
+	{
+		var startTimeGlobal = DeploymentTimeProvider.DeploymentStartTime;
+		var endTimeGlobal = DeploymentTimeProvider.DeploymentEndTime;
+		var durationGlobal = DeploymentTimeProvider.DeploymentDuration;
+		if (ZeroTimesToFirstModule is false)
+		{
+			var startTime = startTimeGlobal?.ToString("HH:mm:ss");
+			var endTime = endTimeGlobal?.ToString("HH:mm:ss");
+			var duration = durationGlobal?.ToString(@"hh\:mm\:ss");
+			return (startTime, endTime, duration);
+		}
+		else
+		{
+			TimeSpan? startTime = TimeSpan.Zero;
+			var endTime = endTimeGlobal - startTimeGlobal;
+			var duration = endTime - startTime;
+			if (duration is null)
+			{
+				duration = DateTimeOffset.Now - startTimeGlobal;
+			}
+			return (startTime.ToTimeSpanString(), endTime.ToTimeSpanString(), duration.ToTimeSpanString());
+		}
 	}
 
 	private static (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinished(ModuleContainer module)

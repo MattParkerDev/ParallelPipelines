@@ -79,11 +79,11 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 			{
 				moduleContainers.Where(s => s.State == ModuleState.Waiting).ToList().ForEach(c => SetModuleState(c, ModuleState.Completed, CompletionType.Cancelled));
 			}
+			DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
 			ConsoleRenderer.WriteFinalState(moduleContainers);
 			AnsiConsole.WriteLine();
 			moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
 			AnsiConsole.WriteLine($"OrchestratorService {(_isPipelineCancellationRequested ? "cancelled" : "completed")}");
-			DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
 		}
 	}
 
