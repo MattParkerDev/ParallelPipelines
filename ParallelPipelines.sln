@@ -19,6 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examplesrc", "examplesrc", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelPipelines.Console", "examplesrc\ParallelPipelines.Console\ParallelPipelines.Console.csproj", "{9A93959C-6425-4C82-9249-7A654E23DEB3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{48027F2A-A9FE-44D9-BD09-432A7E0B683F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelPipelines.Unit.Tests", "tests\ParallelPipelines.Unit.Tests\ParallelPipelines.Unit.Tests.csproj", "{F564F2F0-A597-4FE9-B5E2-A9E44ED276DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,9 +40,14 @@ Global
 		{9A93959C-6425-4C82-9249-7A654E23DEB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A93959C-6425-4C82-9249-7A654E23DEB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A93959C-6425-4C82-9249-7A654E23DEB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F564F2F0-A597-4FE9-B5E2-A9E44ED276DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F564F2F0-A597-4FE9-B5E2-A9E44ED276DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F564F2F0-A597-4FE9-B5E2-A9E44ED276DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F564F2F0-A597-4FE9-B5E2-A9E44ED276DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{04D03AC9-55D6-4647-8FED-091B9C9343D5} = {5F3E03F6-838F-433E-B8ED-38AC5AFDCD85}
 		{9A93959C-6425-4C82-9249-7A654E23DEB3} = {2C1B40FF-A8B7-42B4-994A-74E22076E0CB}
+		{F564F2F0-A597-4FE9-B5E2-A9E44ED276DF} = {48027F2A-A9FE-44D9-BD09-432A7E0B683F}
 	EndGlobalSection
 EndGlobal
