@@ -14,7 +14,6 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 
 	public async Task RunPipeline(CancellationToken cancellationToken)
 	{
-		AnsiConsole.WriteLine("🚀Executing OrchestratorService");
 		var moduleContainers = _moduleContainerProvider.GetAllModuleContainers();
 
 		try

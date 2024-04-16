@@ -9,8 +9,6 @@ using Microsoft.Extensions.Hosting;
 using ParallelPipelines.Host;
 using Spectre.Console;
 
-Console.OutputEncoding = Encoding.UTF8;
-AnsiConsole.WriteLine("\x1b[36m📦 Bootstrapping...\x1b[0m");
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Configuration
