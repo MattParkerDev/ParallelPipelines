@@ -41,11 +41,11 @@ public static class ConsoleRenderer
 					AnsiConsole.WriteLine($"Console Width: {consoleWidth}, overriding to 120");
 					AnsiConsole.Profile.Width = 120;
 				}
-				AnsiConsole.WriteLine($"{"Module",-40}{"Status", -10}{"Start", -15}{"End", -15}{"Duration", -15}");
+				AnsiConsole.WriteLine($"{"Module",-40}{"Status", -14}{"Start", -15}{"End", -15}{"Duration", -11}");
 			}
 			if (HasRenderedOnce)
 			{
-				AnsiConsole.Console.Cursor.SetPosition(0, Console.CursorTop - NumberOfModules - 1 + 1);
+				AnsiConsole.Console.Cursor.SetPosition(0, Console.CursorTop - NumberOfModules - 2 + 1);
 				AnsiConsole.Write("\x1B[0J"); // clear from cursor to end of screen https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#erase-functions
 			}
 			foreach (var module in moduleContainers)
@@ -55,7 +55,8 @@ public static class ConsoleRenderer
 			}
 
 			var (startTime, endTime, duration) = GetTimeStartedAndFinishedGlobal();
-			AnsiConsole.WriteLine($"{"Total",-40}{"Status", -10}{startTime, -15}{endTime, -15}{duration, -15}");
+			AnsiConsole.WriteLine("─────────────────────────────────────────────────────────────────────────────────────────────");
+			AnsiConsole.WriteLine($"{"Total",-40}{"Status", -14}{startTime, -15}{endTime, -15}{duration, -11}");
 
 			if (!HasRenderedOnce)
 			{
@@ -69,7 +70,7 @@ public static class ConsoleRenderer
 	{
 		var (start, end) = GetAnsiColorCodes(module);
 		var (startTime, endTime, duration) = GetTimeStartedAndFinished(module);
-		var text = $"{start}{module.GetModuleName(),-40}{GetStatusString(module), -10}{startTime, -15}{endTime, -15}{duration, -15}{end}";
+		var text = $"{start}{module.GetModuleName(),-40}{GetStatusString(module), -14}{startTime, -15}{endTime, -15}{duration, -11}{end}";
 		return text;
 	}
 
