@@ -148,7 +148,20 @@ public static class ConsoleRenderer
 	}
 	private static string? ToTimeSpanString(this TimeSpan? timeSpan)
 	{
-		return timeSpan?.ToString(@"mm\m\:ss\s\:fff\m\s");
+		if (timeSpan is null)
+		{
+			return null;
+		}
+		if (timeSpan.Value.TotalHours >= 1)
+		{
+			return timeSpan.Value.ToString(@"HH\h\:mm\m\:ss\s");
+		}
+		if (timeSpan.Value.TotalMinutes >= 1)
+		{
+			return timeSpan.Value.ToString(@"mm\m\:ss\s");
+		}
+		return timeSpan.Value.ToString(@"ss\s\:fff\m\s");
+		//return timeSpan?.ToString(@"mm\m\:ss\s\:fff\m\s");
 	}
 
 	public static void WriteModule(ModuleContainer moduleContainer)
