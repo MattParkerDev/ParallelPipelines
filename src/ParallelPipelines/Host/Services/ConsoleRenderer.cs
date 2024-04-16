@@ -25,7 +25,7 @@ public static class ConsoleRenderer
 			await Task.Delay(1000, cancellationToken);
 		}
 	}
-	public static void RenderModulesProgress(List<ModuleContainer> moduleContainers, bool finalWrite = false)
+	public static void RenderModulesProgress(List<ModuleContainer> moduleContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
 	{
 		if (DeploymentConstants.IsGithubActions && finalWrite is false)
 		{
@@ -55,8 +55,11 @@ public static class ConsoleRenderer
 			}
 
 			var (startTime, endTime, duration) = GetTimeStartedAndFinishedGlobal();
+			var (start, end) = GetAnsiColorCodes(pipelineSummary?.OverallCompletionType);
+			var pipelineStatusString = GetStatusString(pipelineSummary?.OverallCompletionType);
+
 			AnsiConsole.WriteLine("─────────────────────────────────────────────────────────────────────────────────────────────");
-			AnsiConsole.WriteLine($"{"Total",-40}{"Status", -14}{startTime, -15}{endTime, -15}{duration, -11}");
+			AnsiConsole.WriteLine($"{"Total",-40}{start}{pipelineStatusString, -14}{end}{startTime, -15}{endTime, -15}{duration, -11}");
 
 			if (!HasRenderedOnce)
 			{
@@ -74,6 +77,26 @@ public static class ConsoleRenderer
 		return text;
 	}
 
+	public static string GetDecoratedStatusString(this CompletionType? completionType)
+	{
+		var pipelineStatusString = GetStatusString(completionType);
+		var (start, end) = GetAnsiColorCodes(completionType);
+		return $"{start}{pipelineStatusString}{end}";
+	}
+
+	private static (string start, string end) GetAnsiColorCodes(CompletionType? completionType)
+	{
+		return completionType switch
+		{
+			null => ("",""),
+			CompletionType.Success => ("\x1b[32m","\x1b[0m"),
+			CompletionType.Skipped => ("\x1b[33m","\x1b[0m"),
+			CompletionType.Cancelled => ("\x1b[31m","\x1b[0m"),
+			CompletionType.Failure => ("\x1b[31m","\x1b[0m"),
+			_ => throw new ArgumentOutOfRangeException(nameof(completionType))
+		};
+	}
+
 	private static (string start, string end) GetAnsiColorCodes(ModuleContainer module)
 	{
 		return module.State switch
@@ -86,6 +109,20 @@ public static class ConsoleRenderer
 			ModuleState.Completed when module.CompletionType == CompletionType.Failure => ("\x1b[31m","\x1b[0m"),
 			_ => throw new ArgumentOutOfRangeException(nameof(module.State))
 		};
+	}
+
+	private static string GetStatusString(CompletionType? completionType)
+	{
+		var pipelineStatusString = completionType switch
+		{
+			null => "Running",
+			CompletionType.Success => "Success",
+			CompletionType.Failure => "Failure",
+			CompletionType.Cancelled => "Cancelled",
+			CompletionType.Skipped => throw new InvalidOperationException("Overall pipeline completion type cannot be skipped"),
+			_ => throw new ArgumentOutOfRangeException(nameof(completionType))
+		};
+		return pipelineStatusString;
 	}
 	private static string GetStatusString(ModuleContainer module)
 	{
@@ -183,8 +220,8 @@ public static class ConsoleRenderer
 		AnsiConsole.WriteLine(text);
 	}
 
-	public static void WriteFinalState(List<ModuleContainer> moduleContainers)
+	public static void WriteFinalState(PipelineSummary pipelineSummary, List<ModuleContainer> moduleContainers)
 	{
-		RenderModulesProgress(moduleContainers, true);
+		RenderModulesProgress(moduleContainers, pipelineSummary, true);
 	}
 }

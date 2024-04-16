@@ -70,7 +70,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		}
 		catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
 		{
-			// Don't thow if await Parallel.ForEachAsync has thrown
+			// Don't throw if await Parallel.ForEachAsync has thrown
 		}
 		finally
 		{
@@ -79,11 +79,28 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 				moduleContainers.Where(s => s.State == ModuleState.Waiting).ToList().ForEach(c => SetModuleState(c, ModuleState.Completed, CompletionType.Cancelled));
 			}
 			DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
-			ConsoleRenderer.WriteFinalState(moduleContainers);
+			var pipelineSummary = GetPipelineSummary(moduleContainers);
+			ConsoleRenderer.WriteFinalState(pipelineSummary, moduleContainers);
 			AnsiConsole.WriteLine();
 			moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
-			AnsiConsole.WriteLine($"OrchestratorService {(_isPipelineCancellationRequested ? "cancelled" : "completed")}");
+			AnsiConsole.WriteLine($"ParallelPipelines finished - {pipelineSummary.OverallCompletionType.GetDecoratedStatusString()}");
 		}
+	}
+
+	private PipelineSummary GetPipelineSummary(List<ModuleContainer> moduleContainers)
+	{
+		var pipelineSummary = new PipelineSummary
+		{
+			OverallCompletionType = moduleContainers switch
+			{
+				_ when _exitPipelineOnSingleFailure is true && moduleContainers.Any(m => m.CompletionType == CompletionType.Failure) => CompletionType.Failure,
+				_ when moduleContainers.Any(m => m.CompletionType == CompletionType.Cancelled) => CompletionType.Cancelled,
+				_ when moduleContainers.Any(m => m.CompletionType is CompletionType.Success or CompletionType.Skipped) => CompletionType.Success,
+				_ => throw new ArgumentOutOfRangeException(nameof(moduleContainers), "Could not determine pipeline completion type")
+			}
+		};
+
+		return pipelineSummary;
 	}
 
 	private void SetModuleState(ModuleContainer moduleContainer, ModuleState state, CompletionType? completionType, bool newModuleStarting = false, bool completeAsyncTask = true)
