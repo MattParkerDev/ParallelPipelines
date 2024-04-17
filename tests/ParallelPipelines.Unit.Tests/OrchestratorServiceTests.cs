@@ -45,6 +45,7 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 		var serviceProvider = services.BuildServiceProvider();
 		var orchestratorService = serviceProvider.GetRequiredService<OrchestratorService>();
 
+		await orchestratorService.InitialiseAsync();
 		var now = DateTimeOffset.Now;
 		var pipelineSummary = await orchestratorService.RunPipeline(CancellationToken.None);
 		var later = DateTimeOffset.Now;

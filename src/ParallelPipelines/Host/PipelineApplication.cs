@@ -1,8 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Text;
 using Microsoft.Extensions.Hosting;
-using ParallelPipelines.Host.Helpers;
-using ParallelPipelines.Host.InternalHelpers;
 using ParallelPipelines.Host.Services;
 using Spectre.Console;
 
@@ -17,12 +14,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
-		Console.OutputEncoding = Encoding.UTF8;
-		AnsiConsole.WriteLine("\x1b[36m📦 Starting ParallelPipelines...\x1b[0m");
-
-		await PipelineFileHelper.PopulateGitRootDirectory();
-		DeploymentConstants.IsGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
-		DeploymentConstants.ConsoleSupportsAnsiSequences = AnsiConsole.Profile.Capabilities.Ansi;
+		await _orchestratorService.InitialiseAsync();
 		_timer.Start();
 		try
 		{

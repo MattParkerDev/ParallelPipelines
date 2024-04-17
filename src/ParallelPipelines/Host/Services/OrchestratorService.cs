@@ -1,7 +1,9 @@
-﻿using ParallelPipelines.Domain.Entities;
+﻿using System.Text;
+using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host.InternalHelpers;
 using ParallelPipelines.Application.Attributes;
+using ParallelPipelines.Host.Helpers;
 using Spectre.Console;
 
 namespace ParallelPipelines.Host.Services;
@@ -13,6 +15,16 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 	private readonly IAnsiConsole _ansiConsole = ansiConsole;
 	private readonly bool _exitPipelineOnSingleFailure = true;
 	private bool _isPipelineCancellationRequested = false;
+
+	public async Task InitialiseAsync()
+	{
+		Console.OutputEncoding = Encoding.UTF8;
+		_ansiConsole.WriteLine("\x1b[36m📦 Starting ParallelPipelines...\x1b[0m");
+
+		await PipelineFileHelper.PopulateGitRootDirectory();
+		DeploymentConstants.IsGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
+		DeploymentConstants.ConsoleSupportsAnsiSequences = AnsiConsole.Profile.Capabilities.Ansi;
+	}
 
 	public async Task<PipelineSummary?> RunPipeline(CancellationToken cancellationToken)
 	{
