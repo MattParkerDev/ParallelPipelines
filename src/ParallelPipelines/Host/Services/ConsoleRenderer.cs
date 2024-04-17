@@ -9,8 +9,7 @@ namespace ParallelPipelines.Host.Services;
 public class ConsoleRenderer(IAnsiConsole ansiConsole)
 {
 	private readonly IAnsiConsole _ansiConsole = ansiConsole;
-
-	public bool ZeroTimesToFirstModule = true;
+	private readonly bool _zeroTimesToFirstModule = true;
 	private bool HasRenderedOnce { get; set; } = false;
 	private int NumberOfModules { get; set; } = 0;
 	private List<ModuleContainer>? ModuleContainers { get; set; }
@@ -141,7 +140,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 		var startTimeGlobal = DeploymentTimeProvider.DeploymentStartTime;
 		var endTimeGlobal = DeploymentTimeProvider.DeploymentEndTime;
 		var durationGlobal = DeploymentTimeProvider.DeploymentDuration;
-		if (ZeroTimesToFirstModule is false)
+		if (_zeroTimesToFirstModule is false)
 		{
 			var startTime = startTimeGlobal?.ToString("HH:mm:ss");
 			var endTime = endTimeGlobal?.ToString("HH:mm:ss");
@@ -163,7 +162,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 
 	private (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinished(ModuleContainer module)
 	{
-		if (ZeroTimesToFirstModule is false)
+		if (_zeroTimesToFirstModule is false)
 		{
 			var startTime = module.StartTime?.ToString("HH:mm:ss");
 			var endTime = module.EndTime?.ToString("HH:mm:ss");
@@ -198,8 +197,6 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 			{ State: ModuleState.Running } => $"⚡ {moduleContainer.GetModuleName()} Starting",
 			_ => throw new ArgumentOutOfRangeException(nameof(moduleContainer))
 		};
-		//AnsiConsole.WriteLine(text);
-		//_logger.LogTrace(text);
 		_ansiConsole.WriteLine(text);
 	}
 
