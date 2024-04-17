@@ -88,6 +88,9 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		AnsiConsole.WriteLine();
 		moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
 		AnsiConsole.WriteLine($"ParallelPipelines finished - {pipelineSummary.OverallCompletionType.GetDecoratedStatusString()}");
+		pipelineSummary.DeploymentStartTime = DeploymentTimeProvider.DeploymentStartTime;
+		pipelineSummary.DeploymentEndTime = DeploymentTimeProvider.DeploymentEndTime;
+		pipelineSummary.ModuleContainers = moduleContainers;
 
 		return pipelineSummary;
 	}
