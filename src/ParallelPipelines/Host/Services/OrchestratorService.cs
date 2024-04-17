@@ -6,9 +6,10 @@ using Spectre.Console;
 
 namespace ParallelPipelines.Host.Services;
 
-public class OrchestratorService(ModuleContainerProvider moduleContainerProvider)
+public class OrchestratorService(ModuleContainerProvider moduleContainerProvider, ConsoleRenderer consoleRenderer)
 {
 	private readonly ModuleContainerProvider _moduleContainerProvider = moduleContainerProvider;
+	private readonly ConsoleRenderer _consoleRenderer = consoleRenderer;
 	private readonly bool _exitPipelineOnSingleFailure = true;
 	private bool _isPipelineCancellationRequested = false;
 
@@ -29,7 +30,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 
 		using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 		DeploymentTimeProvider.DeploymentStartTime = DateTimeOffset.Now;
-		_ = ConsoleRenderer.StartRenderingProgress(moduleContainers, linkedCts.Token);
+		_ = _consoleRenderer.StartRenderingProgress(moduleContainers, linkedCts.Token);
 		try
 		{
 			await Parallel.ForEachAsync(modulesToExecute, linkedCts.Token, async (moduleContainer, ct) =>
@@ -63,7 +64,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 						moduleContainer.Exception = ex;
 						SetModuleState(moduleContainer, ModuleState.Completed, CompletionType.Failure, completeAsyncTask: false);
 					}
-					ConsoleRenderer.RenderModulesProgress(moduleContainers);
+					_consoleRenderer.RenderModulesProgress(moduleContainers);
 					if (_exitPipelineOnSingleFailure)
 					{
 						_isPipelineCancellationRequested = true;
@@ -84,7 +85,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		}
 		DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
 		var pipelineSummary = GetPipelineSummary(moduleContainers);
-		ConsoleRenderer.WriteFinalState(pipelineSummary, moduleContainers);
+		_consoleRenderer.WriteFinalState(pipelineSummary, moduleContainers);
 		AnsiConsole.WriteLine();
 		moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
 		AnsiConsole.WriteLine($"ParallelPipelines finished - {pipelineSummary.OverallCompletionType.GetDecoratedStatusString()}");
@@ -125,7 +126,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		{
 			moduleContainer.CompletedTask.Start();
 		}
-		ConsoleRenderer.WriteModule(moduleContainer);
+		_consoleRenderer.WriteModule(moduleContainer);
 	}
 
 	private void LogFoundModules(List<ModuleContainer> moduleContainers)

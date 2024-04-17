@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Host.Helpers;
 using ParallelPipelines.Host.Services;
@@ -18,6 +19,12 @@ public static class DependencyInjection
 		services.AddSingleton<ExampleAnsiProgressService>();
 		services.AddSingleton<OrchestratorService>();
 		services.AddSingleton<ModuleContainerProvider>();
+		services.AddSingleton<ConsoleRenderer>();
+		services.AddLogging(builder => builder.AddSimpleConsole(options =>
+		{
+			options.IncludeScopes = false;
+			options.SingleLine = true;
+		}));
 		services.AddSingleton<IPipelineContext, PipelineContext>(sp => new PipelineContext(configuration));
 		return services;
 	}
