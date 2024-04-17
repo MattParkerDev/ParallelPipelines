@@ -14,7 +14,7 @@ public static class ConsoleRenderer
 
 	public static async Task StartRenderingProgress(List<ModuleContainer> moduleContainers, CancellationToken cancellationToken)
 	{
-		if (DeploymentConstants.IsGithubActions)
+		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false)
 		{
 			return;
 		}
@@ -27,7 +27,7 @@ public static class ConsoleRenderer
 	}
 	public static void RenderModulesProgress(List<ModuleContainer> moduleContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
 	{
-		if (DeploymentConstants.IsGithubActions && finalWrite is false)
+		if ((DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false) && finalWrite is false)
 		{
 			return;
 		}
@@ -204,7 +204,7 @@ public static class ConsoleRenderer
 
 	public static void WriteModule(ModuleContainer moduleContainer)
 	{
-		if (DeploymentConstants.IsGithubActions is false)
+		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false)
 		{
 			return;
 		}
