@@ -1,5 +1,4 @@
-﻿using CliWrap;
-using CliWrap.Buffered;
+﻿using CliWrap.Buffered;
 
 namespace ParallelPipelines.Domain.Entities;
 

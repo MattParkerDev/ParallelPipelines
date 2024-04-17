@@ -1,5 +1,4 @@
-﻿using CliWrap;
-using ParallelPipelines.Domain.Entities;
+﻿using ParallelPipelines.Domain.Entities;
 
 // ReSharper disable once CheckNamespace
 namespace Deploy.Experimental.Modules.ProvisionAzureResources;

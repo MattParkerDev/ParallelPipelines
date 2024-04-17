@@ -1,7 +1,4 @@
-﻿using CliWrap;
-using CliWrap.Buffered;
-using Deploy.Experimental;
-using Deploy.Experimental.Modules.ProvisionAzureResources;
+﻿using Deploy.Experimental.Modules.ProvisionAzureResources;
 using Deploy.Experimental.Modules.BuildAndPublish;
 using ParallelPipelines.Domain.Entities;
 

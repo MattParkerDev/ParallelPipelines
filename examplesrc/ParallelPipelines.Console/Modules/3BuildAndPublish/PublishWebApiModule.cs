@@ -1,5 +1,4 @@
-﻿using CliWrap;
-using Deploy.Modules.BuildAndPublish;
+﻿using Deploy.Modules.BuildAndPublish;
 using ParallelPipelines.Domain.Entities;
 
 // ReSharper disable once CheckNamespace
