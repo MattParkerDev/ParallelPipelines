@@ -12,9 +12,14 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 	private readonly bool _exitPipelineOnSingleFailure = true;
 	private bool _isPipelineCancellationRequested = false;
 
-	public async Task RunPipeline(CancellationToken cancellationToken)
+	public async Task<PipelineSummary?> RunPipeline(CancellationToken cancellationToken)
 	{
 		var moduleContainers = _moduleContainerProvider.GetAllModuleContainers();
+		if (moduleContainers.Count == 0)
+		{
+			AnsiConsole.WriteLine("ParallelPipelines failed - No modules found to execute");
+			return null;
+		}
 
 		try
 		{
@@ -67,6 +72,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					moduleContainer.CompletedTask.Start();
 				}
 			});
+			Console.WriteLine("Here");
 		}
 		catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
 		{
@@ -85,6 +91,8 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 			moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
 			AnsiConsole.WriteLine($"ParallelPipelines finished - {pipelineSummary.OverallCompletionType.GetDecoratedStatusString()}");
 		}
+		var pipelineSummary2 = GetPipelineSummary(moduleContainers);
+		return pipelineSummary2;
 	}
 
 	private PipelineSummary GetPipelineSummary(List<ModuleContainer> moduleContainers)
@@ -124,7 +132,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 	{
 		AnsiConsole.WriteLine($"Found {moduleContainers.Count} modules");
 		AnsiConsole.WriteLine();
-		if (DeploymentConstants.IsGithubActions)
+		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false)
 		{
 			moduleContainers.ForEach(c => AnsiConsole.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
 			AnsiConsole.WriteLine();

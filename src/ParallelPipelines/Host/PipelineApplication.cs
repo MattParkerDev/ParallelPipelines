@@ -22,10 +22,11 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 
 		await PipelineFileHelper.PopulateGitRootDirectory();
 		DeploymentConstants.IsGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
+		DeploymentConstants.ConsoleSupportsAnsiSequences = AnsiConsole.Profile.Capabilities.Ansi;
 		_timer.Start();
 		try
 		{
-			await _orchestratorService.RunPipeline(cancellationToken);
+			_ = await _orchestratorService.RunPipeline(cancellationToken);
 		}
 		catch (Exception)
 		{
