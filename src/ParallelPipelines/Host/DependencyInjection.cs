@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Host.Helpers;
 using ParallelPipelines.Host.Services;
 using ParallelPipelines.Application;
 using ParallelPipelines.Infrastructure;
+using Spectre.Console;
 
 namespace ParallelPipelines.Host;
 
@@ -20,11 +20,9 @@ public static class DependencyInjection
 		services.AddSingleton<OrchestratorService>();
 		services.AddSingleton<ModuleContainerProvider>();
 		services.AddSingleton<ConsoleRenderer>();
-		services.AddLogging(builder => builder.AddSimpleConsole(options =>
-		{
-			options.IncludeScopes = false;
-			options.SingleLine = true;
-		}));
+
+		services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
+
 		services.AddSingleton<IPipelineContext, PipelineContext>(sp => new PipelineContext(configuration));
 		return services;
 	}

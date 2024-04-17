@@ -6,9 +6,9 @@ using Spectre.Console;
 
 namespace ParallelPipelines.Host.Services;
 
-public class ConsoleRenderer(ILogger<ConsoleRenderer> logger)
+public class ConsoleRenderer(IAnsiConsole ansiConsole)
 {
-	private readonly ILogger<ConsoleRenderer> _logger = logger;
+	private readonly IAnsiConsole _ansiConsole = ansiConsole;
 
 	public bool ZeroTimesToFirstModule = true;
 	private bool HasRenderedOnce { get; set; } = false;
@@ -30,7 +30,6 @@ public class ConsoleRenderer(ILogger<ConsoleRenderer> logger)
 	}
 	public void RenderModulesProgress(List<ModuleContainer> moduleContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
 	{
-		_logger.LogWarning("test");
 		if ((DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false) && finalWrite is false)
 		{
 			return;
@@ -39,32 +38,31 @@ public class ConsoleRenderer(ILogger<ConsoleRenderer> logger)
 		{
 			if (HasRenderedOnce is false)
 			{
-				if (DeploymentConstants.IsGithubActions)
+				var consoleWidth = AnsiConsole.Profile.Width;
+				if (DeploymentConstants.IsGithubActions || consoleWidth < 100)
 				{
-					var consoleWidth = AnsiConsole.Profile.Width;
-					AnsiConsole.WriteLine($"Console Width: {consoleWidth}, overriding to 120");
-					AnsiConsole.Profile.Width = 120;
+					_ansiConsole.WriteLine($"Console Width: {consoleWidth}, overriding to 120");
+					_ansiConsole.Profile.Width = 120;
 				}
-				AnsiConsole.WriteLine($"{"Module",-40}{"Status", -14}{"Start", -15}{"End", -15}{"Duration", -11}");
+				_ansiConsole.WriteLine($"{"Module",-40}{"Status", -14}{"Start", -15}{"End", -15}{"Duration", -11}");
 			}
 			if (HasRenderedOnce)
 			{
-				AnsiConsole.Console.Cursor.SetPosition(0, Console.CursorTop - NumberOfModules - 2 + 1);
-				AnsiConsole.Write("\x1B[0J"); // clear from cursor to end of screen https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#erase-functions
+				_ansiConsole.Cursor.SetPosition(0, Console.CursorTop - NumberOfModules - 2 + 1);
+				_ansiConsole.Write("\x1B[0J"); // clear from cursor to end of screen https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#erase-functions
 			}
 			foreach (var module in moduleContainers)
 			{
 				var text = GetDecoratedText(module);
-				AnsiConsole.WriteLine(text);
-				_logger.LogWarning(text);
+				_ansiConsole.WriteLine(text);
 			}
 
 			var (startTime, endTime, duration) = GetTimeStartedAndFinishedGlobal();
 			var (start, end) = GetAnsiColorCodes(pipelineSummary?.OverallCompletionType);
 			var pipelineStatusString = GetStatusString(pipelineSummary?.OverallCompletionType);
 
-			AnsiConsole.WriteLine("─────────────────────────────────────────────────────────────────────────────────────────────");
-			AnsiConsole.WriteLine($"{"Total",-40}{start}{pipelineStatusString, -14}{end}{startTime, -15}{endTime, -15}{duration, -11}");
+			_ansiConsole.WriteLine("─────────────────────────────────────────────────────────────────────────────────────────────");
+			_ansiConsole.WriteLine($"{"Total",-40}{start}{pipelineStatusString, -14}{end}{startTime, -15}{endTime, -15}{duration, -11}");
 
 			if (!HasRenderedOnce)
 			{
@@ -200,8 +198,9 @@ public class ConsoleRenderer(ILogger<ConsoleRenderer> logger)
 			{ State: ModuleState.Running } => $"⚡ {moduleContainer.GetModuleName()} Starting",
 			_ => throw new ArgumentOutOfRangeException(nameof(moduleContainer))
 		};
-		AnsiConsole.WriteLine(text);
-		_logger.LogTrace(text);
+		//AnsiConsole.WriteLine(text);
+		//_logger.LogTrace(text);
+		_ansiConsole.WriteLine(text);
 	}
 
 	public void WriteFinalState(PipelineSummary pipelineSummary, List<ModuleContainer> moduleContainers)
@@ -210,7 +209,7 @@ public class ConsoleRenderer(ILogger<ConsoleRenderer> logger)
 	}
 }
 
-public static class ConsoleRenderingExtensions
+public static class ConsoleRendererExtensions
 {
 	public static string? ToTimeSpanString(this TimeSpan? timeSpan)
 	{
