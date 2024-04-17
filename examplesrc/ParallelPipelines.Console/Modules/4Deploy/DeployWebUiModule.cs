@@ -9,7 +9,7 @@ namespace Deploy.Modules.Deploy;
 [DependsOnExp<InstallSwaCliModule>]
 [DependsOnExp<DeployBicepModule>]
 [DependsOnExp<PublishWebUiModule>]
-public class DeployWebUiModule(IPipelineContext context) : IModule
+public class DeployWebUiModule : IModule
 {
 	public bool ShouldSkip() => false;
 
