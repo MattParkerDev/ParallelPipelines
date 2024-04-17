@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Host.Helpers;
@@ -21,6 +22,7 @@ public static class DependencyInjection
 		services.AddSingleton<ModuleContainerProvider>();
 		services.AddSingleton<ConsoleRenderer>();
 
+		Console.OutputEncoding = Encoding.UTF8;
 		services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
 
 		services.AddSingleton<IPipelineContext, PipelineContext>(sp => new PipelineContext(configuration));

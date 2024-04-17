@@ -18,7 +18,6 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 
 	public async Task InitialiseAsync()
 	{
-		Console.OutputEncoding = Encoding.UTF8;
 		_ansiConsole.WriteLine("\x1b[36m📦 Starting ParallelPipelines...\x1b[0m");
 
 		await PipelineFileHelper.PopulateGitRootDirectory();
