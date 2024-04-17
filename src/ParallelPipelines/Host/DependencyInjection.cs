@@ -10,7 +10,7 @@ namespace ParallelPipelines.Host;
 
 public static class DependencyInjection
 {
-	public static IServiceCollection AddModularPipelines(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection AddParallelPipelines(this IServiceCollection services, IConfiguration configuration)
 	{
 		services.AddApplication(configuration);
 		services.AddInfrastructure(configuration);
