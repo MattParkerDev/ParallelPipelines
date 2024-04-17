@@ -1,13 +1,13 @@
 using Deploy.Modules.Setup;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host;
 using ParallelPipelines.Host.Services;
 using ParallelPipelines.Unit.Tests.TestModules;
+using Spectre.Console;
 using Xunit.Abstractions;
-
 
 namespace ParallelPipelines.Unit.Tests;
 
@@ -38,6 +38,9 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 		services.AddModule<TestModule2>();
 		services.AddModule<TestModule3>();
 		services.AddModule<TestModule4>();
+
+		services.RemoveAll(typeof(IAnsiConsole));
+		services.AddSingleton<IAnsiConsole>(provider => new MyTestConsole(_output));
 
 		var serviceProvider = services.BuildServiceProvider();
 		var orchestratorService = serviceProvider.GetRequiredService<OrchestratorService>();

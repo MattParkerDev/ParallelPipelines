@@ -1,18 +1,20 @@
-﻿using ParallelPipelines.Domain.Entities;
+﻿using Microsoft.Extensions.Logging;
+using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host.InternalHelpers;
 using Spectre.Console;
 
 namespace ParallelPipelines.Host.Services;
 
-public static class ConsoleRenderer
+public class ConsoleRenderer(IAnsiConsole ansiConsole)
 {
-	public static bool ZeroTimesToFirstModule = true;
-	private static bool HasRenderedOnce { get; set; } = false;
-	private static int NumberOfModules { get; set; } = 0;
-	private static List<ModuleContainer>? ModuleContainers { get; set; }
+	private readonly IAnsiConsole _ansiConsole = ansiConsole;
+	private readonly bool _zeroTimesToFirstModule = true;
+	private bool HasRenderedOnce { get; set; } = false;
+	private int NumberOfModules { get; set; } = 0;
+	private List<ModuleContainer>? ModuleContainers { get; set; }
 
-	public static async Task StartRenderingProgress(List<ModuleContainer> moduleContainers, CancellationToken cancellationToken)
+	public async Task StartRenderingProgress(List<ModuleContainer> moduleContainers, CancellationToken cancellationToken)
 	{
 		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false)
 		{
@@ -25,7 +27,7 @@ public static class ConsoleRenderer
 			await Task.Delay(1000, cancellationToken);
 		}
 	}
-	public static void RenderModulesProgress(List<ModuleContainer> moduleContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
+	public void RenderModulesProgress(List<ModuleContainer> moduleContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
 	{
 		if ((DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false) && finalWrite is false)
 		{
@@ -35,31 +37,31 @@ public static class ConsoleRenderer
 		{
 			if (HasRenderedOnce is false)
 			{
-				if (DeploymentConstants.IsGithubActions)
+				var consoleWidth = AnsiConsole.Profile.Width;
+				if (DeploymentConstants.IsGithubActions || consoleWidth < 100)
 				{
-					var consoleWidth = AnsiConsole.Profile.Width;
-					AnsiConsole.WriteLine($"Console Width: {consoleWidth}, overriding to 120");
-					AnsiConsole.Profile.Width = 120;
+					_ansiConsole.WriteLine($"Console Width: {consoleWidth}, overriding to 120");
+					_ansiConsole.Profile.Width = 120;
 				}
-				AnsiConsole.WriteLine($"{"Module",-40}{"Status", -14}{"Start", -15}{"End", -15}{"Duration", -11}");
+				_ansiConsole.WriteLine($"{"Module",-40}{"Status", -14}{"Start", -15}{"End", -15}{"Duration", -11}");
 			}
 			if (HasRenderedOnce)
 			{
-				AnsiConsole.Console.Cursor.SetPosition(0, Console.CursorTop - NumberOfModules - 2 + 1);
-				AnsiConsole.Write("\x1B[0J"); // clear from cursor to end of screen https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#erase-functions
+				_ansiConsole.Cursor.SetPosition(0, Console.CursorTop - NumberOfModules - 2 + 1);
+				_ansiConsole.Write("\x1B[0J"); // clear from cursor to end of screen https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#erase-functions
 			}
 			foreach (var module in moduleContainers)
 			{
 				var text = GetDecoratedText(module);
-				AnsiConsole.WriteLine(text);
+				_ansiConsole.WriteLine(text);
 			}
 
 			var (startTime, endTime, duration) = GetTimeStartedAndFinishedGlobal();
 			var (start, end) = GetAnsiColorCodes(pipelineSummary?.OverallCompletionType);
 			var pipelineStatusString = GetStatusString(pipelineSummary?.OverallCompletionType);
 
-			AnsiConsole.WriteLine("─────────────────────────────────────────────────────────────────────────────────────────────");
-			AnsiConsole.WriteLine($"{"Total",-40}{start}{pipelineStatusString, -14}{end}{startTime, -15}{endTime, -15}{duration, -11}");
+			_ansiConsole.WriteLine("─────────────────────────────────────────────────────────────────────────────────────────────");
+			_ansiConsole.WriteLine($"{"Total",-40}{start}{pipelineStatusString, -14}{end}{startTime, -15}{endTime, -15}{duration, -11}");
 
 			if (!HasRenderedOnce)
 			{
@@ -69,7 +71,7 @@ public static class ConsoleRenderer
 		}
 	}
 
-	private static string GetDecoratedText(ModuleContainer module)
+	private string GetDecoratedText(ModuleContainer module)
 	{
 		var (start, end) = GetAnsiColorCodes(module);
 		var (startTime, endTime, duration) = GetTimeStartedAndFinished(module);
@@ -77,14 +79,9 @@ public static class ConsoleRenderer
 		return text;
 	}
 
-	public static string GetDecoratedStatusString(this CompletionType? completionType)
-	{
-		var pipelineStatusString = GetStatusString(completionType);
-		var (start, end) = GetAnsiColorCodes(completionType);
-		return $"{start}{pipelineStatusString}{end}";
-	}
 
-	private static (string start, string end) GetAnsiColorCodes(CompletionType? completionType)
+
+	public static (string start, string end) GetAnsiColorCodes(CompletionType? completionType)
 	{
 		return completionType switch
 		{
@@ -111,7 +108,7 @@ public static class ConsoleRenderer
 		};
 	}
 
-	private static string GetStatusString(CompletionType? completionType)
+	public static string GetStatusString(CompletionType? completionType)
 	{
 		var pipelineStatusString = completionType switch
 		{
@@ -138,12 +135,12 @@ public static class ConsoleRenderer
 		};
 	}
 
-	private static (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinishedGlobal()
+	private (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinishedGlobal()
 	{
 		var startTimeGlobal = DeploymentTimeProvider.DeploymentStartTime;
 		var endTimeGlobal = DeploymentTimeProvider.DeploymentEndTime;
 		var durationGlobal = DeploymentTimeProvider.DeploymentDuration;
-		if (ZeroTimesToFirstModule is false)
+		if (_zeroTimesToFirstModule is false)
 		{
 			var startTime = startTimeGlobal?.ToString("HH:mm:ss");
 			var endTime = endTimeGlobal?.ToString("HH:mm:ss");
@@ -163,9 +160,9 @@ public static class ConsoleRenderer
 		}
 	}
 
-	private static (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinished(ModuleContainer module)
+	private (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinished(ModuleContainer module)
 	{
-		if (ZeroTimesToFirstModule is false)
+		if (_zeroTimesToFirstModule is false)
 		{
 			var startTime = module.StartTime?.ToString("HH:mm:ss");
 			var endTime = module.EndTime?.ToString("HH:mm:ss");
@@ -184,7 +181,34 @@ public static class ConsoleRenderer
 			return (startTime.ToTimeSpanString(), endTime.ToTimeSpanString(), duration.ToTimeSpanString());
 		}
 	}
-	private static string? ToTimeSpanString(this TimeSpan? timeSpan)
+
+	public void WriteModule(ModuleContainer moduleContainer)
+	{
+		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is true)
+		{
+			return;
+		}
+		var text = moduleContainer switch
+		{
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Success } => $"✅ {moduleContainer.GetModuleName()} finished Successfully",
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Skipped } => $"{moduleContainer.GetModuleName()} skipped",
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Cancelled } => $"{moduleContainer.GetModuleName()} cancelled due to previous failure",
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Failure } => $"❌ {moduleContainer.GetModuleName()} Failed: {moduleContainer.Exception}",
+			{ State: ModuleState.Running } => $"⚡ {moduleContainer.GetModuleName()} Starting",
+			_ => throw new ArgumentOutOfRangeException(nameof(moduleContainer))
+		};
+		_ansiConsole.WriteLine(text);
+	}
+
+	public void WriteFinalState(PipelineSummary pipelineSummary, List<ModuleContainer> moduleContainers)
+	{
+		RenderModulesProgress(moduleContainers, pipelineSummary, true);
+	}
+}
+
+public static class ConsoleRendererExtensions
+{
+	public static string? ToTimeSpanString(this TimeSpan? timeSpan)
 	{
 		if (timeSpan is null)
 		{
@@ -202,26 +226,10 @@ public static class ConsoleRenderer
 		//return timeSpan?.ToString(@"mm\m\:ss\s\:fff\m\s");
 	}
 
-	public static void WriteModule(ModuleContainer moduleContainer)
+	public static string GetDecoratedStatusString(this CompletionType? completionType)
 	{
-		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is true)
-		{
-			return;
-		}
-		var text = moduleContainer switch
-		{
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Success } => $"✅ {moduleContainer.GetModuleName()} finished Successfully",
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Skipped } => $"{moduleContainer.GetModuleName()} skipped",
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Cancelled } => $"{moduleContainer.GetModuleName()} cancelled due to previous failure",
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Failure } => $"❌ {moduleContainer.GetModuleName()} Failed: {moduleContainer.Exception}",
-			{ State: ModuleState.Running } => $"⚡ {moduleContainer.GetModuleName()} Starting",
-			_ => throw new ArgumentOutOfRangeException(nameof(moduleContainer))
-		};
-		AnsiConsole.WriteLine(text);
-	}
-
-	public static void WriteFinalState(PipelineSummary pipelineSummary, List<ModuleContainer> moduleContainers)
-	{
-		RenderModulesProgress(moduleContainers, pipelineSummary, true);
+		var pipelineStatusString = ConsoleRenderer.GetStatusString(completionType);
+		var (start, end) = ConsoleRenderer.GetAnsiColorCodes(completionType);
+		return $"{start}{pipelineStatusString}{end}";
 	}
 }
