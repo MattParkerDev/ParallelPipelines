@@ -6,10 +6,11 @@ using Spectre.Console;
 
 namespace ParallelPipelines.Host.Services;
 
-public class OrchestratorService(ModuleContainerProvider moduleContainerProvider, ConsoleRenderer consoleRenderer)
+public class OrchestratorService(ModuleContainerProvider moduleContainerProvider, ConsoleRenderer consoleRenderer, IAnsiConsole ansiConsole)
 {
 	private readonly ModuleContainerProvider _moduleContainerProvider = moduleContainerProvider;
 	private readonly ConsoleRenderer _consoleRenderer = consoleRenderer;
+	private readonly IAnsiConsole _ansiConsole = ansiConsole;
 	private readonly bool _exitPipelineOnSingleFailure = true;
 	private bool _isPipelineCancellationRequested = false;
 
@@ -18,7 +19,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		var moduleContainers = _moduleContainerProvider.GetAllModuleContainers();
 		if (moduleContainers.Count == 0)
 		{
-			AnsiConsole.WriteLine("ParallelPipelines failed - No modules found to execute");
+			_ansiConsole.WriteLine("ParallelPipelines failed - No modules found to execute");
 			return null;
 		}
 
@@ -86,9 +87,9 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
 		var pipelineSummary = GetPipelineSummary(moduleContainers);
 		_consoleRenderer.WriteFinalState(pipelineSummary, moduleContainers);
-		AnsiConsole.WriteLine();
-		moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
-		AnsiConsole.WriteLine($"ParallelPipelines finished - {pipelineSummary.OverallCompletionType.GetDecoratedStatusString()}");
+		_ansiConsole.WriteLine();
+		moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => _ansiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
+		_ansiConsole.WriteLine($"ParallelPipelines finished - {pipelineSummary.OverallCompletionType.GetDecoratedStatusString()}");
 		pipelineSummary.DeploymentStartTime = DeploymentTimeProvider.DeploymentStartTime;
 		pipelineSummary.DeploymentEndTime = DeploymentTimeProvider.DeploymentEndTime;
 		pipelineSummary.ModuleContainers = moduleContainers;
@@ -131,12 +132,12 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 
 	private void LogFoundModules(List<ModuleContainer> moduleContainers)
 	{
-		AnsiConsole.WriteLine($"Found {moduleContainers.Count} modules");
-		AnsiConsole.WriteLine();
+		_ansiConsole.WriteLine($"Found {moduleContainers.Count} modules");
+		_ansiConsole.WriteLine();
 		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false)
 		{
-			moduleContainers.ForEach(c => AnsiConsole.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
-			AnsiConsole.WriteLine();
+			moduleContainers.ForEach(c => _ansiConsole.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
+			_ansiConsole.WriteLine();
 		}
 	}
 
