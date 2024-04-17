@@ -14,7 +14,7 @@ builder.Configuration
 	.AddUserSecrets<Program>()
 	.AddEnvironmentVariables();
 
-builder.Services.AddModularPipelines(builder.Configuration);
+builder.Services.AddParallelPipelines(builder.Configuration);
 builder.Services
 	.AddModule<InstallDotnetWasmToolsModule>()
 	.AddModule<InstallSwaCliModule>()
