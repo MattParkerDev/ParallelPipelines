@@ -204,7 +204,7 @@ public static class ConsoleRenderer
 
 	public static void WriteModule(ModuleContainer moduleContainer)
 	{
-		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false)
+		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is true)
 		{
 			return;
 		}

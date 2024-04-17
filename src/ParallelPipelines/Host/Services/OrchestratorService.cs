@@ -21,17 +21,17 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 			return null;
 		}
 
+		LogFoundModules(moduleContainers);
+		PopulateDependents(moduleContainers);
+		PopulateDependencies(moduleContainers);
+
+		var modulesToExecute = _moduleContainerProvider.GetModuleContainersOrderedForExecution(cancellationToken);
+
+		using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+		DeploymentTimeProvider.DeploymentStartTime = DateTimeOffset.Now;
+		_ = ConsoleRenderer.StartRenderingProgress(moduleContainers, linkedCts.Token);
 		try
 		{
-			LogFoundModules(moduleContainers);
-			PopulateDependents(moduleContainers);
-			PopulateDependencies(moduleContainers);
-
-			var modulesToExecute = _moduleContainerProvider.GetModuleContainersOrderedForExecution(cancellationToken);
-
-			using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-			DeploymentTimeProvider.DeploymentStartTime = DateTimeOffset.Now;
-			_ = ConsoleRenderer.StartRenderingProgress(moduleContainers, linkedCts.Token);
 			await Parallel.ForEachAsync(modulesToExecute, linkedCts.Token, async (moduleContainer, ct) =>
 			{
 				try
@@ -72,27 +72,24 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 					moduleContainer.CompletedTask.Start();
 				}
 			});
-			Console.WriteLine("Here");
 		}
 		catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
 		{
 			// Don't throw if await Parallel.ForEachAsync has thrown
 		}
-		finally
+
+		if (_isPipelineCancellationRequested)
 		{
-			if (_isPipelineCancellationRequested)
-			{
-				moduleContainers.Where(s => s.State == ModuleState.Waiting).ToList().ForEach(c => SetModuleState(c, ModuleState.Completed, CompletionType.Cancelled));
-			}
-			DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
-			var pipelineSummary = GetPipelineSummary(moduleContainers);
-			ConsoleRenderer.WriteFinalState(pipelineSummary, moduleContainers);
-			AnsiConsole.WriteLine();
-			moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
-			AnsiConsole.WriteLine($"ParallelPipelines finished - {pipelineSummary.OverallCompletionType.GetDecoratedStatusString()}");
+			moduleContainers.Where(s => s.State == ModuleState.Waiting).ToList().ForEach(c => SetModuleState(c, ModuleState.Completed, CompletionType.Cancelled));
 		}
-		var pipelineSummary2 = GetPipelineSummary(moduleContainers);
-		return pipelineSummary2;
+		DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
+		var pipelineSummary = GetPipelineSummary(moduleContainers);
+		ConsoleRenderer.WriteFinalState(pipelineSummary, moduleContainers);
+		AnsiConsole.WriteLine();
+		moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => AnsiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
+		AnsiConsole.WriteLine($"ParallelPipelines finished - {pipelineSummary.OverallCompletionType.GetDecoratedStatusString()}");
+
+		return pipelineSummary;
 	}
 
 	private PipelineSummary GetPipelineSummary(List<ModuleContainer> moduleContainers)
