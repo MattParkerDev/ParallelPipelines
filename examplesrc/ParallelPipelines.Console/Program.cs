@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Deploy.Experimental.Modules.BuildAndPublish;
+﻿using Deploy.Experimental.Modules.BuildAndPublish;
 using Deploy.Experimental.Modules.ProvisionAzureResources;
 using Deploy.Modules.BuildAndPublish;
 using Deploy.Modules.Deploy;
@@ -7,7 +6,6 @@ using Deploy.Modules.Setup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using ParallelPipelines.Host;
-using Spectre.Console;
 
 var builder = Host.CreateApplicationBuilder(args);
 
