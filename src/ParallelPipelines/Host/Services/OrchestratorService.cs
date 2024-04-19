@@ -15,6 +15,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 	private readonly IAnsiConsole _ansiConsole = ansiConsole;
 	private readonly bool _exitPipelineOnSingleFailure = true;
 	private bool _isPipelineCancellationRequested = false;
+	private bool _runModulesSequentially = false;
 
 	public async Task InitialiseAsync()
 	{
@@ -45,7 +46,15 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		_ = _consoleRenderer.StartRenderingProgress(moduleContainers, linkedCts.Token);
 		try
 		{
-			await Parallel.ForEachAsync(modulesToExecute, linkedCts.Token, async (moduleContainer, ct) =>
+			var parallelOptions = new ParallelOptions
+			{
+				CancellationToken = linkedCts.Token,
+			};
+			if (_runModulesSequentially)
+			{
+				parallelOptions.MaxDegreeOfParallelism = 1;
+			}
+			await Parallel.ForEachAsync(modulesToExecute, parallelOptions, async (moduleContainer, ct) =>
 			{
 				try
 				{

@@ -91,6 +91,8 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 		var module4 = pipelineSummary?.ModuleContainers?.FirstOrDefault(x => x.Module.GetType() == typeof(TestModule4));
 
 		module4.Should().NotBeNull();
+		module4!.StartTime.Should().BeAfter(module2.EndTime!.Value);
+		module4!.StartTime.Should().BeAfter(module3.EndTime!.Value);
 		module4!.StartTime.Should().BeCloseTo(module2.EndTime!.Value, TimeSpan.FromMilliseconds(10));
 		module4!.StartTime.Should().BeCloseTo(module3.EndTime!.Value, TimeSpan.FromMilliseconds(10));
 
