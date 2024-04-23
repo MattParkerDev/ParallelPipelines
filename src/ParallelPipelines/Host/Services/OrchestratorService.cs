@@ -24,6 +24,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		await PipelineFileHelper.PopulateGitRootDirectory();
 		DeploymentConstants.IsGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
 		DeploymentConstants.ConsoleSupportsAnsiSequences = AnsiConsole.Profile.Capabilities.Ansi;
+		DeploymentConstants.WriteDynamicLogs = DeploymentConstants.ConsoleSupportsAnsiSequences && DeploymentConstants.IsGithubActions is false;
 	}
 
 	public async Task<PipelineSummary?> RunPipeline(CancellationToken cancellationToken)
@@ -154,7 +155,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 	{
 		_ansiConsole.WriteLine($"Found {moduleContainers.Count} modules");
 		_ansiConsole.WriteLine();
-		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false)
+		if (DeploymentConstants.WriteDynamicLogs is false)
 		{
 			moduleContainers.ForEach(c => _ansiConsole.WriteLine($"⭐ Found {c.Module.GetType().Name}"));
 			_ansiConsole.WriteLine();

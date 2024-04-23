@@ -16,7 +16,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 
 	public async Task StartRenderingProgress(List<ModuleContainer> moduleContainers, CancellationToken cancellationToken)
 	{
-		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false)
+		if (DeploymentConstants.WriteDynamicLogs is false)
 		{
 			return;
 		}
@@ -29,7 +29,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 	}
 	public void RenderModulesProgress(List<ModuleContainer> moduleContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
 	{
-		if ((DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is false) && finalWrite is false)
+		if (DeploymentConstants.WriteDynamicLogs is false && finalWrite is false)
 		{
 			return;
 		}
@@ -184,7 +184,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 
 	public void WriteModule(ModuleContainer moduleContainer)
 	{
-		if (DeploymentConstants.IsGithubActions is false || DeploymentConstants.ConsoleSupportsAnsiSequences is true)
+		if (DeploymentConstants.WriteDynamicLogs is true)
 		{
 			return;
 		}
