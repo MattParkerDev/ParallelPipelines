@@ -184,7 +184,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 
 	public void WriteModule(ModuleContainer moduleContainer)
 	{
-		if (DeploymentConstants.IsGithubActions || DeploymentConstants.ConsoleSupportsAnsiSequences is true)
+		if (DeploymentConstants.IsGithubActions is false || DeploymentConstants.ConsoleSupportsAnsiSequences is true)
 		{
 			return;
 		}
