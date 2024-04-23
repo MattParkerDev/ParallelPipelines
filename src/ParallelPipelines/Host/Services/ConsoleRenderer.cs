@@ -9,7 +9,7 @@ namespace ParallelPipelines.Host.Services;
 public class ConsoleRenderer(IAnsiConsole ansiConsole)
 {
 	private readonly IAnsiConsole _ansiConsole = ansiConsole;
-	private readonly bool _zeroTimesToFirstModule = true;
+	private static bool _zeroTimesToFirstModule = true;
 	private bool HasRenderedOnce { get; set; } = false;
 	private int NumberOfModules { get; set; } = 0;
 	private List<ModuleContainer>? ModuleContainers { get; set; }
@@ -121,7 +121,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 		};
 		return pipelineStatusString;
 	}
-	private static string GetStatusString(ModuleContainer module)
+	public static string GetStatusString(ModuleContainer module)
 	{
 		return module.State switch
 		{
@@ -135,7 +135,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 		};
 	}
 
-	private (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinishedGlobal()
+	public static (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinishedGlobal()
 	{
 		var startTimeGlobal = DeploymentTimeProvider.DeploymentStartTime;
 		var endTimeGlobal = DeploymentTimeProvider.DeploymentEndTime;
@@ -160,7 +160,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 		}
 	}
 
-	private (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinished(ModuleContainer module)
+	public static (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinished(ModuleContainer module)
 	{
 		if (_zeroTimesToFirstModule is false)
 		{

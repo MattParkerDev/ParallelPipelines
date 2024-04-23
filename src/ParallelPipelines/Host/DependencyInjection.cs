@@ -5,6 +5,7 @@ using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Host.Helpers;
 using ParallelPipelines.Host.Services;
 using ParallelPipelines.Application;
+using ParallelPipelines.Host.Services.GithubActions;
 using ParallelPipelines.Infrastructure;
 using Spectre.Console;
 
@@ -18,10 +19,12 @@ public static class DependencyInjection
 		services.AddApplication(configuration);
 		services.AddInfrastructure(configuration);
 		services.AddHostedService<PipelineApplication>();
-		services.AddSingleton<ExampleAnsiProgressService>();
 		services.AddSingleton<OrchestratorService>();
+		services.AddSingleton<PostStepService>();
 		services.AddSingleton<ModuleContainerProvider>();
 		services.AddSingleton<ConsoleRenderer>();
+
+		services.AddSingleton<GithubActionTableSummaryService>();
 
 
 		if (action is not null)

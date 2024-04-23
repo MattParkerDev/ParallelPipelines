@@ -5,11 +5,12 @@ using Spectre.Console;
 
 namespace ParallelPipelines.Host;
 
-public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetime, OrchestratorService orchestratorService)
+public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetime, OrchestratorService orchestratorService, PostStepService postStepService)
 	: IHostedService
 {
 	private readonly IHostApplicationLifetime _hostApplicationLifetime = hostApplicationLifetime;
 	private readonly OrchestratorService _orchestratorService = orchestratorService;
+	private readonly PostStepService _postStepService = postStepService;
 	private readonly Stopwatch _timer = new Stopwatch();
 
 	public async Task StartAsync(CancellationToken cancellationToken)
@@ -18,7 +19,8 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 		_timer.Start();
 		try
 		{
-			_ = await _orchestratorService.RunPipeline(cancellationToken);
+			var pipelineSummary = await _orchestratorService.RunPipeline(cancellationToken);
+			await _postStepService.RunPostSteps(pipelineSummary, cancellationToken);
 		}
 		catch (Exception)
 		{
