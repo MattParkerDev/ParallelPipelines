@@ -9,6 +9,8 @@
 		<PackageId>ParallelPipelines</PackageId>
         <Authors>MattParkerDev</Authors>
 		<PackageReadmeFile>readme.md</PackageReadmeFile>
+		<PackageVersion>0.8.0-preview1</PackageVersion>
+		<Description>Write Parallel/Concurrent CICD Pipelines in C#</Description>
 	</PropertyGroup>
 
     <ItemGroup>
