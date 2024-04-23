@@ -21,6 +21,10 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 		var services = new ServiceCollection();
 		services.AddParallelPipelines(new ConfigurationBuilder().Build());
 		services.AddModule<InstallDotnetWasmToolsModule>();
+
+		services.RemoveAll(typeof(IAnsiConsole));
+		services.AddSingleton<IAnsiConsole>(provider => new MyTestConsole(_output));
+
 		var serviceProvider = services.BuildServiceProvider();
 		var orchestratorService = serviceProvider.GetRequiredService<OrchestratorService>();
 
@@ -33,7 +37,11 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 	public async Task OrchestratorService_TestTimings()
 	{
 		var services = new ServiceCollection();
-		services.AddParallelPipelines(new ConfigurationBuilder().Build());
+		services.AddParallelPipelines(new ConfigurationBuilder().Build(), options =>
+		{
+			options.EnableGithubMarkdownGanttSummary = true;
+			options.EnableGithubMarkdownTableSummary = true;
+		});
 		services.AddModule<TestModule1>();
 		services.AddModule<TestModule2>();
 		services.AddModule<TestModule3>();

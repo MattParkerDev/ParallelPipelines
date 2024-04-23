@@ -12,7 +12,8 @@ namespace ParallelPipelines.Host;
 
 public static class DependencyInjection
 {
-	public static IServiceCollection AddParallelPipelines(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection AddParallelPipelines(this IServiceCollection services,
+		IConfiguration configuration, Action<PipelineConfig>? action = null)
 	{
 		services.AddApplication(configuration);
 		services.AddInfrastructure(configuration);
@@ -21,6 +22,12 @@ public static class DependencyInjection
 		services.AddSingleton<OrchestratorService>();
 		services.AddSingleton<ModuleContainerProvider>();
 		services.AddSingleton<ConsoleRenderer>();
+
+
+		if (action is not null)
+		{
+			services.Configure(action);
+		}
 
 		Console.OutputEncoding = Encoding.UTF8;
 		services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);

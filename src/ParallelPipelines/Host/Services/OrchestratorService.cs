@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Options;
 using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host.InternalHelpers;
@@ -8,11 +9,12 @@ using Spectre.Console;
 
 namespace ParallelPipelines.Host.Services;
 
-public class OrchestratorService(ModuleContainerProvider moduleContainerProvider, ConsoleRenderer consoleRenderer, IAnsiConsole ansiConsole)
+public class OrchestratorService(ModuleContainerProvider moduleContainerProvider, ConsoleRenderer consoleRenderer, IAnsiConsole ansiConsole, IOptions<PipelineConfig> pipelineConfig)
 {
 	private readonly ModuleContainerProvider _moduleContainerProvider = moduleContainerProvider;
 	private readonly ConsoleRenderer _consoleRenderer = consoleRenderer;
 	private readonly IAnsiConsole _ansiConsole = ansiConsole;
+	private readonly PipelineConfig _pipelineConfig = pipelineConfig.Value;
 	private readonly bool _exitPipelineOnSingleFailure = true;
 	private bool _isPipelineCancellationRequested = false;
 	private bool _runModulesSequentially = false;

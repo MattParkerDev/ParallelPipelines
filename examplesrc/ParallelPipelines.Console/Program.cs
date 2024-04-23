@@ -14,7 +14,12 @@ builder.Configuration
 	.AddUserSecrets<Program>()
 	.AddEnvironmentVariables();
 
-builder.Services.AddParallelPipelines(builder.Configuration);
+builder.Services.AddParallelPipelines(builder.Configuration, options =>
+{
+	options.EnableGithubMarkdownGanttSummary = true;
+	options.EnableGithubMarkdownTableSummary = true;
+});
+
 builder.Services
 	.AddModule<InstallDotnetWasmToolsModule>()
 	.AddModule<InstallSwaCliModule>()
