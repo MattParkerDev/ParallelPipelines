@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host.InternalHelpers;

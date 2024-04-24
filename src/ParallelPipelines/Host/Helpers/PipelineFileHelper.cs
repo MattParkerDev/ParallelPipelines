@@ -32,6 +32,23 @@ public static class PipelineFileHelper
 		return Task.FromResult(fileInfo);
 	}
 
+	public static async Task<FileInfo> CreateFileIfMissingAndGetFile(string targetFilePath)
+	{
+		var fileInfo = new FileInfo(targetFilePath);
+		if (fileInfo.Exists is false)
+		{
+			await fileInfo.Create().DisposeAsync();
+		}
+		fileInfo.Refresh();
+		return fileInfo;
+	}
+
+	public static async Task<FileInfo> CreateFileIfMissingAndGetFile(this DirectoryInfo directoryInfo, string relativePath)
+	{
+		var fileInfo = await CreateFileIfMissingAndGetFile(directoryInfo.FullName + Path.DirectorySeparatorChar + relativePath);
+		return fileInfo;
+	}
+
 	public static async Task<FileInfo> GetFile(this DirectoryInfo directoryInfo, string relativePath)
 	{
 		var fileInfo = await GetFile(directoryInfo.FullName + Path.DirectorySeparatorChar + relativePath);

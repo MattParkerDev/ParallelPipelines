@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Options;
 using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Host.Helpers;
 using ParallelPipelines.Host.InternalHelpers;
@@ -35,6 +36,21 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 			var githubStepSummaryPath = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY")!;
 			var githubStepSummary = await PipelineFileHelper.GetFile(githubStepSummaryPath);
 			await File.WriteAllTextAsync(githubStepSummary.FullName, text, cancellationToken);
+		}
+
+		if (_pipelineConfig.OpenGithubActionSummaryInVscodeLocally)
+		{
+			var githubStepSummaryLocal = await PipelineFileHelper.GitRootDirectory.CreateFileIfMissingAndGetFile("./artifacts/github-step-summary-local.md");
+			await File.WriteAllTextAsync(githubStepSummaryLocal.FullName, "(Ctrl+Shift+V to open in pretty preview window)\n" + text, cancellationToken);
+
+			throw new ApplicationException("OpenGithubActionSummaryInVscodeLocally is not implemented yet.");
+			//var processStartInfo = new ProcessStartInfo
+			//{
+			//	FileName = "code",
+			//	Arguments = githubStepSummaryLocal.FullName,
+			//	UseShellExecute = true
+			//};
+			//Process.Start(processStartInfo);
 		}
 	}
 }
