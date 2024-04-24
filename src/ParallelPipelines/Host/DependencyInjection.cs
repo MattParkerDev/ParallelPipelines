@@ -25,6 +25,7 @@ public static class DependencyInjection
 		services.AddSingleton<ConsoleRenderer>();
 
 		services.AddSingleton<GithubActionTableSummaryService>();
+		services.AddSingleton<GithubActionGanttSummaryService>();
 
 
 		if (action is not null)
