@@ -45,7 +45,8 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 
 		using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 		DeploymentTimeProvider.DeploymentStartTime = DateTimeOffset.Now;
-		var consoleRenderingTask = _consoleRenderer.StartRenderingProgress(moduleContainers, linkedCts.Token);
+		using var consoleRenderingLinkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+		var consoleRenderingTask = _consoleRenderer.StartRenderingProgress(moduleContainers, consoleRenderingLinkedCts.Token);
 		try
 		{
 			var parallelOptions = new ParallelOptions
@@ -109,6 +110,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
 		var pipelineSummary = GetPipelineSummary(moduleContainers);
 		_consoleRenderer.StopRendering = true;
+		await consoleRenderingLinkedCts.CancelAsync();
 		await consoleRenderingTask;
 		await _consoleRenderer.WriteFinalState(pipelineSummary, moduleContainers);
 		_ansiConsole.WriteLine();

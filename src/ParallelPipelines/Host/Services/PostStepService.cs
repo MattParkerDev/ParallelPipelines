@@ -43,7 +43,7 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 			var githubStepSummaryLocal = await PipelineFileHelper.GitRootDirectory.CreateFileIfMissingAndGetFile("./artifacts/github-step-summary-local.md");
 			await File.WriteAllTextAsync(githubStepSummaryLocal.FullName, "(Ctrl+Shift+V to open in pretty preview window)\n" + text, cancellationToken);
 
-			throw new ApplicationException("OpenGithubActionSummaryInVscodeLocally is not implemented yet.");
+			//throw new ApplicationException("OpenGithubActionSummaryInVscodeLocally is not implemented yet.");
 			//var processStartInfo = new ProcessStartInfo
 			//{
 			//	FileName = "code",
