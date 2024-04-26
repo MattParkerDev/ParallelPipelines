@@ -1,5 +1,6 @@
 ﻿using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Domain.Enums;
+using ParallelPipelines.Host.InternalHelpers;
 
 namespace ParallelPipelines.Host.Services.GithubActions;
 
@@ -9,8 +10,10 @@ public class GithubActionGanttSummaryService
 	{
 		var moduleStringList = pipelineSummary.ModuleContainers?.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime).Select(
 			x =>
-				$"{x.GetModuleName()} :{AddCritIfFailed(x)} {GetMinutesSeconds(x.StartTime!.Value)}, {GetMinutesSeconds(x.EndTime!.Value)}"
-		).ToList() ?? [];
+			{
+				var (startTime, endTime) = x.GetTimeStartedAndFinished();
+				return $"{x.GetModuleName()} :{AddCritIfFailed(x)} {startTime}, {endTime}";
+			}).ToList() ?? [];
 
 		var text = $"""
 		            ```mermaid
@@ -32,7 +35,7 @@ public class GithubActionGanttSummaryService
 		            ---
 
 		            gantt
-		            	dateFormat  mm:ss
+		            	dateFormat  mm:ss:SSS
 		            	title       Run Summary
 		            	axisFormat %M:%S
 
@@ -47,22 +50,20 @@ public class GithubActionGanttSummaryService
 	{
 		return moduleContainer.CompletionType is CompletionType.Failure or CompletionType.Cancelled ? "crit," : string.Empty;
 	}
-
-	private static string GetMinutesSeconds(DateTimeOffset dateTimeOffset)
-	{
-		if (dateTimeOffset == DateTimeOffset.MinValue)
-		{
-			return string.Empty;
-		}
-
-		return dateTimeOffset.ToTimeOnly().ToString("mm:ss");
-	}
 }
 
 file static class GithubMarkdownGanttFormatter
 {
-	public static TimeOnly ToTimeOnly(this DateTimeOffset dateTime)
+	public static (string? startTime, string? endTime) GetTimeStartedAndFinished(this ModuleContainer module)
 	{
-		return new TimeOnly(dateTime.Hour, dateTime.Minute, dateTime.Second);
+		var startTime = module.StartTime - DeploymentTimeProvider.DeploymentStartTime;
+		var endTime = module.EndTime - DeploymentTimeProvider.DeploymentStartTime;
+
+		var startTimeOnly = TimeOnly.FromTimeSpan(startTime!.Value);
+		var endTimeOnly = TimeOnly.FromTimeSpan(endTime!.Value);
+
+		var startTimeString = startTimeOnly.ToString("mm:ss:fff");
+		var endTimeString = endTimeOnly.ToString("mm:ss:fff");
+		return (startTimeString, endTimeString);
 	}
 }
