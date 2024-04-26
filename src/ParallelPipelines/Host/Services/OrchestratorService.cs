@@ -28,13 +28,12 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		DeploymentConstants.WriteDynamicLogs = DeploymentConstants.ConsoleSupportsAnsiSequences && DeploymentConstants.IsGithubActions is false;
 	}
 
-	public async Task<PipelineSummary?> RunPipeline(CancellationToken cancellationToken)
+	public async Task<PipelineSummary> RunPipeline(CancellationToken cancellationToken)
 	{
 		var moduleContainers = _moduleContainerProvider.GetAllModuleContainers();
 		if (moduleContainers.Count == 0)
 		{
-			_ansiConsole.WriteLine("ParallelPipelines failed - No modules found to execute");
-			return null;
+			throw new InvalidOperationException("ParallelPipelines failed - No modules found to execute");
 		}
 
 		LogFoundModules(moduleContainers);
