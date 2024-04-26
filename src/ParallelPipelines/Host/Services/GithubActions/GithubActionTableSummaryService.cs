@@ -17,7 +17,7 @@ public class GithubActionTableSummaryService
 
 		var (globalStartTime, globalEndTime, globalDuration) = ConsoleRenderer.GetTimeStartedAndFinishedGlobal();
 		var pipelineStatusString = ConsoleRenderer.GetStatusString(pipelineSummary?.OverallCompletionType).ToDisplayString();
-		var overallSummaryString = $"| Total | **{pipelineStatusString}** | **{globalStartTime}** | **{globalEndTime}** | **{globalDuration}** |";
+		var overallSummaryString = $"| **Total** | **{pipelineStatusString}** | **{globalStartTime}** | **{globalEndTime}** | **{globalDuration}** |";
 		var text = $"""
 		            ### Run Summary
 		            | Module | Status | Start | End | Duration |

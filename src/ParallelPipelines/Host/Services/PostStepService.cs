@@ -44,13 +44,13 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 			await File.WriteAllTextAsync(githubStepSummaryLocal.FullName, "(Ctrl+Shift+V to open in pretty preview window)\n" + text, cancellationToken);
 
 			//throw new ApplicationException("OpenGithubActionSummaryInVscodeLocally is not implemented yet.");
-			//var processStartInfo = new ProcessStartInfo
-			//{
-			//	FileName = "code",
-			//	Arguments = githubStepSummaryLocal.FullName,
-			//	UseShellExecute = true
-			//};
-			//Process.Start(processStartInfo);
+			var processStartInfo = new ProcessStartInfo
+			{
+				FileName = "code",
+				Arguments = githubStepSummaryLocal.FullName,
+				UseShellExecute = true
+			};
+			Process.Start(processStartInfo);
 		}
 	}
 }
