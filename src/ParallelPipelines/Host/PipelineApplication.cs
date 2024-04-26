@@ -22,10 +22,18 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 			var pipelineSummary = await _orchestratorService.RunPipeline(cancellationToken);
 			await _postStepService.RunPostSteps(pipelineSummary, cancellationToken);
 		}
-		catch (Exception)
+		catch (Exception e)
 		{
-			AnsiConsole.WriteLine("ParallelPipelines failed");
-			throw;
+			if (e is OperationCanceledException or TaskCanceledException)
+			{
+				AnsiConsole.WriteLine($"ParallelPipelines failed with exception: {e.Message}");
+				Environment.ExitCode = 1;
+			}
+			else
+			{
+				AnsiConsole.WriteLine($"ParallelPipelines failed with unhandled exception: {e.Message}");
+				throw;
+			}
 		}
 		_hostApplicationLifetime.StopApplication();
 	}
