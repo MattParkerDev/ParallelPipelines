@@ -38,7 +38,7 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 			await File.WriteAllTextAsync(githubStepSummary.FullName, text, cancellationToken);
 		}
 
-		if (_pipelineConfig.OpenGithubActionSummaryInVscodeLocally)
+		if (_pipelineConfig.OpenGithubActionSummaryInVscodeLocally && DeploymentConstants.IsGithubActions is false)
 		{
 			var githubStepSummaryLocal = await PipelineFileHelper.GitRootDirectory.CreateFileIfMissingAndGetFile("./artifacts/github-step-summary-local.md");
 			await File.WriteAllTextAsync(githubStepSummaryLocal.FullName, "(Ctrl+Shift+V to open in pretty preview window)\n" + text, cancellationToken);
