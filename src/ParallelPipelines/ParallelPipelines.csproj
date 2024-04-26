@@ -9,14 +9,14 @@
 		<PackageId>ParallelPipelines</PackageId>
         <Authors>MattParkerDev</Authors>
 		<PackageReadmeFile>readme.md</PackageReadmeFile>
-		<PackageVersion>0.8.1-preview2</PackageVersion>
+		<PackageVersion>0.8.1-preview3</PackageVersion>
 		<Description>Write Parallel/Concurrent CICD Pipelines in C#</Description>
 	</PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="CliWrap" Version="3.6.6" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-      <PackageReference Include="Spectre.Console" Version="0.48.0" />
+      <PackageReference Include="Spectre.Console" Version="0.49.1" />
     </ItemGroup>
 
 	<ItemGroup>
