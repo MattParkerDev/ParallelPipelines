@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host.InternalHelpers;
@@ -46,7 +45,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 
 		using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 		DeploymentTimeProvider.DeploymentStartTime = DateTimeOffset.Now;
-		_ = _consoleRenderer.StartRenderingProgress(moduleContainers, linkedCts.Token);
+		var consoleRenderingTask = _consoleRenderer.StartRenderingProgress(moduleContainers, linkedCts.Token);
 		try
 		{
 			var parallelOptions = new ParallelOptions
@@ -88,7 +87,7 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 						moduleContainer.Exception = ex;
 						SetModuleState(moduleContainer, ModuleState.Completed, CompletionType.Failure, completeAsyncTask: false);
 					}
-					_consoleRenderer.RenderModulesProgress(moduleContainers);
+					await _consoleRenderer.RenderModulesProgress(moduleContainers);
 					if (_exitPipelineOnSingleFailure)
 					{
 						_isPipelineCancellationRequested = true;
@@ -109,7 +108,9 @@ public class OrchestratorService(ModuleContainerProvider moduleContainerProvider
 		}
 		DeploymentTimeProvider.DeploymentEndTime = DateTimeOffset.Now;
 		var pipelineSummary = GetPipelineSummary(moduleContainers);
-		_consoleRenderer.WriteFinalState(pipelineSummary, moduleContainers);
+		_consoleRenderer.StopRendering = true;
+		await consoleRenderingTask;
+		await _consoleRenderer.WriteFinalState(pipelineSummary, moduleContainers);
 		_ansiConsole.WriteLine();
 		moduleContainers.Where(s => s.Exception != null).ToList().ForEach(s => _ansiConsole.WriteLine($"❌ {s.GetModuleName()} Failed: {s.Exception}"));
 		_ansiConsole.WriteLine($"ParallelPipelines finished - {pipelineSummary.OverallCompletionType.GetDecoratedStatusString()}");

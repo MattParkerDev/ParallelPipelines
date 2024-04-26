@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using Microsoft.Extensions.Logging;
-using ParallelPipelines.Domain.Entities;
+﻿using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host.InternalHelpers;
 using Spectre.Console;
@@ -14,6 +12,9 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 	private bool HasRenderedOnce { get; set; } = false;
 	private int NumberOfModules { get; set; } = 0;
 	private List<ModuleContainer>? ModuleContainers { get; set; }
+	public bool StopRendering { get; set; } = false;
+
+	private SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
 	public async Task StartRenderingProgress(List<ModuleContainer> moduleContainers, CancellationToken cancellationToken)
 	{
@@ -22,19 +23,21 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 			return;
 		}
 		ModuleContainers = moduleContainers;
-		while (!cancellationToken.IsCancellationRequested)
+		while (cancellationToken.IsCancellationRequested is false && StopRendering is false)
 		{
-			RenderModulesProgress(ModuleContainers);
-			await Task.Delay(1000, cancellationToken);
+			await RenderModulesProgress(ModuleContainers);
+			// TODO suppress throwing for delay
+			await Task.Delay(1000, CancellationToken.None);
 		}
 	}
-	public void RenderModulesProgress(List<ModuleContainer> moduleContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
+	public async Task RenderModulesProgress(List<ModuleContainer> moduleContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
 	{
 		if (DeploymentConstants.WriteDynamicLogs is false && finalWrite is false)
 		{
 			return;
 		}
-		lock ("ConsoleRenderer")
+		await semaphoreSlim.WaitAsync(CancellationToken.None);
+		try
 		{
 			if (HasRenderedOnce is false)
 			{
@@ -70,6 +73,33 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 				NumberOfModules = moduleContainers.Count;
 			}
 		}
+		finally
+		{
+			semaphoreSlim.Release();
+		}
+	}
+
+	public void WriteModule(ModuleContainer moduleContainer)
+	{
+		if (DeploymentConstants.WriteDynamicLogs is true)
+		{
+			return;
+		}
+		var text = moduleContainer switch
+		{
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Success } => $"✅ {moduleContainer.GetModuleName()} finished Successfully",
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Skipped } => $"{moduleContainer.GetModuleName()} skipped",
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Cancelled } => $"{moduleContainer.GetModuleName()} cancelled due to previous failure",
+			{ State: ModuleState.Completed, CompletionType: CompletionType.Failure } => $"❌ {moduleContainer.GetModuleName()} Failed: {moduleContainer.Exception}",
+			{ State: ModuleState.Running } => $"⚡ {moduleContainer.GetModuleName()} Starting",
+			_ => throw new ArgumentOutOfRangeException(nameof(moduleContainer))
+		};
+		_ansiConsole.WriteLine(text);
+	}
+
+	public async Task WriteFinalState(PipelineSummary pipelineSummary, List<ModuleContainer> moduleContainers)
+	{
+		await RenderModulesProgress(moduleContainers, pipelineSummary, true);
 	}
 
 	private string GetDecoratedText(ModuleContainer module)
@@ -181,29 +211,6 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 			}
 			return (startTime.ToTimeSpanString(), endTime.ToTimeSpanString(), duration.ToTimeSpanString());
 		}
-	}
-
-	public void WriteModule(ModuleContainer moduleContainer)
-	{
-		if (DeploymentConstants.WriteDynamicLogs is true)
-		{
-			return;
-		}
-		var text = moduleContainer switch
-		{
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Success } => $"✅ {moduleContainer.GetModuleName()} finished Successfully",
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Skipped } => $"{moduleContainer.GetModuleName()} skipped",
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Cancelled } => $"{moduleContainer.GetModuleName()} cancelled due to previous failure",
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Failure } => $"❌ {moduleContainer.GetModuleName()} Failed: {moduleContainer.Exception}",
-			{ State: ModuleState.Running } => $"⚡ {moduleContainer.GetModuleName()} Starting",
-			_ => throw new ArgumentOutOfRangeException(nameof(moduleContainer))
-		};
-		_ansiConsole.WriteLine(text);
-	}
-
-	public void WriteFinalState(PipelineSummary pipelineSummary, List<ModuleContainer> moduleContainers)
-	{
-		RenderModulesProgress(moduleContainers, pipelineSummary, true);
 	}
 }
 
