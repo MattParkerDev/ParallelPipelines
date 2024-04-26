@@ -26,8 +26,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 		while (cancellationToken.IsCancellationRequested is false && StopRendering is false)
 		{
 			await RenderModulesProgress(ModuleContainers);
-			// TODO suppress throwing for delay
-			await Task.Delay(1000, CancellationToken.None);
+			await Task.Delay(1000, cancellationToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 		}
 	}
 	public async Task RenderModulesProgress(List<ModuleContainer> moduleContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
