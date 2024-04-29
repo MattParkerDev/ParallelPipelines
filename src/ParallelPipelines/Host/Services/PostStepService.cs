@@ -42,7 +42,35 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 		if (_pipelineConfig.WriteGithubActionSummaryToLocalFileLocally && DeploymentConstants.IsGithubActions is false)
 		{
 			var githubStepSummaryLocal = await PipelineFileHelper.GitRootDirectory.CreateFileIfMissingAndGetFile("./artifacts/github-step-summary-local.md");
+
+			if (_pipelineConfig.WriteCliCommandOutputsToSummaryFile is true)
+			{
+				text += "\n### CLI Command Outputs\n";
+				foreach (var moduleContainer in pipelineSummary.ModuleContainers.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime))
+				{
+					var standardOutput = string.Join("\n", moduleContainer.CliCommandResults.Select(x => x.StandardOutput)).Trim();
+					var errorOutput = string.Join("\n", moduleContainer.CliCommandResults.Select(x => x.StandardError)).Trim();
+					text += $"""
+					        <details>
+					        <summary>{moduleContainer.GetModuleName()}</summary>
+
+					        ##### Error Output
+					        ```console
+					        {errorOutput}
+					        ```
+
+					        ##### Standard Output
+					        ```console
+					        {standardOutput}
+					        ```
+
+					        </details>
+					        """;
+				}
+			}
 			await File.WriteAllTextAsync(githubStepSummaryLocal.FullName, "(Ctrl+Shift+V to open in pretty preview window)\n" + text, cancellationToken);
+
+
 
 			//throw new ApplicationException("OpenGithubActionSummaryInVscodeLocally is not implemented yet.");
 			if (_pipelineConfig.OpenGithubActionSummaryInVscodeLocallyAutomatically)
