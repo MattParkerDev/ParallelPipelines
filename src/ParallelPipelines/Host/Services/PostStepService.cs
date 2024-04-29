@@ -8,10 +8,11 @@ using Spectre.Console;
 
 namespace ParallelPipelines.Host.Services;
 
-public class PostStepService(GithubActionTableSummaryService githubActionTableSummaryService, IOptions<PipelineConfig> pipelineConfig, GithubActionGanttSummaryService githubActionGanttSummaryService)
+public class PostStepService(GithubActionTableSummaryService githubActionTableSummaryService, IOptions<PipelineConfig> pipelineConfig, GithubActionGanttSummaryService githubActionGanttSummaryService, IAnsiConsole console)
 {
 	private readonly GithubActionTableSummaryService _githubActionTableSummaryService = githubActionTableSummaryService;
 	private readonly GithubActionGanttSummaryService _githubActionGanttSummaryService = githubActionGanttSummaryService;
+	private readonly IAnsiConsole _console = console;
 	private readonly PipelineConfig _pipelineConfig = pipelineConfig.Value;
 
 	public async Task RunPostSteps(PipelineSummary pipelineSummary, CancellationToken cancellationToken)
@@ -38,19 +39,24 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 			await File.WriteAllTextAsync(githubStepSummary.FullName, text, cancellationToken);
 		}
 
-		if (_pipelineConfig.OpenGithubActionSummaryInVscodeLocally && DeploymentConstants.IsGithubActions is false)
+		if (_pipelineConfig.WriteGithubActionSummaryToLocalFileLocally && DeploymentConstants.IsGithubActions is false)
 		{
 			var githubStepSummaryLocal = await PipelineFileHelper.GitRootDirectory.CreateFileIfMissingAndGetFile("./artifacts/github-step-summary-local.md");
 			await File.WriteAllTextAsync(githubStepSummaryLocal.FullName, "(Ctrl+Shift+V to open in pretty preview window)\n" + text, cancellationToken);
 
 			//throw new ApplicationException("OpenGithubActionSummaryInVscodeLocally is not implemented yet.");
-			var processStartInfo = new ProcessStartInfo
+			if (_pipelineConfig.OpenGithubActionSummaryInVscodeLocallyAutomatically)
 			{
-				FileName = "code",
-				Arguments = githubStepSummaryLocal.FullName,
-				UseShellExecute = true
-			};
-			Process.Start(processStartInfo);
+				var processStartInfo = new ProcessStartInfo
+				{
+					FileName = "code",
+					Arguments = githubStepSummaryLocal.FullName,
+					UseShellExecute = true
+				};
+				Process.Start(processStartInfo);
+			}
+
+			_console.WriteLine("\nWrote Github Action Summary to: file:///" + githubStepSummaryLocal.GetFullNameUnix() + "\n");
 		}
 	}
 }

@@ -18,7 +18,7 @@ builder.Services.AddParallelPipelines(builder.Configuration, options =>
 {
 	options.EnableGithubMarkdownGanttSummary = true;
 	options.EnableGithubMarkdownTableSummary = true;
-	options.OpenGithubActionSummaryInVscodeLocally = true;
+	options.WriteGithubActionSummaryToLocalFileLocally = true;
 });
 
 builder.Services

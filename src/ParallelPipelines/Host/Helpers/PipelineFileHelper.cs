@@ -95,4 +95,9 @@ public static class PipelineFileHelper
 	{
 		return await File.ReadAllTextAsync(targetFilePath);
 	}
+
+	public static string GetFullNameUnix(this FileInfo fileInfo)
+	{
+		return fileInfo.FullName.Replace('\\', '/');
+	}
 }
