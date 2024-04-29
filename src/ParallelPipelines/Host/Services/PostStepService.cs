@@ -48,8 +48,8 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 				text += "\n### CLI Command Outputs\n";
 				foreach (var moduleContainer in pipelineSummary.ModuleContainers.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime))
 				{
-					var standardOutput = string.Join("\n", moduleContainer.CliCommandResults.Select(x => x.StandardOutput)).Trim();
-					var errorOutput = string.Join("\n", moduleContainer.CliCommandResults.Select(x => x.StandardError)).Trim();
+					var standardOutput = string.Join("\n", moduleContainer.CliCommandResults?.Select(x => x?.StandardOutput) ?? Array.Empty<string>()).Trim();
+					var errorOutput = string.Join("\n", moduleContainer.CliCommandResults?.Select(x => x?.StandardError) ?? Array.Empty<string?>()).Trim();
 					text += $"""
 					        <details>
 					        <summary>{moduleContainer.GetModuleName()}</summary>

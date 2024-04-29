@@ -8,5 +8,5 @@ public class PipelineSummary
 	public DateTimeOffset? DeploymentStartTime;
 	public DateTimeOffset? DeploymentEndTime;
 	public TimeSpan? DeploymentDuration => DeploymentEndTime - DeploymentStartTime;
-	public List<ModuleContainer>? ModuleContainers { get; set; }
+	public List<ModuleContainer> ModuleContainers { get; set; } = [];
 }
