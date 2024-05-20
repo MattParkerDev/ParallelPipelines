@@ -5,10 +5,24 @@ namespace ParallelPipelines.Host.Helpers;
 
 public static class PipelineCliHelper
 {
+	public static async Task<BufferedCommandResult?> RunCliCommandInDirectoryAsync(string workingDirectory, string targetFilePath, string arguments,
+		CancellationToken cancellationToken)
+	{
+		var command = Cli.Wrap(targetFilePath).WithWorkingDirectory(workingDirectory).WithArguments(arguments);
+		var result = await RunCliCommandAsync(command, cancellationToken);
+		return result;
+	}
+
 	public static async Task<BufferedCommandResult?> RunCliCommandAsync(string targetFilePath, string arguments,
 		CancellationToken cancellationToken)
 	{
 		var command = Cli.Wrap(targetFilePath).WithArguments(arguments);
+		var result = await RunCliCommandAsync(command, cancellationToken);
+		return result;
+	}
+
+	private static async Task<BufferedCommandResult?> RunCliCommandAsync(Command command, CancellationToken cancellationToken)
+	{
 		var result = await command.ExecuteBufferedWithGracefulCancelAsync(cancellationToken);
 		if (result?.IsSuccess is false)
 		{

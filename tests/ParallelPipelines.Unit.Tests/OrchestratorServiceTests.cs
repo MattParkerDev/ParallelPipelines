@@ -39,8 +39,8 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 		var services = new ServiceCollection();
 		services.AddParallelPipelines(new ConfigurationBuilder().Build(), options =>
 		{
-			options.EnableGithubMarkdownGanttSummary = true;
-			options.EnableGithubMarkdownTableSummary = true;
+			options.Local.EnableGithubMarkdownGanttSummary = true;
+			options.Local.EnableGithubMarkdownTableSummary = true;
 		});
 		services.AddModule<TestModule1>();
 		services.AddModule<TestModule2>();

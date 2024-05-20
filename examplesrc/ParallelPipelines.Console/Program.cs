@@ -16,10 +16,8 @@ builder.Configuration
 
 builder.Services.AddParallelPipelines(builder.Configuration, options =>
 {
-	options.EnableGithubMarkdownGanttSummary = true;
-	options.EnableGithubMarkdownTableSummary = true;
-	options.WriteGithubActionSummaryToLocalFileLocally = true;
-	options.WriteCliCommandOutputsToSummaryFile = true;
+	options.Cicd.WriteCliCommandOutputsToSummary = true;
+	options.Local.OutputSummaryToFile = true;
 });
 
 builder.Services

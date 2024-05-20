@@ -17,74 +17,112 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 
 	public async Task RunPostSteps(PipelineSummary pipelineSummary, CancellationToken cancellationToken)
 	{
-		await WriteGithubSummary(pipelineSummary, cancellationToken);
+		var text = GetGithubSummary(pipelineSummary, cancellationToken);
+		await WriteGithubSummary(text, cancellationToken);
 	}
-	private async Task WriteGithubSummary(PipelineSummary pipelineSummary, CancellationToken cancellationToken)
+
+	private string GetGithubSummary(PipelineSummary pipelineSummary, CancellationToken cancellationToken)
 	{
 		var text = string.Empty;
-		if (_pipelineConfig.EnableGithubMarkdownTableSummary)
+
+		if (DeploymentConstants.IsGithubActions)
 		{
-			var tableSummary = _githubActionTableSummaryService.GenerateTableSummary(pipelineSummary);
-			text += tableSummary;
+			if (_pipelineConfig.Cicd.EnableGithubMarkdownTableSummary)
+			{
+				var tableSummary = _githubActionTableSummaryService.GenerateTableSummary(pipelineSummary);
+				text += tableSummary;
+			}
+			if (_pipelineConfig.Cicd.EnableGithubMarkdownGanttSummary)
+			{
+				var ganttSummary = _githubActionGanttSummaryService.GenerateMermaidSummary(pipelineSummary);
+				text += "\n\n" + ganttSummary;
+			}
+			if (_pipelineConfig.Cicd.WriteCliCommandOutputsToSummary)
+			{
+				var cliCommandSummary = GetCliCommandOutput(pipelineSummary);
+				text += cliCommandSummary;
+			}
 		}
-		if (_pipelineConfig.EnableGithubMarkdownGanttSummary)
+		else
 		{
-			var ganttSummary = _githubActionGanttSummaryService.GenerateMermaidSummary(pipelineSummary);
-			text += "\n\n" + ganttSummary;
+			if (_pipelineConfig.Local.EnableGithubMarkdownTableSummary)
+			{
+				var tableSummary = _githubActionTableSummaryService.GenerateTableSummary(pipelineSummary);
+				text += tableSummary;
+			}
+			if (_pipelineConfig.Local.EnableGithubMarkdownGanttSummary)
+			{
+				var ganttSummary = _githubActionGanttSummaryService.GenerateMermaidSummary(pipelineSummary);
+				text += "\n\n" + ganttSummary;
+			}
+			if (_pipelineConfig.Local.WriteCliCommandOutputsToSummary)
+			{
+				var cliCommandSummary = GetCliCommandOutput(pipelineSummary);
+				text += cliCommandSummary;
+			}
 		}
-		if (DeploymentConstants.IsGithubActions && string.IsNullOrWhiteSpace(text) is false)
+
+		return text;
+	}
+
+	private static string GetCliCommandOutput(PipelineSummary pipelineSummary)
+	{
+		var text = "\n### CLI Command Outputs\n";
+		foreach (var moduleContainer in pipelineSummary.ModuleContainers.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime))
+		{
+			var standardOutput = string.Join("\n", moduleContainer.CliCommandResults?.Select(x => x?.StandardOutput) ?? Array.Empty<string>()).Trim();
+			var errorOutput = string.Join("\n", moduleContainer.CliCommandResults?.Select(x => x?.StandardError) ?? Array.Empty<string?>()).Trim();
+			text += $"""
+			         <details>
+			         <summary>{moduleContainer.GetModuleName()}</summary>
+
+			         ##### Error Output
+			         ```console
+			         {errorOutput}
+			         ```
+
+			         ##### Standard Output
+			         ```console
+			         {standardOutput}
+			         ```
+
+			         </details>
+			         """;
+		}
+
+		return text;
+	}
+
+	private async Task WriteGithubSummary(string text, CancellationToken cancellationToken)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		if (DeploymentConstants.IsGithubActions)
 		{
 			var githubStepSummaryPath = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY")!;
 			var githubStepSummary = await PipelineFileHelper.GetFile(githubStepSummaryPath);
 			await File.WriteAllTextAsync(githubStepSummary.FullName, text, cancellationToken);
 		}
-
-		if (_pipelineConfig.WriteGithubActionSummaryToLocalFileLocally && DeploymentConstants.IsGithubActions is false)
+		else if (_pipelineConfig.Local.OutputSummaryToFile)
 		{
-			var githubStepSummaryLocal = await PipelineFileHelper.GitRootDirectory.CreateFileIfMissingAndGetFile("./artifacts/github-step-summary-local.md");
+				var githubStepSummaryLocal = await PipelineFileHelper.GitRootDirectory.CreateFileIfMissingAndGetFile("./artifacts/github-step-summary-local.md");
 
-			if (_pipelineConfig.WriteCliCommandOutputsToSummaryFile is true)
-			{
-				text += "\n### CLI Command Outputs\n";
-				foreach (var moduleContainer in pipelineSummary.ModuleContainers.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime))
+				await File.WriteAllTextAsync(githubStepSummaryLocal.FullName, "(Ctrl+Shift+V to open in pretty preview window)\n" + text, cancellationToken);
+
+				if (_pipelineConfig.Local.OpenSummaryFileInVscodeAutomatically)
 				{
-					var standardOutput = string.Join("\n", moduleContainer.CliCommandResults?.Select(x => x?.StandardOutput) ?? Array.Empty<string>()).Trim();
-					var errorOutput = string.Join("\n", moduleContainer.CliCommandResults?.Select(x => x?.StandardError) ?? Array.Empty<string?>()).Trim();
-					text += $"""
-					        <details>
-					        <summary>{moduleContainer.GetModuleName()}</summary>
-
-					        ##### Error Output
-					        ```console
-					        {errorOutput}
-					        ```
-
-					        ##### Standard Output
-					        ```console
-					        {standardOutput}
-					        ```
-
-					        </details>
-					        """;
+					var processStartInfo = new ProcessStartInfo
+					{
+						FileName = "code",
+						Arguments = githubStepSummaryLocal.FullName,
+						UseShellExecute = true
+					};
+					Process.Start(processStartInfo);
 				}
-			}
-			await File.WriteAllTextAsync(githubStepSummaryLocal.FullName, "(Ctrl+Shift+V to open in pretty preview window)\n" + text, cancellationToken);
 
-
-
-			//throw new ApplicationException("OpenGithubActionSummaryInVscodeLocally is not implemented yet.");
-			if (_pipelineConfig.OpenGithubActionSummaryInVscodeLocallyAutomatically)
-			{
-				var processStartInfo = new ProcessStartInfo
-				{
-					FileName = "code",
-					Arguments = githubStepSummaryLocal.FullName,
-					UseShellExecute = true
-				};
-				Process.Start(processStartInfo);
-			}
-
-			_console.WriteLine("\nWrote Github Action Summary to: file:///" + githubStepSummaryLocal.GetFullNameUnix() + "\n");
+				_console.WriteLine("\nWrote Github Action Summary to: file:///" + githubStepSummaryLocal.GetFullNameUnix() + "\n");
 		}
 	}
 }
