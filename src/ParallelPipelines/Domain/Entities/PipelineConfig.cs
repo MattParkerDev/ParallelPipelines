@@ -8,8 +8,9 @@ public class PipelineConfig
 
 public class CicdConfig
 {
-	public bool EnableGithubMarkdownTableSummary { get; set; } = true;
-	public bool EnableGithubMarkdownGanttSummary { get; set; } = true;
+	public bool OutputSummaryToGithubStepSummary { get; set; } = false;
+	public bool DisableGithubMarkdownTableSummary { get; set; } = false;
+	public bool DisableGithubMarkdownGanttSummary { get; set; } = false;
 	public bool WriteCliCommandOutputsToSummary { get; set; } = false;
 }
 
@@ -18,7 +19,7 @@ public class LocalConfig
 	public bool OutputSummaryToFile { get; set; } = false;
 	public bool OpenSummaryFileInVscodeAutomatically { get; set; } = false;
 
-	public bool EnableGithubMarkdownTableSummary { get; set; } = true;
-	public bool EnableGithubMarkdownGanttSummary { get; set; } = true;
-	public bool WriteCliCommandOutputsToSummary { get; set; } = true;
+	public bool DisableGithubMarkdownTableSummary { get; set; } = false;
+	public bool DisableGithubMarkdownGanttSummary { get; set; } = false;
+	public bool DisableWriteCliCommandOutputsToSummary { get; set; } = false;
 }

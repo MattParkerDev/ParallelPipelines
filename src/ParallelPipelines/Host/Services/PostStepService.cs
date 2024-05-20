@@ -27,12 +27,16 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 
 		if (DeploymentConstants.IsGithubActions)
 		{
-			if (_pipelineConfig.Cicd.EnableGithubMarkdownTableSummary)
+			if (_pipelineConfig.Cicd.OutputSummaryToGithubStepSummary is false)
+			{
+				return text;
+			}
+			if (!_pipelineConfig.Cicd.DisableGithubMarkdownTableSummary)
 			{
 				var tableSummary = _githubActionTableSummaryService.GenerateTableSummary(pipelineSummary);
 				text += tableSummary;
 			}
-			if (_pipelineConfig.Cicd.EnableGithubMarkdownGanttSummary)
+			if (!_pipelineConfig.Cicd.DisableGithubMarkdownGanttSummary)
 			{
 				var ganttSummary = _githubActionGanttSummaryService.GenerateMermaidSummary(pipelineSummary);
 				text += "\n\n" + ganttSummary;
@@ -45,17 +49,21 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 		}
 		else
 		{
-			if (_pipelineConfig.Local.EnableGithubMarkdownTableSummary)
+			if (_pipelineConfig.Local.OutputSummaryToFile is false)
+			{
+				return text;
+			}
+			if (!_pipelineConfig.Local.DisableGithubMarkdownTableSummary)
 			{
 				var tableSummary = _githubActionTableSummaryService.GenerateTableSummary(pipelineSummary);
 				text += tableSummary;
 			}
-			if (_pipelineConfig.Local.EnableGithubMarkdownGanttSummary)
+			if (!_pipelineConfig.Local.DisableGithubMarkdownGanttSummary)
 			{
 				var ganttSummary = _githubActionGanttSummaryService.GenerateMermaidSummary(pipelineSummary);
 				text += "\n\n" + ganttSummary;
 			}
-			if (_pipelineConfig.Local.WriteCliCommandOutputsToSummary)
+			if (!_pipelineConfig.Local.DisableWriteCliCommandOutputsToSummary)
 			{
 				var cliCommandSummary = GetCliCommandOutput(pipelineSummary);
 				text += cliCommandSummary;
@@ -101,28 +109,31 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 		}
 		if (DeploymentConstants.IsGithubActions)
 		{
-			var githubStepSummaryPath = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY")!;
-			var githubStepSummary = await PipelineFileHelper.GetFile(githubStepSummaryPath);
-			await File.WriteAllTextAsync(githubStepSummary.FullName, text, cancellationToken);
+			if (_pipelineConfig.Cicd.OutputSummaryToGithubStepSummary)
+			{
+				var githubStepSummaryPath = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY")!;
+				var githubStepSummary = await PipelineFileHelper.GetFile(githubStepSummaryPath);
+				await File.WriteAllTextAsync(githubStepSummary.FullName, text, cancellationToken);
+			}
 		}
 		else if (_pipelineConfig.Local.OutputSummaryToFile)
 		{
-				var githubStepSummaryLocal = await PipelineFileHelper.GitRootDirectory.CreateFileIfMissingAndGetFile("./artifacts/github-step-summary-local.md");
+			var githubStepSummaryLocal = await PipelineFileHelper.GitRootDirectory.CreateFileIfMissingAndGetFile("./artifacts/github-step-summary-local.md");
 
-				await File.WriteAllTextAsync(githubStepSummaryLocal.FullName, "(Ctrl+Shift+V to open in pretty preview window)\n" + text, cancellationToken);
+			await File.WriteAllTextAsync(githubStepSummaryLocal.FullName, "(Ctrl+Shift+V to open in pretty preview window)\n" + text, cancellationToken);
 
-				if (_pipelineConfig.Local.OpenSummaryFileInVscodeAutomatically)
+			if (_pipelineConfig.Local.OpenSummaryFileInVscodeAutomatically)
+			{
+				var processStartInfo = new ProcessStartInfo
 				{
-					var processStartInfo = new ProcessStartInfo
-					{
-						FileName = "code",
-						Arguments = githubStepSummaryLocal.FullName,
-						UseShellExecute = true
-					};
-					Process.Start(processStartInfo);
-				}
+					FileName = "code",
+					Arguments = githubStepSummaryLocal.FullName,
+					UseShellExecute = true
+				};
+				Process.Start(processStartInfo);
+			}
 
-				_console.WriteLine("\nWrote Github Action Summary to: file:///" + githubStepSummaryLocal.GetFullNameUnix() + "\n");
+			_console.WriteLine("\nWrote Github Action Summary to: file:///" + githubStepSummaryLocal.GetFullNameUnix() + "\n");
 		}
 	}
 }

@@ -16,7 +16,6 @@ builder.Configuration
 
 builder.Services.AddParallelPipelines(builder.Configuration, options =>
 {
-	options.Cicd.WriteCliCommandOutputsToSummary = true;
 	options.Local.OutputSummaryToFile = true;
 });
 
