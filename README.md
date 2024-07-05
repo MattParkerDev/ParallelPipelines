@@ -14,6 +14,21 @@
 
 Despite the comparison, ParallelPipelines is built primarily to be used in Github Actions. Support for Bitbucket Pipelines/Azure Pipelines may be officially supported in the future if there is interest.
 
+## Getting Started
+
+- Copy and update as needed the [Github workflow examples](./samples/Github%20Workflows) folder to your repository
+- Create a new C# Project for CICD, and install the [ParallelPipelines Nuget package](https://www.nuget.org/packages/ParallelPipelines/)
+- Create some steps! See the [examplesrc/ParallelPipelines.Console/Modules](./examplesrc/ParallelPipelines.Console/Modules) folder for examples
+- Test your CICD locally with `dotnet run`
+- Ensure the path to your `Deploy` project is correct in the Github workflow
+- Done!
+
+### Notes Regarding Examples
+
+- The examples are written with a C#/.NET/Azure ecosystem in mind, noting example steps to install dotnet wasm-tools, install the Azure Static Web Apps CLI to deploy a Blazor WebAssembly app, and provision an Azure resource group/deploy a Bicep template.
+- These are just examples - you can write whatever steps you would like, as steps simply run shell commands.
+
+
 ## Example Summary Table and Gantt Chart:
 ### Run Summary
 | Module | Status | Start | End | Duration |
