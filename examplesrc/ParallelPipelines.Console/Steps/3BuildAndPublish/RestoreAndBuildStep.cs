@@ -3,7 +3,7 @@ using ParallelPipelines.Domain.Entities;
 
 namespace ParallelPipelines.Console.Steps._3BuildAndPublish;
 
-[DependsOnExp<InstallDotnetWasmToolsStep>]
+[DependsOnStep<InstallDotnetWasmToolsStep>]
 public class RestoreAndBuildStep : IStep
 {
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)

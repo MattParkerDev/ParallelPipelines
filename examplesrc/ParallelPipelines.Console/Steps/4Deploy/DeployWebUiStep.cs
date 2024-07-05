@@ -5,9 +5,9 @@ using ParallelPipelines.Domain.Entities;
 
 namespace ParallelPipelines.Console.Steps._4Deploy;
 
-[DependsOnExp<InstallSwaCliStep>]
-[DependsOnExp<DeployBicepStep>]
-[DependsOnExp<PublishWebUiStep>]
+[DependsOnStep<InstallSwaCliStep>]
+[DependsOnStep<DeployBicepStep>]
+[DependsOnStep<PublishWebUiStep>]
 public class DeployWebUiStep : IStep
 {
 	public bool ShouldSkip() => false;

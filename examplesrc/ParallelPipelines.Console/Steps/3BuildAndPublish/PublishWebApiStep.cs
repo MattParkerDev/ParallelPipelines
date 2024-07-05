@@ -2,7 +2,7 @@
 
 namespace ParallelPipelines.Console.Steps._3BuildAndPublish;
 
-[DependsOnExp<RestoreAndBuildStep>]
+[DependsOnStep<RestoreAndBuildStep>]
 public class PublishWebApiStep : IStep
 {
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)

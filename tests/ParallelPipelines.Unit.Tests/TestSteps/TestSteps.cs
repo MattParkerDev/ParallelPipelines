@@ -13,7 +13,7 @@ public class TestStep1 : IStep
 	}
 }
 
-[DependsOnExp<TestStep1>]
+[DependsOnStep<TestStep1>]
 public class TestStep2 : IStep
 {
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
@@ -23,7 +23,7 @@ public class TestStep2 : IStep
 	}
 }
 
-[DependsOnExp<TestStep1>]
+[DependsOnStep<TestStep1>]
 public class TestStep3 : IStep
 {
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
@@ -33,8 +33,8 @@ public class TestStep3 : IStep
 	}
 }
 
-[DependsOnExp<TestStep2>]
-[DependsOnExp<TestStep3>]
+[DependsOnStep<TestStep2>]
+[DependsOnStep<TestStep3>]
 public class TestStep4 : IStep
 {
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)

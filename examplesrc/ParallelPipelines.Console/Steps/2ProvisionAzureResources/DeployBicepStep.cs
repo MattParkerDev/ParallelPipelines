@@ -2,7 +2,7 @@
 
 namespace ParallelPipelines.Console.Steps._2ProvisionAzureResources;
 
-[DependsOnExp<CreateResourceGroupStep>]
+[DependsOnStep<CreateResourceGroupStep>]
 public class DeployBicepStep(IPipelineContext context) : IStep
 {
 	private readonly IPipelineContext _context = context;

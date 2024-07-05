@@ -4,8 +4,8 @@ using ParallelPipelines.Domain.Entities;
 
 namespace ParallelPipelines.Console.Steps._4Deploy;
 
-[DependsOnExp<PublishWebApiStep>]
-[DependsOnExp<DeployBicepStep>]
+[DependsOnStep<PublishWebApiStep>]
+[DependsOnStep<DeployBicepStep>]
 public class DeployWebApiStep(IPipelineContext context) : IStep
 {
 	private readonly IPipelineContext _context = context;
