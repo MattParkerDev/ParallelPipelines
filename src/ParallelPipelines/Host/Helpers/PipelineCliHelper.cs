@@ -1,5 +1,6 @@
 ﻿using CliWrap;
 using CliWrap.Buffered;
+using ParallelPipelines.Domain.Entities;
 
 namespace ParallelPipelines.Host.Helpers;
 
@@ -16,6 +17,10 @@ public static class PipelineCliHelper
 	public static async Task<BufferedCommandResult?> RunCliCommandAsync(string targetFilePath, string arguments,
 		CancellationToken cancellationToken)
 	{
+		if (cancellationToken == CancellationToken.None)
+		{
+			throw new InvalidOperationException($"Please pass the cancellation token from {nameof(IModule.RunModule)} to {nameof(RunCliCommandAsync)}!");
+		}
 		var command = Cli.Wrap(targetFilePath).WithArguments(arguments);
 		var result = await RunCliCommandAsync(command, cancellationToken);
 		return result;
