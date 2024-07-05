@@ -12,7 +12,7 @@
 | ❌ Cannot rerun failed jobs (restart in progress run)                                   | ✅ Rerun failed jobs                    |
 | ✅ C# and strong types                                                                  | ❌ YAML                                 |
 
-Despite the comparison, ParallelPipelines is built primarily to be used in Github Actions. Support for Bitbucket Pipelines/Azure Pipelines may be officially supported in the future if there is interest.
+Despite the comparison, ParallelPipelines is built primarily to be used in Github Actions. Bitbucket Pipelines/Azure Pipelines may be officially supported in the future if there is interest.
 
 ## Getting Started
 
