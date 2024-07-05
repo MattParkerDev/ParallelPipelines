@@ -1,11 +1,11 @@
-using Deploy.Modules.Setup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ParallelPipelines.Console.Steps._1Setup;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host;
 using ParallelPipelines.Host.Services;
-using ParallelPipelines.Unit.Tests.TestModules;
+using ParallelPipelines.Unit.Tests.TestSteps;
 using Spectre.Console;
 using Xunit.Abstractions;
 
@@ -20,7 +20,7 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 	{
 		var services = new ServiceCollection();
 		services.AddParallelPipelines(new ConfigurationBuilder().Build());
-		services.AddModule<InstallDotnetWasmToolsModule>();
+		services.AddStep<InstallDotnetWasmToolsStep>();
 
 		services.RemoveAll(typeof(IAnsiConsole));
 		services.AddSingleton<IAnsiConsole>(provider => new MyTestConsole(_output));
@@ -42,18 +42,18 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 			options.Local.DisableGithubMarkdownGanttSummary = false;
 			options.Local.DisableGithubMarkdownTableSummary = false;
 		});
-		services.AddModule<TestModule1>();
-		services.AddModule<TestModule2>();
-		services.AddModule<TestModule3>();
-		services.AddModule<TestModule4>();
+		services.AddStep<TestStep1>();
+		services.AddStep<TestStep2>();
+		services.AddStep<TestStep3>();
+		services.AddStep<TestStep4>();
 
 		services.RemoveAll(typeof(IAnsiConsole));
 		services.AddSingleton<IAnsiConsole>(provider => new MyTestConsole(_output));
 
 		var serviceProvider = services.BuildServiceProvider();
 		var orchestratorService = serviceProvider.GetRequiredService<OrchestratorService>();
-
-		await orchestratorService.InitialiseAsync();
+		var cancellationToken = new CancellationTokenSource().Token;
+		await orchestratorService.InitialiseAsync(cancellationToken);
 		var now = DateTimeOffset.Now;
 		var pipelineSummary = await orchestratorService.RunPipeline(CancellationToken.None);
 		var later = DateTimeOffset.Now;
@@ -70,44 +70,44 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 
 		pipelineSummary?.DeploymentDuration.Should().BeCloseTo(TimeSpan.FromMilliseconds(3000), TimeSpan.FromMilliseconds(50));
 
-		var module1 = pipelineSummary?.ModuleContainers?.FirstOrDefault(x => x.Module.GetType() == typeof(TestModule1));
-		module1.Should().NotBeNull();
-		module1!.StartTime.Should().BeCloseTo(pipelineSummary!.DeploymentStartTime!.Value, TimeSpan.FromMilliseconds(10));
+		var step1 = pipelineSummary?.StepContainers?.FirstOrDefault(x => x.Step.GetType() == typeof(TestStep1));
+		step1.Should().NotBeNull();
+		step1!.StartTime.Should().BeCloseTo(pipelineSummary!.DeploymentStartTime!.Value, TimeSpan.FromMilliseconds(10));
 
-		module1!.EndTime.Should().BeAfter(module1.StartTime!.Value);
-		module1!.EndTime.Should().BeCloseTo(module1.StartTime!.Value.AddMilliseconds(1000), TimeSpan.FromMilliseconds(100));
-		module1!.Duration.Should().BeCloseTo(TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(100));
+		step1!.EndTime.Should().BeAfter(step1.StartTime!.Value);
+		step1!.EndTime.Should().BeCloseTo(step1.StartTime!.Value.AddMilliseconds(1000), TimeSpan.FromMilliseconds(100));
+		step1!.Duration.Should().BeCloseTo(TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(100));
 
-		var module2 = pipelineSummary?.ModuleContainers?.FirstOrDefault(x => x.Module.GetType() == typeof(TestModule2));
-		module2.Should().NotBeNull();
-		module2!.StartTime.Should().BeCloseTo(module1.EndTime!.Value, TimeSpan.FromMilliseconds(10));
+		var step2 = pipelineSummary?.StepContainers?.FirstOrDefault(x => x.Step.GetType() == typeof(TestStep2));
+		step2.Should().NotBeNull();
+		step2!.StartTime.Should().BeCloseTo(step1.EndTime!.Value, TimeSpan.FromMilliseconds(10));
 
-		module2!.EndTime.Should().BeAfter(module2.StartTime!.Value);
-		module2!.EndTime.Should().BeCloseTo(module2.StartTime!.Value.AddMilliseconds(1000), TimeSpan.FromMilliseconds(50));
-		module2!.Duration.Should().BeCloseTo(TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(100));
+		step2!.EndTime.Should().BeAfter(step2.StartTime!.Value);
+		step2!.EndTime.Should().BeCloseTo(step2.StartTime!.Value.AddMilliseconds(1000), TimeSpan.FromMilliseconds(50));
+		step2!.Duration.Should().BeCloseTo(TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(100));
 
-		var module3 = pipelineSummary?.ModuleContainers?.FirstOrDefault(x => x.Module.GetType() == typeof(TestModule3));
-		module3.Should().NotBeNull();
-		module3!.StartTime.Should().BeCloseTo(module1.EndTime!.Value, TimeSpan.FromMilliseconds(10));
-		module3!.StartTime.Should().BeCloseTo(module2.StartTime!.Value, TimeSpan.FromMilliseconds(10));
+		var step3 = pipelineSummary?.StepContainers?.FirstOrDefault(x => x.Step.GetType() == typeof(TestStep3));
+		step3.Should().NotBeNull();
+		step3!.StartTime.Should().BeCloseTo(step1.EndTime!.Value, TimeSpan.FromMilliseconds(10));
+		step3!.StartTime.Should().BeCloseTo(step2.StartTime!.Value, TimeSpan.FromMilliseconds(10));
 
-		module3!.EndTime.Should().BeAfter(module3.StartTime!.Value);
-		module3!.EndTime.Should().BeCloseTo(module3.StartTime!.Value.AddMilliseconds(1000), TimeSpan.FromMilliseconds(100));
-		module3!.EndTime.Should().BeCloseTo(module2.EndTime!.Value, TimeSpan.FromMilliseconds(100));
-		module3!.Duration.Should().BeCloseTo(TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(100));
+		step3!.EndTime.Should().BeAfter(step3.StartTime!.Value);
+		step3!.EndTime.Should().BeCloseTo(step3.StartTime!.Value.AddMilliseconds(1000), TimeSpan.FromMilliseconds(100));
+		step3!.EndTime.Should().BeCloseTo(step2.EndTime!.Value, TimeSpan.FromMilliseconds(100));
+		step3!.Duration.Should().BeCloseTo(TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(100));
 
-		var module4 = pipelineSummary?.ModuleContainers?.FirstOrDefault(x => x.Module.GetType() == typeof(TestModule4));
+		var step4 = pipelineSummary?.StepContainers?.FirstOrDefault(x => x.Step.GetType() == typeof(TestStep4));
 
-		module4.Should().NotBeNull();
-		module4!.StartTime.Should().BeAfter(module2.EndTime!.Value);
-		module4!.StartTime.Should().BeAfter(module3.EndTime!.Value);
-		module4!.StartTime.Should().BeCloseTo(module2.EndTime!.Value, TimeSpan.FromMilliseconds(10));
-		module4!.StartTime.Should().BeCloseTo(module3.EndTime!.Value, TimeSpan.FromMilliseconds(10));
+		step4.Should().NotBeNull();
+		step4!.StartTime.Should().BeAfter(step2.EndTime!.Value);
+		step4!.StartTime.Should().BeAfter(step3.EndTime!.Value);
+		step4!.StartTime.Should().BeCloseTo(step2.EndTime!.Value, TimeSpan.FromMilliseconds(10));
+		step4!.StartTime.Should().BeCloseTo(step3.EndTime!.Value, TimeSpan.FromMilliseconds(10));
 
-		module4!.EndTime.Should().BeAfter(module4.StartTime!.Value);
-		module4!.EndTime.Should().BeCloseTo(module4.StartTime!.Value.AddMilliseconds(1000), TimeSpan.FromMilliseconds(100));
-		module4!.Duration.Should().BeCloseTo(TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(100));
+		step4!.EndTime.Should().BeAfter(step4.StartTime!.Value);
+		step4!.EndTime.Should().BeCloseTo(step4.StartTime!.Value.AddMilliseconds(1000), TimeSpan.FromMilliseconds(100));
+		step4!.Duration.Should().BeCloseTo(TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(100));
 
-		pipelineSummary?.DeploymentEndTime.Should().BeCloseTo(module4.EndTime!.Value, TimeSpan.FromMilliseconds(10));
+		pipelineSummary?.DeploymentEndTime.Should().BeCloseTo(step4.EndTime!.Value, TimeSpan.FromMilliseconds(10));
 	}
 }

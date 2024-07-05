@@ -3,7 +3,7 @@
 namespace ParallelPipelines.Application.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true, Inherited = true)]
-public class DependsOnExpAttribute<T> : Attribute where T : class, IModule
+public class DependsOnExpAttribute<T> : Attribute where T : class, IStep
 {
 }
 

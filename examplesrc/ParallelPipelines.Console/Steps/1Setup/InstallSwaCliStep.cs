@@ -1,11 +1,10 @@
 ﻿using ParallelPipelines.Domain.Entities;
 
-// ReSharper disable once CheckNamespace
-namespace Deploy.Modules.Setup;
+namespace ParallelPipelines.Console.Steps._1Setup;
 
-public class InstallSwaCliModule : IModule
+public class InstallSwaCliStep : IStep
 {
-	public async Task<BufferedCommandResult?[]?> RunModule(CancellationToken cancellationToken)
+	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{
 		var result =
 			await PipelineCliHelper.RunCliCommandAsync("pnpm", "install -g @azure/static-web-apps-cli",

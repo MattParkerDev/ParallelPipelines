@@ -8,7 +8,7 @@ public enum CompletionType
 	Cancelled
 }
 
-public enum ModuleState
+public enum StepState
 {
 	Waiting,
 	Running,

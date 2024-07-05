@@ -18,7 +18,7 @@ Despite the comparison, ParallelPipelines is built primarily to be used in Githu
 
 - Copy and update as needed the [Github workflow examples](./samples/Github%20Workflows) folder to your repository
 - Create a new C# Project for CICD, and install the [ParallelPipelines Nuget package](https://www.nuget.org/packages/ParallelPipelines/)
-- Create some steps! See the [examplesrc/ParallelPipelines.Console/Modules](./examplesrc/ParallelPipelines.Console/Modules) folder for examples
+- Create some steps! See the [examplesrc/ParallelPipelines.Console/Steps](./examplesrc/ParallelPipelines.Console/Steps) folder for examples
 - Test your CICD locally with `dotnet run`
 - Ensure the path to your `Deploy` project is correct in the Github workflow
 - Done!
@@ -31,18 +31,18 @@ Despite the comparison, ParallelPipelines is built primarily to be used in Githu
 
 ## Example Summary Table and Gantt Chart:
 ### Run Summary
-| Module | Status | Start | End | Duration |
-| --- | --- | --- | --- | --- |
-| InstallSwaCliModule | ${\textsf{\color{lightgreen}Success}}$ | 00s:005ms | 10s:118ms | 10s:113ms |
-| CreateResourceGroupModule | ${\textsf{\color{lightgreen}Success}}$ | 10s:119ms | 15s:735ms | 05s:616ms |
-| InstallDotnetWasmToolsModule | ${\textsf{\color{lightgreen}Success}}$ | 00s:005ms | 25s:225ms | 25s:220ms |
-| DeployBicepModule | ${\textsf{\color{lightgreen}Success}}$ | 15s:737ms | 01m:08s | 52s:861ms |
-| RestoreAndBuildModule | ${\textsf{\color{lightgreen}Success}}$ | 25s:228ms | 02m:25s | 02m:00s |
-| PublishWebApiModule | ${\textsf{\color{lightgreen}Success}}$ | 02m:25s | 02m:31s | 05s:862ms |
-| DeployWebApiModule | ${\textsf{\color{lightgreen}Success}}$ | 02m:31s | 03m:15s | 44s:776ms |
-| PublishWebUiModule | ${\textsf{\color{lightgreen}Success}}$ | 02m:25s | 03m:32s | 01m:06s |
-| DeployWebUiModule | ${\textsf{\color{lightgreen}Success}}$ | 03m:32s | 04m:11s | 39s:304ms |
-| **Total** | **${\textsf{\color{lightgreen}Success}}$** | **00s:000ms** | **04m:11s** | **04m:11s** |
+| Step                       | Status | Start | End | Duration |
+|----------------------------| --- | --- | --- | --- |
+| InstallSwaCliStep          | ${\textsf{\color{lightgreen}Success}}$ | 00s:005ms | 10s:118ms | 10s:113ms |
+| CreateResourceGroupStep    | ${\textsf{\color{lightgreen}Success}}$ | 10s:119ms | 15s:735ms | 05s:616ms |
+| InstallDotnetWasmToolsStep | ${\textsf{\color{lightgreen}Success}}$ | 00s:005ms | 25s:225ms | 25s:220ms |
+| DeployBicepStep            | ${\textsf{\color{lightgreen}Success}}$ | 15s:737ms | 01m:08s | 52s:861ms |
+| RestoreAndBuildStep        | ${\textsf{\color{lightgreen}Success}}$ | 25s:228ms | 02m:25s | 02m:00s |
+| PublishWebApiStep          | ${\textsf{\color{lightgreen}Success}}$ | 02m:25s | 02m:31s | 05s:862ms |
+| DeployWebApiStep           | ${\textsf{\color{lightgreen}Success}}$ | 02m:31s | 03m:15s | 44s:776ms |
+| PublishWebUiStep           | ${\textsf{\color{lightgreen}Success}}$ | 02m:25s | 03m:32s | 01m:06s |
+| DeployWebUiStep            | ${\textsf{\color{lightgreen}Success}}$ | 03m:32s | 04m:11s | 39s:304ms |
+| **Total**                  | **${\textsf{\color{lightgreen}Success}}$** | **00s:000ms** | **04m:11s** | **04m:11s** |
 
 ```mermaid
 ---
@@ -67,13 +67,13 @@ gantt
 	title       Run Summary
 	axisFormat %M:%S
 
-InstallSwaCliModule : 00:00:005, 00:10:118
-CreateResourceGroupModule : 00:10:119, 00:15:735
-InstallDotnetWasmToolsModule : 00:00:005, 00:25:225
-DeployBicepModule : 00:15:737, 01:08:598
-RestoreAndBuildModule : 00:25:228, 02:25:285
-PublishWebApiModule : 02:25:285, 02:31:148
-DeployWebApiModule : 02:31:148, 03:15:925
-PublishWebUiModule : 02:25:287, 03:32:122
-DeployWebUiModule : 03:32:122, 04:11:427
+InstallSwaCliStep : 00:00:005, 00:10:118
+CreateResourceGroupStep : 00:10:119, 00:15:735
+InstallDotnetWasmToolsStep : 00:00:005, 00:25:225
+DeployBicepStep : 00:15:737, 01:08:598
+RestoreAndBuildStep : 00:25:228, 02:25:285
+PublishWebApiStep : 02:25:285, 02:31:148
+DeployWebApiStep : 02:31:148, 03:15:925
+PublishWebUiStep : 02:25:287, 03:32:122
+DeployWebUiStep : 03:32:122, 04:11:427
 ```

@@ -76,13 +76,13 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 	private static string GetCliCommandOutput(PipelineSummary pipelineSummary)
 	{
 		var text = "\n### CLI Command Outputs\n";
-		foreach (var moduleContainer in pipelineSummary.ModuleContainers.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime))
+		foreach (var stepContainer in pipelineSummary.StepContainers.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime))
 		{
-			var standardOutput = string.Join("\n", moduleContainer.CliCommandResults?.Select(x => x?.StandardOutput) ?? Array.Empty<string>()).Trim();
-			var errorOutput = string.Join("\n", moduleContainer.CliCommandResults?.Select(x => x?.StandardError) ?? Array.Empty<string?>()).Trim();
+			var standardOutput = string.Join("\n", stepContainer.CliCommandResults?.Select(x => x?.StandardOutput) ?? Array.Empty<string>()).Trim();
+			var errorOutput = string.Join("\n", stepContainer.CliCommandResults?.Select(x => x?.StandardError) ?? Array.Empty<string?>()).Trim();
 			text += $"""
 			         <details>
-			         <summary>{moduleContainer.GetModuleName()}</summary>
+			         <summary>{stepContainer.GetStepName()}</summary>
 
 			         ##### Error Output
 			         ```console

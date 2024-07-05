@@ -19,7 +19,7 @@ public static class PipelineCliHelper
 	{
 		if (cancellationToken == CancellationToken.None)
 		{
-			throw new InvalidOperationException($"Please pass the cancellation token from {nameof(IModule.RunModule)} to {nameof(RunCliCommandAsync)}!");
+			throw new InvalidOperationException($"Please pass the cancellation token from {nameof(IStep.RunStep)} to {nameof(RunCliCommandAsync)}!");
 		}
 		var command = Cli.Wrap(targetFilePath).WithArguments(arguments);
 		var result = await RunCliCommandAsync(command, cancellationToken);

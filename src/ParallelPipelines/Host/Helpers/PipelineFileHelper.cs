@@ -7,10 +7,10 @@ public static class PipelineFileHelper
 {
 	public static DirectoryInfo GitRootDirectory { get; set; } = null!;
 
-	internal static async Task PopulateGitRootDirectory()
+	internal static async Task PopulateGitRootDirectory(CancellationToken cancellationToken)
 	{
 		var result =
-			await PipelineCliHelper.RunCliCommandAsync("git", "rev-parse --show-toplevel", CancellationToken.None);
+			await PipelineCliHelper.RunCliCommandAsync("git", "rev-parse --show-toplevel", cancellationToken);
 		var gitRootDirectory = await GetDirectory(result!.StandardOutput.Trim().ReplaceLineEndings(string.Empty));
 		if (gitRootDirectory.Exists is false)
 		{

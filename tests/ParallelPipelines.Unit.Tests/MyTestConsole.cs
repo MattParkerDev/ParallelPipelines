@@ -4,6 +4,9 @@ using Xunit.Abstractions;
 
 namespace ParallelPipelines.Unit.Tests;
 
+/// <summary>
+/// Used to capture the output of the console to the test output
+/// </summary>
 public class MyTestConsole(ITestOutputHelper testOutput) : IAnsiConsole
 {
 	private readonly ITestOutputHelper _testOutput = testOutput;

@@ -4,22 +4,22 @@ using ParallelPipelines.Application.Attributes;
 
 namespace ParallelPipelines.Host.Services;
 
-public class ModuleContainerProvider(IEnumerable<ModuleContainer> moduleContainers)
+public class StepContainerProvider(IEnumerable<StepContainer> stepContainers)
 {
-	private readonly List<ModuleContainer> _moduleContainers = moduleContainers.ToList();
+	private readonly List<StepContainer> _stepContainers = stepContainers.ToList();
 
-	public List<ModuleContainer> GetAllModuleContainers()
+	public List<StepContainer> GetAllStepContainers()
 	{
-		return _moduleContainers;
+		return _stepContainers;
 	}
 
-	public async IAsyncEnumerable<ModuleContainer> GetModuleContainersOrderedForExecution(
+	public async IAsyncEnumerable<StepContainer> GetStepContainersOrderedForExecution(
 		[EnumeratorCancellation] CancellationToken cancellationToken)
 	{
-		var noDependencies = _moduleContainers.Where(m => m.Module.GetType().HasNoDependencies()).ToList();
+		var noDependencies = _stepContainers.Where(m => m.Step.GetType().HasNoDependencies()).ToList();
 		if (noDependencies.Count == 0)
 		{
-			throw new InvalidOperationException("No modules found with no dependencies");
+			throw new InvalidOperationException("No steps found with no dependencies");
 		}
 
 		foreach (var container in noDependencies)
@@ -28,11 +28,11 @@ public class ModuleContainerProvider(IEnumerable<ModuleContainer> moduleContaine
 		}
 
 		var inProgress = noDependencies;
-		var remaining = _moduleContainers.Except(inProgress).ToList();
+		var remaining = _stepContainers.Except(inProgress).ToList();
 
 		while (remaining.Count != 0)
 		{
-			var result = await await Task.WhenAny(inProgress.Select(s => s.CompletedTask).ToList()).WaitAsync(cancellationToken);
+			var result = await await Task.WhenAny(inProgress.Select(s => s.CompletedTask).ToList()).WaitAsync(cancellationToken); // required, as otherwise the loop will not be cancellable
 			inProgress.Remove(result);
 			foreach (var dependent in result.Dependents)
 			{

@@ -8,28 +8,28 @@ namespace ParallelPipelines.Host.Services;
 public class ConsoleRenderer(IAnsiConsole ansiConsole)
 {
 	private readonly IAnsiConsole _ansiConsole = ansiConsole;
-	private static bool _zeroTimesToFirstModule = true;
+	private static bool _zeroTimesToFirstStep = true;
 	private bool HasRenderedOnce { get; set; } = false;
-	private int NumberOfModules { get; set; } = 0;
-	private List<ModuleContainer>? ModuleContainers { get; set; }
+	private int NumberOfSteps { get; set; } = 0;
+	private List<StepContainer>? StepContainers { get; set; }
 	public bool StopRendering { get; set; } = false;
 
 	private SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
-	public async Task StartRenderingProgress(List<ModuleContainer> moduleContainers, CancellationToken cancellationToken)
+	public async Task StartRenderingProgress(List<StepContainer> stepContainers, CancellationToken cancellationToken)
 	{
 		if (DeploymentConstants.WriteDynamicLogs is false)
 		{
 			return;
 		}
-		ModuleContainers = moduleContainers;
+		StepContainers = stepContainers;
 		while (cancellationToken.IsCancellationRequested is false && StopRendering is false)
 		{
-			await RenderModulesProgress(ModuleContainers);
+			await RenderStepsProgress(StepContainers);
 			await Task.Delay(1000, cancellationToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 		}
 	}
-	public async Task RenderModulesProgress(List<ModuleContainer> moduleContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
+	public async Task RenderStepsProgress(List<StepContainer> stepContainers, PipelineSummary? pipelineSummary = null, bool finalWrite = false)
 	{
 		if (DeploymentConstants.WriteDynamicLogs is false && finalWrite is false)
 		{
@@ -46,16 +46,16 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 					_ansiConsole.WriteLine($"Console Width: {consoleWidth}, overriding to 120");
 					_ansiConsole.Profile.Width = 120;
 				}
-				_ansiConsole.WriteLine($"{"Module",-40}{"Status", -14}{"Start", -15}{"End", -15}{"Duration", -11}");
+				_ansiConsole.WriteLine($"{"Step",-40}{"Status", -14}{"Start", -15}{"End", -15}{"Duration", -11}");
 			}
 			if (HasRenderedOnce)
 			{
-				_ansiConsole.Cursor.SetPosition(0, Console.CursorTop - NumberOfModules - 2 + 1);
+				_ansiConsole.Cursor.SetPosition(0, Console.CursorTop - NumberOfSteps - 2 + 1);
 				_ansiConsole.Write("\x1B[0J"); // clear from cursor to end of screen https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#erase-functions
 			}
-			foreach (var module in moduleContainers)
+			foreach (var step in stepContainers)
 			{
-				var text = GetDecoratedText(module);
+				var text = GetDecoratedText(step);
 				_ansiConsole.WriteLine(text);
 			}
 
@@ -69,7 +69,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 			if (!HasRenderedOnce)
 			{
 				HasRenderedOnce = true;
-				NumberOfModules = moduleContainers.Count;
+				NumberOfSteps = stepContainers.Count;
 			}
 		}
 		finally
@@ -78,34 +78,34 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 		}
 	}
 
-	public void WriteModule(ModuleContainer moduleContainer)
+	public void WriteStep(StepContainer stepContainer)
 	{
 		if (DeploymentConstants.WriteDynamicLogs is true)
 		{
 			return;
 		}
-		var text = moduleContainer switch
+		var text = stepContainer switch
 		{
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Success } => $"✅ {moduleContainer.GetModuleName()} finished Successfully",
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Skipped } => $"{moduleContainer.GetModuleName()} skipped",
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Cancelled } => $"{moduleContainer.GetModuleName()} cancelled due to previous failure",
-			{ State: ModuleState.Completed, CompletionType: CompletionType.Failure } => $"❌ {moduleContainer.GetModuleName()} Failed: {moduleContainer.Exception}",
-			{ State: ModuleState.Running } => $"⚡ {moduleContainer.GetModuleName()} Starting",
-			_ => throw new ArgumentOutOfRangeException(nameof(moduleContainer))
+			{ State: StepState.Completed, CompletionType: CompletionType.Success } => $"✅ {stepContainer.GetStepName()} finished Successfully",
+			{ State: StepState.Completed, CompletionType: CompletionType.Skipped } => $"{stepContainer.GetStepName()} skipped",
+			{ State: StepState.Completed, CompletionType: CompletionType.Cancelled } => $"{stepContainer.GetStepName()} cancelled due to previous failure",
+			{ State: StepState.Completed, CompletionType: CompletionType.Failure } => $"❌ {stepContainer.GetStepName()} Failed: {stepContainer.Exception}",
+			{ State: StepState.Running } => $"⚡ {stepContainer.GetStepName()} Starting",
+			_ => throw new ArgumentOutOfRangeException(nameof(stepContainer))
 		};
 		_ansiConsole.WriteLine(text);
 	}
 
-	public async Task WriteFinalState(PipelineSummary pipelineSummary, List<ModuleContainer> moduleContainers)
+	public async Task WriteFinalState(PipelineSummary pipelineSummary, List<StepContainer> stepContainers)
 	{
-		await RenderModulesProgress(moduleContainers, pipelineSummary, true);
+		await RenderStepsProgress(stepContainers, pipelineSummary, true);
 	}
 
-	private string GetDecoratedText(ModuleContainer module)
+	private string GetDecoratedText(StepContainer step)
 	{
-		var (start, end) = GetAnsiColorCodes(module);
-		var (startTime, endTime, duration) = GetTimeStartedAndFinished(module);
-		var text = $"{start}{module.GetModuleName(),-40}{GetStatusString(module), -14}{startTime, -15}{endTime, -15}{duration, -11}{end}";
+		var (start, end) = GetAnsiColorCodes(step);
+		var (startTime, endTime, duration) = GetTimeStartedAndFinished(step);
+		var text = $"{start}{step.GetStepName(),-40}{GetStatusString(step), -14}{startTime, -15}{endTime, -15}{duration, -11}{end}";
 		return text;
 	}
 
@@ -124,17 +124,17 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 		};
 	}
 
-	private static (string start, string end) GetAnsiColorCodes(ModuleContainer module)
+	private static (string start, string end) GetAnsiColorCodes(StepContainer step)
 	{
-		return module.State switch
+		return step.State switch
 		{
-			ModuleState.Waiting => ("",""),
-			ModuleState.Running => ("\x1b[36m","\x1b[0m"),
-			ModuleState.Completed when module.CompletionType == CompletionType.Success => ("\x1b[32m","\x1b[0m"),
-			ModuleState.Completed when module.CompletionType == CompletionType.Skipped => ("\x1b[33m","\x1b[0m"),
-			ModuleState.Completed when module.CompletionType == CompletionType.Cancelled => ("\x1b[31m","\x1b[0m"),
-			ModuleState.Completed when module.CompletionType == CompletionType.Failure => ("\x1b[31m","\x1b[0m"),
-			_ => throw new ArgumentOutOfRangeException(nameof(module.State))
+			StepState.Waiting => ("",""),
+			StepState.Running => ("\x1b[36m","\x1b[0m"),
+			StepState.Completed when step.CompletionType == CompletionType.Success => ("\x1b[32m","\x1b[0m"),
+			StepState.Completed when step.CompletionType == CompletionType.Skipped => ("\x1b[33m","\x1b[0m"),
+			StepState.Completed when step.CompletionType == CompletionType.Cancelled => ("\x1b[31m","\x1b[0m"),
+			StepState.Completed when step.CompletionType == CompletionType.Failure => ("\x1b[31m","\x1b[0m"),
+			_ => throw new ArgumentOutOfRangeException(nameof(step.State))
 		};
 	}
 
@@ -151,17 +151,17 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 		};
 		return pipelineStatusString;
 	}
-	public static string GetStatusString(ModuleContainer module)
+	public static string GetStatusString(StepContainer step)
 	{
-		return module.State switch
+		return step.State switch
 		{
-			ModuleState.Waiting => "Waiting",
-			ModuleState.Running => "Running",
-			ModuleState.Completed when module.CompletionType == CompletionType.Success => "Success",
-			ModuleState.Completed when module.CompletionType == CompletionType.Skipped => "Skipped",
-			ModuleState.Completed when module.CompletionType == CompletionType.Cancelled => "Cancelled",
-			ModuleState.Completed when module.CompletionType == CompletionType.Failure => $"Failure",
-			_ => throw new ArgumentOutOfRangeException(nameof(module.State))
+			StepState.Waiting => "Waiting",
+			StepState.Running => "Running",
+			StepState.Completed when step.CompletionType == CompletionType.Success => "Success",
+			StepState.Completed when step.CompletionType == CompletionType.Skipped => "Skipped",
+			StepState.Completed when step.CompletionType == CompletionType.Cancelled => "Cancelled",
+			StepState.Completed when step.CompletionType == CompletionType.Failure => $"Failure",
+			_ => throw new ArgumentOutOfRangeException(nameof(step.State))
 		};
 	}
 
@@ -170,7 +170,7 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 		var startTimeGlobal = DeploymentTimeProvider.DeploymentStartTime;
 		var endTimeGlobal = DeploymentTimeProvider.DeploymentEndTime;
 		var durationGlobal = DeploymentTimeProvider.DeploymentDuration;
-		if (_zeroTimesToFirstModule is false)
+		if (_zeroTimesToFirstStep is false)
 		{
 			var startTime = startTimeGlobal?.ToString("HH:mm:ss");
 			var endTime = endTimeGlobal?.ToString("HH:mm:ss");
@@ -190,23 +190,23 @@ public class ConsoleRenderer(IAnsiConsole ansiConsole)
 		}
 	}
 
-	public static (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinished(ModuleContainer module)
+	public static (string? startTime, string? endTime, string? duration) GetTimeStartedAndFinished(StepContainer step)
 	{
-		if (_zeroTimesToFirstModule is false)
+		if (_zeroTimesToFirstStep is false)
 		{
-			var startTime = module.StartTime?.ToString("HH:mm:ss");
-			var endTime = module.EndTime?.ToString("HH:mm:ss");
-			var duration = module.Duration?.ToString(@"hh\:mm\:ss");
+			var startTime = step.StartTime?.ToString("HH:mm:ss");
+			var endTime = step.EndTime?.ToString("HH:mm:ss");
+			var duration = step.Duration?.ToString(@"hh\:mm\:ss");
 			return (startTime, endTime, duration);
 		}
 		else
 		{
-			var startTime = module.StartTime - DeploymentTimeProvider.DeploymentStartTime;
-			var endTime = module.EndTime - DeploymentTimeProvider.DeploymentStartTime;
+			var startTime = step.StartTime - DeploymentTimeProvider.DeploymentStartTime;
+			var endTime = step.EndTime - DeploymentTimeProvider.DeploymentStartTime;
 			var duration = endTime - startTime;
 			if (duration is null)
 			{
-				duration = DateTimeOffset.Now - module.StartTime;
+				duration = DateTimeOffset.Now - step.StartTime;
 			}
 			return (startTime.ToTimeSpanString(), endTime.ToTimeSpanString(), duration.ToTimeSpanString());
 		}

@@ -1,10 +1,9 @@
-﻿using Deploy.Experimental.Modules.BuildAndPublish;
-using Deploy.Experimental.Modules.ProvisionAzureResources;
-using Deploy.Modules.BuildAndPublish;
-using Deploy.Modules.Deploy;
-using Deploy.Modules.Setup;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using ParallelPipelines.Console.Steps._1Setup;
+using ParallelPipelines.Console.Steps._2ProvisionAzureResources;
+using ParallelPipelines.Console.Steps._3BuildAndPublish;
+using ParallelPipelines.Console.Steps._4Deploy;
 using ParallelPipelines.Host;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -20,15 +19,15 @@ builder.Services.AddParallelPipelines(builder.Configuration, options =>
 });
 
 builder.Services
-	.AddModule<InstallDotnetWasmToolsModule>()
-	.AddModule<InstallSwaCliModule>()
-	.AddModule<RestoreAndBuildModule>()
-	.AddModule<PublishWebApiModule>()
-	.AddModule<PublishWebUiModule>()
-	.AddModule<CreateResourceGroupModule>()
-	.AddModule<DeployBicepModule>()
-	.AddModule<DeployWebApiModule>()
-	.AddModule<DeployWebUiModule>();
+	.AddStep<InstallDotnetWasmToolsStep>()
+	.AddStep<InstallSwaCliStep>()
+	.AddStep<RestoreAndBuildStep>()
+	.AddStep<PublishWebApiStep>()
+	.AddStep<PublishWebUiStep>()
+	.AddStep<CreateResourceGroupStep>()
+	.AddStep<DeployBicepStep>()
+	.AddStep<DeployWebApiStep>()
+	.AddStep<DeployWebUiStep>();
 
 using var host = builder.Build();
 

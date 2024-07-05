@@ -15,7 +15,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
-		await _orchestratorService.InitialiseAsync();
+		await _orchestratorService.InitialiseAsync(cancellationToken);
 		_timer.Start();
 		try
 		{

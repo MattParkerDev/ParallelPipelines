@@ -8,11 +8,11 @@ public class GithubActionGanttSummaryService
 {
 	public string GenerateMermaidSummary(PipelineSummary pipelineSummary)
 	{
-		var moduleStringList = pipelineSummary.ModuleContainers?.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime).Select(
+		var stepStringList = pipelineSummary.StepContainers?.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime).Select(
 			x =>
 			{
 				var (startTime, endTime) = x.GetTimeStartedAndFinished();
-				return $"{x.GetModuleName()} :{AddCritIfFailed(x)} {startTime}, {endTime}";
+				return $"{x.GetStepName()} :{AddCritIfFailed(x)} {startTime}, {endTime}";
 			}).ToList() ?? [];
 
 		var text = $"""
@@ -39,25 +39,25 @@ public class GithubActionGanttSummaryService
 		            	title       Run Summary
 		            	axisFormat %M:%S
 
-		            {string.Join("\n", moduleStringList)}
+		            {string.Join("\n", stepStringList)}
 		            ```
 		            """;
 
 		return text;
 	}
 
-	private static string AddCritIfFailed(ModuleContainer moduleContainer)
+	private static string AddCritIfFailed(StepContainer stepContainer)
 	{
-		return moduleContainer.CompletionType is CompletionType.Failure or CompletionType.Cancelled ? "crit," : string.Empty;
+		return stepContainer.CompletionType is CompletionType.Failure or CompletionType.Cancelled ? "crit," : string.Empty;
 	}
 }
 
 file static class GithubMarkdownGanttFormatter
 {
-	public static (string? startTime, string? endTime) GetTimeStartedAndFinished(this ModuleContainer module)
+	public static (string? startTime, string? endTime) GetTimeStartedAndFinished(this StepContainer step)
 	{
-		var startTime = module.StartTime - DeploymentTimeProvider.DeploymentStartTime;
-		var endTime = module.EndTime - DeploymentTimeProvider.DeploymentStartTime;
+		var startTime = step.StartTime - DeploymentTimeProvider.DeploymentStartTime;
+		var endTime = step.EndTime - DeploymentTimeProvider.DeploymentStartTime;
 
 		var startTimeOnly = TimeOnly.FromTimeSpan(startTime!.Value);
 		var endTimeOnly = TimeOnly.FromTimeSpan(endTime!.Value);

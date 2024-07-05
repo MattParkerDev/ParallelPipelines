@@ -2,9 +2,9 @@
 
 namespace ParallelPipelines.Domain.Entities;
 
-public interface IModule
+public interface IStep
 {
-	public Task<BufferedCommandResult?[]?> RunModule(CancellationToken cancellationToken);
+	public Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken);
 
 	public bool ShouldSkip()
 	{

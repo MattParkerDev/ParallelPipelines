@@ -6,11 +6,11 @@ public class GithubActionTableSummaryService
 {
 	public string GenerateTableSummary(PipelineSummary pipelineSummary)
 	{
-		var moduleStringList = pipelineSummary.ModuleContainers?.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime).Select(
-			moduleContainer =>
+		var stepStringList = pipelineSummary.StepContainers?.OrderBy(x => x.EndTime).ThenBy(s => s.StartTime).Select(
+			stepContainer =>
 			{
-				var (startTime, endTime, duration) = ConsoleRenderer.GetTimeStartedAndFinished(moduleContainer);
-				var text = $"| {moduleContainer.GetModuleName()} | {ConsoleRenderer.GetStatusString(moduleContainer).ToDisplayString()} | {startTime} | {endTime} | {duration} |";
+				var (startTime, endTime, duration) = ConsoleRenderer.GetTimeStartedAndFinished(stepContainer);
+				var text = $"| {stepContainer.GetStepName()} | {ConsoleRenderer.GetStatusString(stepContainer).ToDisplayString()} | {startTime} | {endTime} | {duration} |";
 				return text;
 			}
 		).ToList() ?? [];
@@ -20,9 +20,9 @@ public class GithubActionTableSummaryService
 		var overallSummaryString = $"| **Total** | **{pipelineStatusString}** | **{globalStartTime}** | **{globalEndTime}** | **{globalDuration}** |";
 		var text = $"""
 		            ### Run Summary
-		            | Module | Status | Start | End | Duration |
+		            | Step | Status | Start | End | Duration |
 		            | --- | --- | --- | --- | --- |
-		            {string.Join("\n", moduleStringList)}
+		            {string.Join("\n", stepStringList)}
 		            {overallSummaryString}
 		            """;
 

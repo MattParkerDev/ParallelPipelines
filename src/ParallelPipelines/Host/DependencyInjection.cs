@@ -21,7 +21,7 @@ public static class DependencyInjection
 		services.AddHostedService<PipelineApplication>();
 		services.AddSingleton<OrchestratorService>();
 		services.AddSingleton<PostStepService>();
-		services.AddSingleton<ModuleContainerProvider>();
+		services.AddSingleton<StepContainerProvider>();
 		services.AddSingleton<ConsoleRenderer>();
 
 		services.AddSingleton<GithubActionTableSummaryService>();
@@ -40,14 +40,14 @@ public static class DependencyInjection
 		return services;
 	}
 
-	public static IServiceCollection AddModule<TModule>(this IServiceCollection services)
-		where TModule : class, IModule
+	public static IServiceCollection AddStep<TStep>(this IServiceCollection services)
+		where TStep : class, IStep
 	{
-		services.AddSingleton<TModule>();
-		services.AddSingleton<ModuleContainer>(sp =>
+		services.AddSingleton<TStep>();
+		services.AddSingleton<StepContainer>(sp =>
 		{
-			var module = sp.GetRequiredService<TModule>();
-			return new ModuleContainer(module);
+			var step = sp.GetRequiredService<TStep>();
+			return new StepContainer(step);
 		});
 		return services;
 	}
