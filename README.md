@@ -25,7 +25,7 @@ Despite the comparison, ParallelPipelines is built primarily to be used in Githu
 
 ### Notes Regarding Examples
 
-- The examples are written with a C#/.NET/Azure ecosystem in mind, noting example steps to install dotnet wasm-tools, install the Azure Static Web Apps CLI to deploy a Blazor WebAssembly app, and provision an Azure resource group/deploy a Bicep template.
+- The examples are written with a C#/.NET/Azure ecosystem in mind, noting steps such as installing dotnet wasm-tools, installing the Azure Static Web Apps CLI to deploy a Blazor WebAssembly app, and provisioning an Azure resource group/deploying a Bicep template.
 - These are just examples - you can write whatever steps you would like, as steps simply run shell commands.
 
 
