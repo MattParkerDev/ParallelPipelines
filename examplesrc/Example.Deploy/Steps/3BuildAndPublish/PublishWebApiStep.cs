@@ -1,6 +1,6 @@
 ﻿using ParallelPipelines.Domain.Entities;
 
-namespace ParallelPipelines.Console.Steps._3BuildAndPublish;
+namespace Example.Deploy.Steps._3BuildAndPublish;
 
 [DependsOnStep<RestoreAndBuildStep>]
 public class PublishWebApiStep(IPipelineContext pipelineContext) : IStep

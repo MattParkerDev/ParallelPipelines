@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using ParallelPipelines.Console.Steps._1Setup;
-using ParallelPipelines.Console.Steps._2ProvisionAzureResources;
-using ParallelPipelines.Console.Steps._3BuildAndPublish;
-using ParallelPipelines.Console.Steps._4Deploy;
+using Example.Deploy.Steps._1Setup;
+using Example.Deploy.Steps._2ProvisionAzureResources;
+using Example.Deploy.Steps._3BuildAndPublish;
+using Example.Deploy.Steps._4Deploy;
 using ParallelPipelines.Host;
 
 var builder = Host.CreateApplicationBuilder(args);

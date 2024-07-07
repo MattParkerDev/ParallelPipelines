@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ParallelPipelines.Console.Steps._1Setup;
+using Example.Deploy.Steps._1Setup;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host;
 using ParallelPipelines.Host.Services;

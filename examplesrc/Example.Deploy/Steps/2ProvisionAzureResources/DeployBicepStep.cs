@@ -1,6 +1,6 @@
 ﻿using ParallelPipelines.Domain.Entities;
 
-namespace ParallelPipelines.Console.Steps._2ProvisionAzureResources;
+namespace Example.Deploy.Steps._2ProvisionAzureResources;
 
 [DependsOnStep<CreateResourceGroupStep>]
 public class DeployBicepStep(IPipelineContext pipelineContext) : IStep

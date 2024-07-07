@@ -1,0 +1,14 @@
+name: Prod - Pipeline
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  call-reusable-build-and-deploy:
+    uses: ./.github/workflows/template-deploy.yml
+    with:
+      environment: 'prod'
+
+    secrets: inherit

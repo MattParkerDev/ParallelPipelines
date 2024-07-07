@@ -1,0 +1,39 @@
+name: Template Build and Deploy
+on:
+  workflow_call:
+    inputs:
+      # The environment to deploy to (Staging or Production)
+      environment:
+        required: true
+        type: string
+
+    secrets:
+      AZURECLIENTID:
+        required: true
+      AZURECLIENTSECRET:
+        required: true
+      AZURESUBSCRIPTIONID:
+        required: true
+      AZURETENANTID:
+        required: true
+
+jobs:
+  execute-parallel-pipeline:
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.AZURECLIENTID }}","clientSecret":"${{ secrets.AZURECLIENTSECRET }}","subscriptionId":"${{ secrets.AZURESUBSCRIPTIONID }}","tenantId":"${{ secrets.AZURETENANTID }}"}'
+
+      - name: Set env
+        run: echo "ParallelPipelinesEnvironment=${{ inputs.environment }}" >> $GITHUB_ENV
+
+      - name: Dotnet Run Pipeline
+        run: dotnet run -c Release --project ./examplesrc/Example.Deploy/Example.Deploy.csproj ### Update to your new deploy project path

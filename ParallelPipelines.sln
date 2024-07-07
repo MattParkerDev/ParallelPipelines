@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examplesrc", "examplesrc", "{2C1B40FF-A8B7-42B4-994A-74E22076E0CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelPipelines.Console", "examplesrc\ParallelPipelines.Console\ParallelPipelines.Console.csproj", "{9A93959C-6425-4C82-9249-7A654E23DEB3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Deploy", "examplesrc\Example.Deploy\Example.Deploy.csproj", "{9A93959C-6425-4C82-9249-7A654E23DEB3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{48027F2A-A9FE-44D9-BD09-432A7E0B683F}"
 EndProject

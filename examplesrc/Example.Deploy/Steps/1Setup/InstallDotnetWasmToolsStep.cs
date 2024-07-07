@@ -1,16 +1,15 @@
 ﻿using ParallelPipelines.Domain.Entities;
 
-namespace ParallelPipelines.Console.Steps._1Setup;
+namespace Example.Deploy.Steps._1Setup;
 
-public class InstallSwaCliStep(IPipelineContext pipelineContext) : IStep
+public class InstallDotnetWasmToolsStep(IPipelineContext pipelineContext) : IStep
 {
 	private readonly IPipelineContext _pipelineContext = pipelineContext;
 
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{
 		var result =
-			await PipelineCliHelper.RunCliCommandAsync("pnpm", "install -g @azure/static-web-apps-cli",
-				cancellationToken);
+			await PipelineCliHelper.RunCliCommandAsync("dotnet", "workload install wasm-tools", cancellationToken);
 		return [result];
 	}
 }

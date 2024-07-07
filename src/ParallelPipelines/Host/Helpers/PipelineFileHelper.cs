@@ -5,7 +5,7 @@ namespace ParallelPipelines.Host.Helpers;
 
 public static class PipelineFileHelper
 {
-	public static DirectoryInfo GitRootDirectory { get; set; } = null!;
+	public static DirectoryInfo GitRootDirectory { get; private set; } = null!;
 
 	internal static async Task PopulateGitRootDirectory(CancellationToken cancellationToken)
 	{

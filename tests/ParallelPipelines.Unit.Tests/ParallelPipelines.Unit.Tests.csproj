@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\examplesrc\ParallelPipelines.Console\ParallelPipelines.Console.csproj" />
+      <ProjectReference Include="..\..\examplesrc\Example.Deploy\Example.Deploy.csproj" />
       <ProjectReference Include="..\..\src\ParallelPipelines\ParallelPipelines.csproj" />
     </ItemGroup>
 

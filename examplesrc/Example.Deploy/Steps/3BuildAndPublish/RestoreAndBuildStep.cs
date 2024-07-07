@@ -1,7 +1,7 @@
-﻿using ParallelPipelines.Console.Steps._1Setup;
+﻿using Example.Deploy.Steps._1Setup;
 using ParallelPipelines.Domain.Entities;
 
-namespace ParallelPipelines.Console.Steps._3BuildAndPublish;
+namespace Example.Deploy.Steps._3BuildAndPublish;
 
 [DependsOnStep<InstallDotnetWasmToolsStep>]
 public class RestoreAndBuildStep(IPipelineContext pipelineContext) : IStep
