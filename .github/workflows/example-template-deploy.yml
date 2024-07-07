@@ -35,11 +35,11 @@ jobs:
       - name: Set env
         run: echo "ParallelPipelinesEnvironment=${{ inputs.environment }}" >> $GITHUB_ENV
 
+      - name: Dotnet Run Pipeline
+        run: dotnet run -c Release --project ./examplesrc/Example.Deploy/Example.Deploy.csproj ### Update to your new deploy project path
+
       - name: Upload ParallelPipelines Artifact
         uses: actions/upload-artifact@v4
         with:
           name: parallel-pipelines-artifact
-          path: ./README.md
-
-      - name: Dotnet Run Pipeline
-        run: dotnet run -c Release --project ./examplesrc/Example.Deploy/Example.Deploy.csproj ### Update to your new deploy project path
+          path: ./pipeline-summary-dto.json
