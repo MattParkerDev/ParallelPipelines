@@ -14,7 +14,7 @@ public class DeployWebUiStep : IStep
 
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{
-		await Task.Delay(TimeSpan.FromSeconds(20), cancellationToken);
+		await Task.Delay(TimeSpan.FromSeconds(12), cancellationToken);
 		return null;
 	}
 }

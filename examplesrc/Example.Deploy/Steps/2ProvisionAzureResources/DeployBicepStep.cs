@@ -10,7 +10,7 @@ public class DeployBicepStep(IPipelineContext pipelineContext) : IStep
 	public bool ShouldSkip() => false;
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{
-		await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+		await Task.Delay(TimeSpan.FromSeconds(20), cancellationToken);
 		return null;
 	}
 }

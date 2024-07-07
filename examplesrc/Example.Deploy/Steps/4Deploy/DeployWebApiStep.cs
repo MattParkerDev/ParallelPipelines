@@ -12,7 +12,7 @@ public class DeployWebApiStep(IPipelineContext pipelineContext) : IStep
 
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{
-		await Task.Delay(TimeSpan.FromSeconds(15), cancellationToken);
+		await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
 		return null;
 	}
 }
