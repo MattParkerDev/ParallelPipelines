@@ -24,6 +24,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{48027F2A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelPipelines.Unit.Tests", "tests\ParallelPipelines.Unit.Tests\ParallelPipelines.Unit.Tests.csproj", "{F564F2F0-A597-4FE9-B5E2-A9E44ED276DF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{FE5A9F2E-7018-4834-81B8-F5ED7213616F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\example-prod-deploy.yml = .github\workflows\example-prod-deploy.yml
+		.github\workflows\example-template-deploy.yml = .github\workflows\example-template-deploy.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
