@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
 using Microsoft.Extensions.Options;
+using ParallelPipelines.Application;
 using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Host.Helpers;
 using ParallelPipelines.Host.InternalHelpers;
@@ -19,6 +21,9 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 	{
 		var text = GetGithubSummary(pipelineSummary, cancellationToken);
 		await WriteGithubSummary(text, cancellationToken);
+		var pipelineSummaryDto = PipelineSummaryMapper.ToDto(pipelineSummary);
+		var summaryFile = await PipelineFileHelper.GitRootDirectory.CreateFileIfMissingAndGetFile("pipeline-summary-dto.json");
+		await File.WriteAllTextAsync(summaryFile.FullName, JsonSerializer.Serialize(pipelineSummaryDto, new JsonSerializerOptions { WriteIndented = true }), cancellationToken);
 	}
 
 	private string GetGithubSummary(PipelineSummary pipelineSummary, CancellationToken cancellationToken)

@@ -1,10 +1,13 @@
 ﻿using System.Diagnostics;
+using System.IO.Compression;
+using System.Text.Json;
 using Actions.Octokit;
 using GitHub;
 using GitHub.Models;
 using Microsoft.Extensions.Hosting;
 using Octokit;
 using Octokit.Internal;
+using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Host.Helpers;
 using ParallelPipelines.Host.Services;
 using Spectre.Console;
@@ -33,11 +36,34 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 			var owner = Context.Current.Repo.Owner;
 			var repo = Context.Current.Repo.Repo;
 			var githubToken = _pipelineContext.Configuration["WorkflowGithubToken"];
-			//var githubClient = new GitHubClient(new ProductHeaderValue("ParallelPipelines"), new InMemoryCredentialStore(new Credentials(githubToken, AuthenticationType.Bearer)));
-			var githubClient = new GitHubClient(new ProductHeaderValue("ParallelPipelines"));
+			var githubClient = new GitHubClient(new ProductHeaderValue("ParallelPipelines"), new InMemoryCredentialStore(new Credentials(githubToken, AuthenticationType.Bearer)));
+			//var githubClient = new GitHubClient(new ProductHeaderValue("ParallelPipelines"), new InMemoryCredentialStore(new Credentials("", AuthenticationType.Bearer)));
 			owner = "MattParkerDev";
 			repo = "ParallelPipelines";
-			var runs = await githubClient.Actions.Workflows.Runs.ListByWorkflow(owner, repo, "example-prod-deploy.yml");
+			runId = 9828456326;
+			var run = await githubClient.Actions.Workflows.Runs.Get(owner, repo, runId);
+			var attemptNumber = run.RunAttempt + 1;
+			if (attemptNumber > 1)
+			{
+				AnsiConsole.WriteLine($"ParallelPipelines is running on attempt number {attemptNumber}");
+				var result = await githubClient.Actions.Artifacts.ListWorkflowArtifacts(owner, repo, runId);
+				var artifacts = result.Artifacts;
+				var failedRunArtifact = artifacts.FirstOrDefault(s => s.Name == "parallel-pipelines-artifact");
+				if (failedRunArtifact is not null)
+				{
+					await using var stream = await githubClient.Actions.Artifacts.DownloadArtifact(owner, repo, failedRunArtifact.Id, "zip");
+					// unzip stream and get json string
+					var zipArchive = new ZipArchive(stream);
+					var entry = zipArchive.Entries.FirstOrDefault();
+					if (entry is not null)
+					{
+						await using var entryStream = entry.Open();
+						var json = JsonSerializer.DeserializeAsync<string>(entryStream, cancellationToken: cancellationToken);
+
+					}
+				}
+			}
+
 
 			var pipelineSummary = await _orchestratorService.RunPipeline(cancellationToken);
 			await _postStepService.RunPostSteps(pipelineSummary, cancellationToken);
