@@ -16,6 +16,7 @@ builder.Configuration
 builder.Services.AddParallelPipelines(builder.Configuration, options =>
 {
 	options.Local.OutputSummaryToFile = true;
+	options.AllowedEnvironmentNames = ["dev", "prod"];
 });
 
 builder.Services

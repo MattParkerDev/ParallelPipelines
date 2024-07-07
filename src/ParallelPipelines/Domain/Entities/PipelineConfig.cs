@@ -4,6 +4,7 @@ public class PipelineConfig
 {
 	public CicdConfig Cicd { get; set; } = new();
 	public LocalConfig Local { get; set; } = new();
+	public List<string>? AllowedEnvironmentNames { get; set; }
 }
 
 public class CicdConfig

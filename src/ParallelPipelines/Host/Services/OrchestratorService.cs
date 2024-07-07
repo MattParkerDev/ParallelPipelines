@@ -8,12 +8,13 @@ using Spectre.Console;
 
 namespace ParallelPipelines.Host.Services;
 
-public class OrchestratorService(StepContainerProvider stepContainerProvider, ConsoleRenderer consoleRenderer, IAnsiConsole ansiConsole, IOptions<PipelineConfig> pipelineConfig)
+public class OrchestratorService(StepContainerProvider stepContainerProvider, ConsoleRenderer consoleRenderer, IAnsiConsole ansiConsole, IOptions<PipelineConfig> pipelineConfig, IPipelineContext pipelineContext)
 {
 	private readonly StepContainerProvider _stepContainerProvider = stepContainerProvider;
 	private readonly ConsoleRenderer _consoleRenderer = consoleRenderer;
 	private readonly IAnsiConsole _ansiConsole = ansiConsole;
 	private readonly PipelineConfig _pipelineConfig = pipelineConfig.Value;
+	private readonly IPipelineContext _pipelineContext = pipelineContext;
 	private readonly bool _exitPipelineOnSingleFailure = true;
 	private bool _isPipelineCancellationRequested = false;
 	private bool _runStepsSequentially = false;
@@ -26,6 +27,7 @@ public class OrchestratorService(StepContainerProvider stepContainerProvider, Co
 		DeploymentConstants.IsGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
 		DeploymentConstants.ConsoleSupportsAnsiSequences = AnsiConsole.Profile.Capabilities.Ansi;
 		DeploymentConstants.WriteDynamicLogs = DeploymentConstants.ConsoleSupportsAnsiSequences && DeploymentConstants.IsGithubActions is false;
+		_pipelineContext.ValidateandPopulatePipelineEnvironment();
 	}
 
 	public async Task<PipelineSummary> RunPipeline(CancellationToken cancellationToken)

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Host.Helpers;
 using ParallelPipelines.Host.Services;
@@ -36,7 +37,7 @@ public static class DependencyInjection
 		Console.OutputEncoding = Encoding.UTF8;
 		services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
 
-		services.AddSingleton<IPipelineContext, PipelineContext>(sp => new PipelineContext(configuration));
+		services.AddSingleton<IPipelineContext, PipelineContext>();
 		return services;
 	}
 
