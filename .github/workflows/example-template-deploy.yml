@@ -36,4 +36,6 @@ jobs:
         run: echo "ParallelPipelinesEnvironment=${{ inputs.environment }}" >> $GITHUB_ENV
 
       - name: Dotnet Run Pipeline
+        env:
+          WorkflowGithubToken: ${{ secrets.GITHUB_TOKEN }}
         run: dotnet run -c Release --project ./examplesrc/Example.Deploy/Example.Deploy.csproj ### Update to your new deploy project path
