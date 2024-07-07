@@ -7,15 +7,15 @@ on:
         required: true
         type: string
 
-    secrets:
-      AZURECLIENTID:
-        required: true
-      AZURECLIENTSECRET:
-        required: true
-      AZURESUBSCRIPTIONID:
-        required: true
-      AZURETENANTID:
-        required: true
+#    secrets:
+#      AZURECLIENTID:
+#        required: true
+#      AZURECLIENTSECRET:
+#        required: true
+#      AZURESUBSCRIPTIONID:
+#        required: true
+#      AZURETENANTID:
+#        required: true
 
 jobs:
   execute-parallel-pipeline:
@@ -28,9 +28,9 @@ jobs:
       - uses: pnpm/action-setup@v3
         with:
           version: 8
-      - uses: azure/login@v2
-        with:
-          creds: '{"clientId":"${{ secrets.AZURECLIENTID }}","clientSecret":"${{ secrets.AZURECLIENTSECRET }}","subscriptionId":"${{ secrets.AZURESUBSCRIPTIONID }}","tenantId":"${{ secrets.AZURETENANTID }}"}'
+#      - uses: azure/login@v2
+#        with:
+#          creds: '{"clientId":"${{ secrets.AZURECLIENTID }}","clientSecret":"${{ secrets.AZURECLIENTSECRET }}","subscriptionId":"${{ secrets.AZURESUBSCRIPTIONID }}","tenantId":"${{ secrets.AZURETENANTID }}"}'
 
       - name: Set env
         run: echo "ParallelPipelinesEnvironment=${{ inputs.environment }}" >> $GITHUB_ENV

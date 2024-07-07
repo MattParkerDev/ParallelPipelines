@@ -9,6 +9,6 @@ jobs:
   call-reusable-build-and-deploy:
     uses: ./.github/workflows/example-template-deploy.yml
     with:
-      environment: 'prod'
+      environment: 'dev'
 
     secrets: inherit
