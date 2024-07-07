@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-reusable-build-and-deploy:
-    uses: ./.github/workflows/template-deploy.yml
+    uses: ./.github/workflows/example-template-deploy.yml
     with:
       environment: 'prod'
 
