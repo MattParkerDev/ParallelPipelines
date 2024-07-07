@@ -10,6 +10,8 @@ public class DeployWebApiStep(IPipelineContext pipelineContext) : IStep
 {
 	private readonly IPipelineContext _pipelineContext = pipelineContext;
 
+	public bool ShouldSkip() => true;
+
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{
 		await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);

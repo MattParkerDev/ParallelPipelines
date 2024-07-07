@@ -10,7 +10,7 @@ namespace Example.Deploy.Steps._4Deploy;
 [DependsOnStep<PublishWebUiStep>]
 public class DeployWebUiStep : IStep
 {
-	public bool ShouldSkip() => false;
+	public bool ShouldSkip() => true;
 
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{
