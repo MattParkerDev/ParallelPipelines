@@ -9,7 +9,9 @@ using ParallelPipelines.Host;
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Configuration
+#if DEBUG
 	.AddJsonFile("appsettings.Development.json", true)
+#endif
 	.AddUserSecrets<Program>()
 	.AddEnvironmentVariables();
 
