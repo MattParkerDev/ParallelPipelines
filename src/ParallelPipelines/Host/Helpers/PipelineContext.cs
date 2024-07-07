@@ -12,7 +12,7 @@ public class PipelineContext(IConfiguration configuration, IOptions<PipelineConf
 
 	public string GetPipelineEnvironment() => _pipelineEnvironment ?? throw new InvalidOperationException("The pipeline environment has not been set - this is a ParallelPipelines bug");
 
-	public void ValidateandPopulatePipelineEnvironment()
+	public void ValidateAndPopulatePipelineEnvironment()
 	{
 		var environment = Configuration["ParallelPipelinesEnvironment"];
 
@@ -33,6 +33,6 @@ public class PipelineContext(IConfiguration configuration, IOptions<PipelineConf
 public interface IPipelineContext
 {
 	public IConfiguration Configuration { get; }
-	internal void ValidateandPopulatePipelineEnvironment();
+	internal void ValidateAndPopulatePipelineEnvironment();
 	public string GetPipelineEnvironment();
 }

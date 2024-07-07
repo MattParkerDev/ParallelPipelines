@@ -27,7 +27,7 @@ public class OrchestratorService(StepContainerProvider stepContainerProvider, Co
 		DeploymentConstants.IsGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
 		DeploymentConstants.ConsoleSupportsAnsiSequences = AnsiConsole.Profile.Capabilities.Ansi;
 		DeploymentConstants.WriteDynamicLogs = DeploymentConstants.ConsoleSupportsAnsiSequences && DeploymentConstants.IsGithubActions is false;
-		_pipelineContext.ValidateandPopulatePipelineEnvironment();
+		_pipelineContext.ValidateAndPopulatePipelineEnvironment();
 	}
 
 	public async Task<PipelineSummary> RunPipeline(CancellationToken cancellationToken)
