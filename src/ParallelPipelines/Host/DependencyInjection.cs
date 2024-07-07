@@ -1,4 +1,7 @@
 ﻿using System.Text;
+using Actions.Octokit;
+using Actions.Octokit.Extensions;
+using GitHub;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -19,6 +22,8 @@ public static class DependencyInjection
 	{
 		services.AddApplication(configuration);
 		services.AddInfrastructure(configuration);
+		var workflowGithubToken = configuration["WorkflowGithubToken"] ?? "InvalidToken";
+		//services.AddGitHubClientServices(workflowGithubToken!);
 		services.AddHostedService<PipelineApplication>();
 		services.AddSingleton<OrchestratorService>();
 		services.AddSingleton<PostStepService>();
