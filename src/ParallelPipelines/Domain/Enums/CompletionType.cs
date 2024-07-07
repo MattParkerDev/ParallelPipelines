@@ -3,6 +3,7 @@
 public enum CompletionType
 {
 	Success,
+	PrevSuccess,
 	Failure,
 	Skipped,
 	Cancelled

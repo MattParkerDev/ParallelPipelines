@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using ParallelPipelines.Application;
 using ParallelPipelines.Domain.Entities;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host.InternalHelpers;
@@ -30,7 +31,7 @@ public class OrchestratorService(StepContainerProvider stepContainerProvider, Co
 		_pipelineContext.ValidateAndPopulatePipelineEnvironment();
 	}
 
-	public async Task<PipelineSummary> RunPipeline(CancellationToken cancellationToken)
+	public async Task<PipelineSummary> RunPipeline(PipelineSummaryDto? failedRunSummaryDto, CancellationToken cancellationToken)
 	{
 		var stepContainers = _stepContainerProvider.GetAllStepContainers();
 		if (stepContainers.Count == 0)
@@ -41,6 +42,7 @@ public class OrchestratorService(StepContainerProvider stepContainerProvider, Co
 		LogFoundSteps(stepContainers);
 		PopulateDependents(stepContainers);
 		PopulateDependencies(stepContainers);
+		ApplyFailedRunSummary(stepContainers, failedRunSummaryDto);
 
 		var stepsToExecute = _stepContainerProvider.GetStepContainersOrderedForExecution(cancellationToken);
 
@@ -69,6 +71,10 @@ public class OrchestratorService(StepContainerProvider stepContainerProvider, Co
 					else if (stepContainer.Step.ShouldSkip())
 					{
 						SetStepState(stepContainer, StepState.Completed, CompletionType.Skipped);
+					}
+					else if (stepContainer.CompletionType is CompletionType.PrevSuccess)
+					{
+						SetStepState(stepContainer, StepState.Completed, CompletionType.PrevSuccess);
 					}
 					else
 					{
@@ -123,6 +129,8 @@ public class OrchestratorService(StepContainerProvider stepContainerProvider, Co
 
 		return pipelineSummary;
 	}
+
+
 
 	private PipelineSummary GetPipelineSummary(List<StepContainer> stepContainers)
 	{
@@ -187,5 +195,23 @@ public class OrchestratorService(StepContainerProvider stepContainerProvider, Co
 		{
 			stepContainer.Dependents.ForEach(d => d.Dependencies.Add(stepContainer));
 		}
+	}
+
+	private void ApplyFailedRunSummary(List<StepContainer> stepContainers, PipelineSummaryDto? failedRunSummaryDto)
+	{
+		if (failedRunSummaryDto is null)
+		{
+			return;
+		}
+		stepContainers.ForEach(s =>
+		{
+			var step = failedRunSummaryDto.StepContainers.FirstOrDefault(f => f.StepName == s.GetStepName());
+			if (step?.CompletionType is CompletionType.Success)
+			{
+				s.CompletionType = CompletionType.PrevSuccess;
+				s.State = StepState.Completed;
+				s.HasCompleted = true;
+			}
+		});
 	}
 }

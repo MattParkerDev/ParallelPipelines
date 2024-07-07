@@ -6,7 +6,7 @@ namespace ParallelPipelines.Application;
 public class PipelineSummaryDto
 {
 	public CompletionType? OverallCompletionType { get; set; }
-	public DateTimeOffset? DeploymentStartTime;
+	public DateTimeOffset? DeploymentStartTime; // TODO: These aren't serialising correctly
 	public DateTimeOffset? DeploymentEndTime;
 	public List<StepContainerDto> StepContainers { get; set; } = [];
 }

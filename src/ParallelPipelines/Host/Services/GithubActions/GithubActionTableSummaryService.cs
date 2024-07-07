@@ -39,6 +39,7 @@ file static class GithubMarkdownTableFormatter
 		var text = status switch
 		{
 			"Success" => $$$"""${\textsf{\color{lightgreen}{{{status}}}}}$""",
+			"PrevSuccess" => $$$"""${\textsf{\color{lightgreen}{{{status}}}}}$""",
 			"Skipped" => $$$"""${\textsf{\color{orange}{{{status}}}}}$""",
 			"Cancelled" => $$$"""${\textsf{\color{red}{{{status}}}}}$""",
 			"Failure" => $$$"""${\textsf{\color{red}{{{status}}}}}$""",

@@ -28,7 +28,7 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 		var serviceProvider = services.BuildServiceProvider();
 		var orchestratorService = serviceProvider.GetRequiredService<OrchestratorService>();
 
-		var pipelineSummary = await orchestratorService.RunPipeline(CancellationToken.None);
+		var pipelineSummary = await orchestratorService.RunPipeline(null, CancellationToken.None);
 		pipelineSummary.Should().NotBeNull();
 		pipelineSummary?.OverallCompletionType.Should().Be(CompletionType.Success);
 	}
@@ -55,7 +55,7 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 		var cancellationToken = new CancellationTokenSource().Token;
 		await orchestratorService.InitialiseAsync(cancellationToken);
 		var now = DateTimeOffset.Now;
-		var pipelineSummary = await orchestratorService.RunPipeline(CancellationToken.None);
+		var pipelineSummary = await orchestratorService.RunPipeline(null, CancellationToken.None);
 		var later = DateTimeOffset.Now;
 
 		pipelineSummary.Should().NotBeNull();
