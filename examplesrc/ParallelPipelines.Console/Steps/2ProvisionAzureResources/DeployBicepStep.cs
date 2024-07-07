@@ -3,9 +3,10 @@
 namespace ParallelPipelines.Console.Steps._2ProvisionAzureResources;
 
 [DependsOnStep<CreateResourceGroupStep>]
-public class DeployBicepStep(IPipelineContext context) : IStep
+public class DeployBicepStep(IPipelineContext pipelineContext) : IStep
 {
-	private readonly IPipelineContext _context = context;
+	private readonly IPipelineContext _pipelineContext = pipelineContext;
+
 	public bool ShouldSkip() => false;
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{

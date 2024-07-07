@@ -2,8 +2,10 @@
 
 namespace ParallelPipelines.Console.Steps._1Setup;
 
-public class InstallSwaCliStep : IStep
+public class InstallSwaCliStep(IPipelineContext pipelineContext) : IStep
 {
+	private readonly IPipelineContext _pipelineContext = pipelineContext;
+
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{
 		var result =

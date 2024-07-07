@@ -2,8 +2,10 @@
 
 namespace ParallelPipelines.Console.Steps._1Setup;
 
-public class InstallDotnetWasmToolsStep : IStep
+public class InstallDotnetWasmToolsStep(IPipelineContext pipelineContext) : IStep
 {
+	private readonly IPipelineContext _pipelineContext = pipelineContext;
+
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{
 		var result =

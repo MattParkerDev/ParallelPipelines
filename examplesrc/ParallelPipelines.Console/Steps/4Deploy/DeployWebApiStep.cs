@@ -6,9 +6,9 @@ namespace ParallelPipelines.Console.Steps._4Deploy;
 
 [DependsOnStep<PublishWebApiStep>]
 [DependsOnStep<DeployBicepStep>]
-public class DeployWebApiStep(IPipelineContext context) : IStep
+public class DeployWebApiStep(IPipelineContext pipelineContext) : IStep
 {
-	private readonly IPipelineContext _context = context;
+	private readonly IPipelineContext _pipelineContext = pipelineContext;
 
 	public async Task<BufferedCommandResult?[]?> RunStep(CancellationToken cancellationToken)
 	{
