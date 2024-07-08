@@ -9,6 +9,7 @@ public class PipelineConfig
 
 public class CicdConfig
 {
+	public bool UseDotnetArtifactOnRetry { get; set; } = false;
 	public bool OutputSummaryToGithubStepSummary { get; set; } = false;
 	public bool DisableGithubMarkdownTableSummary { get; set; } = false;
 	public bool DisableGithubMarkdownGanttSummary { get; set; } = false;

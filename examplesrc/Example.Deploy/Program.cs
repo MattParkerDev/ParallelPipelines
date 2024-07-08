@@ -17,6 +17,7 @@ builder.Configuration
 
 builder.Services.AddParallelPipelines(builder.Configuration, options =>
 {
+	options.Cicd.UseDotnetArtifactOnRetry = true;
 	options.Cicd.OutputSummaryToGithubStepSummary = true;
 	options.Cicd.WriteCliCommandOutputsToSummary = true;
 	options.Local.OutputSummaryToFile = true;

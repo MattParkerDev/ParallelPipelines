@@ -38,8 +38,15 @@ jobs:
       - name: Dotnet Run Pipeline
         run: dotnet run -c Release --project ./examplesrc/Example.Deploy/Example.Deploy.csproj ### Update to your new deploy project path
 
+      # The Github Toolkit C# SDK doesn't support uploading yet, let's just do it here for now
       - name: Upload ParallelPipelines Artifact
         uses: actions/upload-artifact@v4
         with:
           name: parallel-pipelines-artifact
           path: ./pipeline-summary-dto.json
+
+      - name: Upload .NET Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-artifact
+          path: ./artifacts
