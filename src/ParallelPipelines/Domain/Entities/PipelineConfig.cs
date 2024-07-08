@@ -12,6 +12,7 @@ public class CicdConfig
 	public bool OutputSummaryToGithubStepSummary { get; set; } = false;
 	public bool DisableGithubMarkdownTableSummary { get; set; } = false;
 	public bool DisableGithubMarkdownGanttSummary { get; set; } = false;
+	public bool DisableGithubMarkdownFlowchartSummary { get; set; } = false;
 	public bool WriteCliCommandOutputsToSummary { get; set; } = false;
 }
 
@@ -22,5 +23,6 @@ public class LocalConfig
 
 	public bool DisableGithubMarkdownTableSummary { get; set; } = false;
 	public bool DisableGithubMarkdownGanttSummary { get; set; } = false;
+	public bool DisableGithubMarkdownFlowchartSummary { get; set; } = false;
 	public bool DisableWriteCliCommandOutputsToSummary { get; set; } = false;
 }

@@ -8,10 +8,11 @@ using Spectre.Console;
 
 namespace ParallelPipelines.Host.Services;
 
-public class PostStepService(GithubActionTableSummaryService githubActionTableSummaryService, IOptions<PipelineConfig> pipelineConfig, GithubActionGanttSummaryService githubActionGanttSummaryService, IAnsiConsole console)
+public class PostStepService(GithubActionTableSummaryService githubActionTableSummaryService, IOptions<PipelineConfig> pipelineConfig, GithubActionGanttSummaryService githubActionGanttSummaryService, IAnsiConsole console, GithubActionFlowChartSummaryService githubActionFlowChartSummaryService)
 {
 	private readonly GithubActionTableSummaryService _githubActionTableSummaryService = githubActionTableSummaryService;
 	private readonly GithubActionGanttSummaryService _githubActionGanttSummaryService = githubActionGanttSummaryService;
+	private readonly GithubActionFlowChartSummaryService _githubActionFlowChartSummaryService = githubActionFlowChartSummaryService;
 	private readonly IAnsiConsole _console = console;
 	private readonly PipelineConfig _pipelineConfig = pipelineConfig.Value;
 
@@ -41,6 +42,11 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 				var ganttSummary = _githubActionGanttSummaryService.GenerateMermaidSummary(pipelineSummary);
 				text += "\n\n" + ganttSummary;
 			}
+			if (!_pipelineConfig.Cicd.DisableGithubMarkdownFlowchartSummary)
+			{
+				var flowchartSummary = _githubActionFlowChartSummaryService.GenerateFlowchartSummary(pipelineSummary);
+				text += "\n\n" + flowchartSummary;
+			}
 			if (_pipelineConfig.Cicd.WriteCliCommandOutputsToSummary)
 			{
 				var cliCommandSummary = GetCliCommandOutput(pipelineSummary);
@@ -62,6 +68,11 @@ public class PostStepService(GithubActionTableSummaryService githubActionTableSu
 			{
 				var ganttSummary = _githubActionGanttSummaryService.GenerateMermaidSummary(pipelineSummary);
 				text += "\n\n" + ganttSummary;
+			}
+			if (!_pipelineConfig.Local.DisableGithubMarkdownFlowchartSummary)
+			{
+				var flowchartSummary = _githubActionFlowChartSummaryService.GenerateFlowchartSummary(pipelineSummary);
+				text += "\n\n" + flowchartSummary;
 			}
 			if (!_pipelineConfig.Local.DisableWriteCliCommandOutputsToSummary)
 			{
