@@ -13,7 +13,7 @@ using Spectre.Console;
 
 namespace ParallelPipelines.Host.Services;
 
-public class PreStepService(GithubActionTableSummaryService githubActionTableSummaryService, IOptions<PipelineConfig> pipelineConfig, GithubActionGanttSummaryService githubActionGanttSummaryService, IAnsiConsole console, IPipelineContext pipelineContext)
+public class PreStepService(IOptions<PipelineConfig> pipelineConfig, IAnsiConsole console, IPipelineContext pipelineContext)
 {
 	private readonly IAnsiConsole _console = console;
 	private readonly PipelineConfig _pipelineConfig = pipelineConfig.Value;

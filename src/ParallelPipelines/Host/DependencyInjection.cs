@@ -27,6 +27,7 @@ public static class DependencyInjection
 		services.AddHostedService<PipelineApplication>();
 		services.AddSingleton<OrchestratorService>();
 		services.AddSingleton<PostStepService>();
+		services.AddSingleton<PreStepService>();
 		services.AddSingleton<StepContainerProvider>();
 		services.AddSingleton<ConsoleRenderer>();
 
