@@ -19,7 +19,9 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 	public async Task OrchestratorService_ReturnsSuccess()
 	{
 		var services = new ServiceCollection();
-		services.AddParallelPipelines(new ConfigurationBuilder().Build());
+		var configuration = new ConfigurationBuilder().Build();
+		services.AddSingleton<IConfiguration>(configuration);
+		services.AddParallelPipelines(configuration);
 		services.AddStep<InstallDotnetWasmToolsStep>();
 
 		services.RemoveAll(typeof(IAnsiConsole));
@@ -37,10 +39,14 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 	public async Task OrchestratorService_TestTimings()
 	{
 		var services = new ServiceCollection();
-		services.AddParallelPipelines(new ConfigurationBuilder().Build(), options =>
+		var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>{["ParallelPipelinesEnvironment"] = "unit-test"}).Build();
+		services.AddSingleton<IConfiguration>(configuration);
+
+		services.AddParallelPipelines(configuration, options =>
 		{
 			options.Local.DisableGithubMarkdownGanttSummary = false;
 			options.Local.DisableGithubMarkdownTableSummary = false;
+			options.AllowedEnvironmentNames = ["unit-test"];
 		});
 		services.AddStep<TestStep1>();
 		services.AddStep<TestStep2>();

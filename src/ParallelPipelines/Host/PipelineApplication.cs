@@ -31,6 +31,7 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 			}
 			else
 			{
+				// This should never occur as exceptions in steps are caught, to cancel the remaining steps
 				AnsiConsole.WriteLine($"ParallelPipelines failed with unhandled exception: {e.Message}");
 				throw;
 			}

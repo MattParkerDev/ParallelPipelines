@@ -33,6 +33,10 @@ public static class DependencyInjection
 		{
 			services.Configure(action);
 		}
+		else
+		{
+			services.AddOptions<PipelineConfig>();
+		}
 
 		Console.OutputEncoding = Encoding.UTF8;
 		services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
