@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Example.Deploy.Steps._1Setup;
 using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host;
+using ParallelPipelines.Host.Helpers;
 using ParallelPipelines.Host.Services;
 using ParallelPipelines.Unit.Tests.TestSteps;
 using Spectre.Console;
@@ -115,5 +117,30 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 		step4!.Duration.Should().BeCloseTo(TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(100));
 
 		pipelineSummary?.DeploymentEndTime.Should().BeCloseTo(step4.EndTime!.Value, TimeSpan.FromMilliseconds(10));
+	}
+
+	[Fact]
+	public async Task ParallelPipelinesApplication_FailedStep_ExitsWithExitCode1()
+	{
+		// To pass, add a throw in one of the steps
+		var cts = new CancellationTokenSource();
+		await PipelineFileHelper.PopulateGitRootDirectory(cts.Token);
+		// new process
+		var process = new Process
+		{
+			StartInfo = new ProcessStartInfo
+			{
+				FileName = "dotnet",
+				Arguments = "run",
+				WorkingDirectory = Path.Combine(PipelineFileHelper.GitRootDirectory.FullName, "examplesrc/Example.Deploy"),
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				UseShellExecute = false,
+				CreateNoWindow = true
+			}
+		};
+		process.Start();
+		await process.WaitForExitAsync();
+		process.ExitCode.Should().Be(1);
 	}
 }

@@ -27,4 +27,8 @@
 		<None Include="readme.md" Pack="true" PackagePath="\"/>
 	</ItemGroup>
 
+	<ItemGroup>
+		<InternalsVisibleTo Include="ParallelPipelines.Unit.Tests" />
+	</ItemGroup>
+
 </Project>

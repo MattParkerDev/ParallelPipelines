@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Hosting;
+using ParallelPipelines.Domain.Enums;
 using ParallelPipelines.Host.Services;
 using Spectre.Console;
 
@@ -21,6 +22,10 @@ public class PipelineApplication(IHostApplicationLifetime hostApplicationLifetim
 		{
 			var pipelineSummary = await _orchestratorService.RunPipeline(cancellationToken);
 			await _postStepService.RunPostSteps(pipelineSummary, cancellationToken);
+			if (pipelineSummary.OverallCompletionType is CompletionType.Cancelled or CompletionType.Failure)
+			{
+				Environment.ExitCode = 1;
+			}
 		}
 		catch (Exception e)
 		{
