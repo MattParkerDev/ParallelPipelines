@@ -27,23 +27,21 @@ public class StepContainerProvider(IEnumerable<StepContainer> stepContainers)
 			yield return container;
 		}
 
-		var inProgress = noDependencies;
-		var remaining = _stepContainers.Except(inProgress).ToList();
+		var remaining = _stepContainers.Except(noDependencies).ToList();
 
-		while (remaining.Count != 0)
+		var tasks = Task.WhenEach(_stepContainers.Select(s => s.CompletedTask).ToList());
+		await foreach (var task in tasks.WithCancellation(cancellationToken).ConfigureAwait(false))
 		{
-			var result = await await Task.WhenAny(inProgress.Select(s => s.CompletedTask).ToList()).WaitAsync(cancellationToken); // required, as otherwise the loop will not be cancellable
-			inProgress.Remove(result);
+			var result = await task;
 			foreach (var dependent in result.Dependents)
 			{
-				if (remaining.Contains(dependent) is false || dependent.Dependencies.Any(d => !d.HasCompleted))
+				if (remaining.Contains(dependent) is false || dependent.Dependencies.Any(d => d.HasCompleted is false))
 				{
 					continue;
 				}
 
-				yield return dependent;
-				inProgress.Add(dependent);
 				remaining.Remove(dependent);
+				yield return dependent;
 			}
 		}
 	}
