@@ -11,7 +11,7 @@
         <Authors>MattParkerDev</Authors>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>readme.md</PackageReadmeFile>
-		<PackageVersion>1.0.1</PackageVersion>
+		<PackageVersion>2.0.0</PackageVersion>
 		<PackageProjectUrl>https://github.com/MattParkerDev/ParallelPipelines</PackageProjectUrl>
 		<Description>Orchestrate Parallel/Concurrent CICD Pipelines in C#</Description>
 		<PackageTags>Csharp Dotnet Orchestration CICD Pipeline Deploy Deployment Pipelines Parallel Concurrent</PackageTags>
