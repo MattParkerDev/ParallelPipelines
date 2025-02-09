@@ -59,10 +59,10 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 
 		var serviceProvider = services.BuildServiceProvider();
 		var orchestratorService = serviceProvider.GetRequiredService<OrchestratorService>();
-		var cancellationToken = new CancellationTokenSource().Token;
+		var cancellationToken = TestContext.Current.CancellationToken;
 		await orchestratorService.InitialiseAsync(cancellationToken);
 		var now = DateTimeOffset.Now;
-		var pipelineSummary = await orchestratorService.RunPipeline(CancellationToken.None);
+		var pipelineSummary = await orchestratorService.RunPipeline(cancellationToken);
 		var later = DateTimeOffset.Now;
 
 		pipelineSummary.Should().NotBeNull();
