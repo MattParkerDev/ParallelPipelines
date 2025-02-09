@@ -1,6 +1,5 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Rendering;
-using Xunit.Abstractions;
 
 namespace ParallelPipelines.Unit.Tests;
 

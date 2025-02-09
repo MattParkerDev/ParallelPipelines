@@ -9,7 +9,6 @@ using ParallelPipelines.Host.Helpers;
 using ParallelPipelines.Host.Services;
 using ParallelPipelines.Unit.Tests.TestSteps;
 using Spectre.Console;
-using Xunit.Abstractions;
 
 namespace ParallelPipelines.Unit.Tests;
 
@@ -140,7 +139,7 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 			}
 		};
 		process.Start();
-		await process.WaitForExitAsync();
+		await process.WaitForExitAsync(TestContext.Current.CancellationToken);
 		process.ExitCode.Should().Be(1);
 	}
 }
