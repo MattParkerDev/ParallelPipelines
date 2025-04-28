@@ -31,7 +31,7 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 		var serviceProvider = services.BuildServiceProvider();
 		var orchestratorService = serviceProvider.GetRequiredService<OrchestratorService>();
 
-		var pipelineSummary = await orchestratorService.RunPipeline(CancellationToken.None);
+		var pipelineSummary = await orchestratorService.RunPipeline(TestContext.Current.CancellationToken);
 		pipelineSummary.Should().NotBeNull();
 		pipelineSummary?.OverallCompletionType.Should().Be(CompletionType.Success);
 	}
@@ -59,10 +59,9 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 
 		var serviceProvider = services.BuildServiceProvider();
 		var orchestratorService = serviceProvider.GetRequiredService<OrchestratorService>();
-		var cancellationToken = TestContext.Current.CancellationToken;
-		await orchestratorService.InitialiseAsync(cancellationToken);
+		await orchestratorService.InitialiseAsync(TestContext.Current.CancellationToken);
 		var now = DateTimeOffset.Now;
-		var pipelineSummary = await orchestratorService.RunPipeline(cancellationToken);
+		var pipelineSummary = await orchestratorService.RunPipeline(TestContext.Current.CancellationToken);
 		var later = DateTimeOffset.Now;
 
 		pipelineSummary.Should().NotBeNull();
@@ -122,8 +121,7 @@ public class OrchestratorServiceTests(ITestOutputHelper output)
 	public async Task ParallelPipelinesApplication_FailedStep_ExitsWithExitCode1()
 	{
 		// To pass, add a throw in one of the steps
-		var cts = new CancellationTokenSource();
-		await PipelineFileHelper.PopulateGitRootDirectory(cts.Token);
+		await PipelineFileHelper.PopulateGitRootDirectory(TestContext.Current.CancellationToken);
 		// new process
 		var process = new Process
 		{

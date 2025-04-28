@@ -8,10 +8,10 @@
 		<!--
 		To enable the Microsoft Testing Platform 'dotnet test' experience, add property:
 		  <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
-	
+
 		To enable the Microsoft Testing Platform native command line experience, add property:
 		  <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
-	
+
 		For more information on Microsoft Testing Platform support in xUnit.net, please visit:
 		  https://xunit.net/docs/getting-started/v3/microsoft-testing-platform
 		-->
@@ -25,13 +25,13 @@
 			<PrivateAssets>all</PrivateAssets>
 	  		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="FluentAssertions" Version="6.12.2" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+		<PackageReference Include="AwesomeAssertions" Version="8.1.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
 	  		<PrivateAssets>all</PrivateAssets>
   			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="xunit.v3" Version="1.1.0" />
+		<PackageReference Include="xunit.v3" Version="2.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
