@@ -1,4 +1,4 @@
-name: Template Build and Deploy
+name: (EXAMPLE) Template Build and Deploy
 on:
   workflow_call:
     inputs:
