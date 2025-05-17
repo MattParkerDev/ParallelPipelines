@@ -6,6 +6,10 @@
   <Folder Name="/examplesrc/">
     <Project Path="examplesrc\Example.Deploy\Example.Deploy.csproj" Type="Classic C#" />
   </Folder>
+  <Folder Name="/iac/">
+    <Project Path="iac\DetermineIfPublishNecessary\DetermineIfPublishNecessary.csproj" Type="Classic C#" />
+    <Project Path="iac\PublishToNuget\PublishToNuget.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
