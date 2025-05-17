@@ -19,7 +19,7 @@
 
     <ItemGroup>
       <PackageReference Include="CliWrap" Version="3.8.2" />
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
       <PackageReference Include="Spectre.Console" Version="0.50.0" />
     </ItemGroup>
 
