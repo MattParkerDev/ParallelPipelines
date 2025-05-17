@@ -1,0 +1,22 @@
+﻿<Solution>
+  <Folder Name="/.github/">
+    <File Path=".github\workflows\example-prod-deploy.yml" />
+    <File Path=".github\workflows\example-template-deploy.yml" />
+  </Folder>
+  <Folder Name="/examplesrc/">
+    <Project Path="examplesrc\Example.Deploy\Example.Deploy.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src\ParallelPipelines\ParallelPipelines.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests\ParallelPipelines.Unit.Tests\ParallelPipelines.Unit.Tests.csproj" Type="Classic C#" />
+  </Folder>
+</Solution>
