@@ -2,6 +2,7 @@
   <Folder Name="/.github/">
     <File Path=".github\workflows\example-prod-deploy.yml" />
     <File Path=".github\workflows\example-template-deploy.yml" />
+    <File Path=".github\workflows\publish-nuget-package.yml" />
   </Folder>
   <Folder Name="/examplesrc/">
     <Project Path="examplesrc\Example.Deploy\Example.Deploy.csproj" Type="Classic C#" />
