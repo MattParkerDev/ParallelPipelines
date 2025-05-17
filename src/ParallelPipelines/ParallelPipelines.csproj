@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
@@ -18,13 +18,13 @@
 	</PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CliWrap" Version="3.8.2" />
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
-      <PackageReference Include="Spectre.Console" Version="0.50.0" />
+      <PackageReference Include="CliWrap" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" />
+      <PackageReference Include="Spectre.Console" />
     </ItemGroup>
 
 	<ItemGroup>
-		<None Include="readme.md" Pack="true" PackagePath="\"/>
+		<None Include="readme.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
