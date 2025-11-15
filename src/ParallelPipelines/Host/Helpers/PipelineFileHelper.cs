@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System.Formats.Tar;
+using System.IO.Compression;
 using System.Text.Json;
 
 namespace ParallelPipelines.Host.Helpers;
@@ -84,6 +85,15 @@ public static class PipelineFileHelper
 	{
 		ZipFile.CreateFromDirectory(sourceDirectory.FullName, targetZipFilePath);
 		return GetFile(targetZipFilePath);
+	}
+
+	public static Task<FileInfo> TarballDirectoryToFile(this DirectoryInfo sourceDirectory, string targetTarballFilePath)
+	{
+		using FileStream fileStream = new(targetTarballFilePath, FileMode.CreateNew, FileAccess.Write);
+		using GZipStream gzipStream = new(fileStream, CompressionMode.Compress, leaveOpen: true);
+
+		TarFile.CreateFromDirectory(sourceDirectory.FullName, gzipStream, includeBaseDirectory: false);
+		return GetFile(targetTarballFilePath);
 	}
 
 	public static async Task WriteTextToFileAsync(string targetFilePath, string content)
